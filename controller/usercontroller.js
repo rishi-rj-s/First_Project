@@ -10,10 +10,11 @@ const otpGenerator = require("otp-generator");
 exports.login = async (req, res) => {
   const { username, password } = req.body;
   const users = await Userdb.findOne({ email: username });
-  if(users.status == "blocked"){
-    res.redirect("/?error=blocked")
-  }
+  
   if (users) {
+    if(users.status == "blocked"){
+      res.redirect("/?error=blocked")
+    }
     const passwordMatch = await bcrypt.compare(password, users.password);
     if (passwordMatch) {
       req.session.id = users._id;
