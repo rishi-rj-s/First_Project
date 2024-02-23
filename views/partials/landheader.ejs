@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <title>RISHI STUDIO</title>
+    <link rel="stylesheet" href="/css/user/styles.css">
+    <link rel="stylesheet" href="/css/user/magnific-popup.css">
+    <link rel="icon" href="/img/landing/favicon.png">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <style>
+        @media (min-width: 768px) {
+            .form-outline-inline {
+                flex-direction: row;
+                align-items: center;
+                margin-top: 0;
+            }
+
+            .form-outline-inline input[type="search"] {
+                width: auto;
+                margin-bottom: 0;
+                margin-right: 5px;
+            }
+        }
+
+
+        .banner-wrapper {
+            background-color: black;
+            padding: 10px;
+        }
+
+        .banner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .banner h1 {
+            font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+            padding-left: 10px;
+            margin-top: 0;
+            color: white;
+        }
+
+        .form-outline-inline {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .form-outline-inline input[type="search"] {
+            width: 100%;
+            margin-right: 5px;
+        }
+
+        .icons {
+            align-items: center;
+        }
+
+        .icons a {
+            margin-right: 10px;
+        }
+
+        @media (min-width: 768px) {
+            .banner h1 {
+                margin-bottom: 0;
+            }
+
+            .form-outline-inline input[type="search"] {
+                width: auto;
+                margin-right: 0;
+            }
+        }
+
+        .banner .fa-heart {
+            color: red !important;
+        }
+
+        .banner .fa-shopping-cart {
+            color: orange !important;
+        }
+
+        .banner .fa-user {
+            color: Teal !important;
+        }
+        .social-icons i{
+            padding-right: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+
+
+    <!--  NAVIGATION  -->
+
+    <div class="banner-wrapper fixed-top">
+        <div class="banner">
+            <h1>RISHI STUDIO</h1>
+            <form class="form-outline-inline" action="/product/search" method="get" required>
+                <input type="search" id="form1" class="form-control" placeholder="Search" />
+                <button type="submit" class="btn btn-primary shadow-0">
+                    <i class="fa fa-search"></i>
+                </button>
+            </form>
+            <div class="icons">
+                <a><i class="fa fa-shopping-cart"></i></a>
+                <a><i class="fa fa-heart"></i></a>
+                <a><i class="fa fa-user"></i></a>
+                <a href="/user/logout"><i class="fa fa-power-off"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="navbar-wrapper">
+        <nav class=" navbar-inverse  bg-dark">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <!-- Responsive button -->
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navi"
+                        aria-label="Toggle navigation">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                </div>
+                <div class="collapse navbar-collapse" id="navi">
+                    <!-- Navigation links -->
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="/user/landing" class="roundbtn">HOME</a></li>
+                        <li><a href="/user/products/Offer's" class="roundbtn">OFFERS</a></li>
+                        <li><a href="/user/products/Kid's" class="roundbtn">KIDS</a></li>
+                        <li><a href="/user/products/Men's" class="roundbtn">MENS</a></li>
+                        <li><a href="/user/products/Women's" class="roundbtn">WOMENS</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <!--  NAVIGATION ENDS  -->

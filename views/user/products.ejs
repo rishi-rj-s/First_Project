@@ -1,0 +1,102 @@
+<%-include('../partials/productheader')%>
+
+<body>
+
+     <div class="banner-wrapper fixed-top">
+          <div class="banner">
+              <h1>RISHI STUDIO</h1>
+              <form class="form-outline-inline" method="get" required>
+                  <input type="search" id="form1" class="form-control" placeholder="Search" />
+                  <button type="submit" class="btn btn-primary shadow-0">
+                      <i class="fa fa-search"></i>
+                  </button>
+              </form>
+              <div class="icons">
+                  <a><i class="fa fa-shopping-cart"></i></a>
+                  <a><i class="fa fa-heart"></i></a>
+                  <a><i class="fa fa-user"></i></a>
+                  <a href="/user/logout"><i class="fa fa-power-off"></i></a>
+              </div>
+          </div>
+      </div>
+  
+      <div class="navbar-wrapper">
+          <nav class=" navbar-inverse bg-dark">
+              <div class="container-fluid">
+                  <div class="navbar-header">
+                      <!-- Responsive button -->
+                      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navi"
+                          aria-label="Toggle navigation">
+                          <span class="icon-bar"></span>
+                          <span class="icon-bar"></span>
+                          <span class="icon-bar"></span>
+                      </button>
+                  </div>
+                  <div class="collapse navbar-collapse" id="navi">
+                      <!-- Navigation links -->
+                      <ul class="nav navbar-nav navbar-right">
+                          <li><a href="#" class="roundbtn">HOME</a></li>
+                          <li><a href="#" class="roundbtn">OFFERS</a></li>
+                          <li><a href="#" class="roundbtn">KIDS</a></li>
+                          <li><a href="#" class="roundbtn">MENS</a></li>
+                          <li><a href="#" class="roundbtn">WOMENS</a></li>
+                      </ul>
+                  </div>
+              </div>
+          </nav>
+      </div>
+  
+      <!-- Breadcrumbs -->
+      <div class="container mt-5">
+        <div class="row">
+          <div class="col-12 col-md-8">
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/user/landing">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Products</li>
+              </ol>
+            </nav>
+          </div>
+          <div class="col-12 col-md-4"></div>
+        </div>
+      </div>
+    
+
+<!-- partial:index.partial.html -->
+<section class="section-products">
+		<div class="container">
+				<div class="row justify-content-center text-center">
+						<div class="col-md-8 col-lg-6">
+							<h2 class="mb-5"><%= category%> Collection</h2>
+						</div>
+				</div>
+				<div class="row">
+                        <% products.filter(pdt => pdt.listing !== "Unlisted").forEach((pdt) => { %>
+                              <!-- Single Product -->
+                              <div class="col-md-6 col-lg-4 col-xl-3">
+                                        <div id="product-1" class="single-product">
+                                                  <div class="part-1">
+                                                    <!-- <div class="part-1 product-image" style="background-image: url('/<%= pdt.images[0] %>'); background-repeat: no-repeat; background-size: cover; background-position: center;"></div> -->
+                                                    <img src="/<%= pdt.images[0] %>" alt="" style="height: 100%; width: 100%; background-repeat: no-repeat; background-size: cover; background-position: center;" >
+                                                            <ul>
+                                                                      <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
+                                                                      <li><a href="#"><i class="fa fa-heart"></i></a></li>
+                                                                      <li><a href="#"><i class="fa fa-plus"></i></a></li>
+                                                                      <li><a href="/user/productview/<%= pdt._id %>"><i class="fa fa-expand"></i></a></li>
+                                                            </ul>
+                                                  </div>
+                                                  <div class="part-2">
+                                                            <h3 class="product-title"><%= pdt.p_name %></h3>
+                                                            <h4 class="product-old-price">$<%= pdt.price %></h4>
+                                                            <h4 class="product-price text-lg">$<%= pdt.total_price %></h4>
+                                                  </div>
+                                        </div>
+                              </div>
+                         <% }) %>
+				</div>
+		</div>
+</section>
+<!-- partial -->
+<%-include('footer')%>
+</body>
+</html>

@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge" />
+  <title>RISHI STUDIO</title>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <!-- Google Fonts Roboto -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" />
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <!-- Custom styles -->
+  <link rel="stylesheet" href="/css/user/product_view.css" />
+  <link rel="icon" href="/img/landing/favicon.png">
+  <style>
+    @media (min-width: 768px) {
+      .form-outline-inline {
+        flex-direction: row;
+        align-items: center;
+        margin-top: 0;
+      }
+
+      .form-outline-inline input[type="search"] {
+        width: auto;
+        margin-bottom: 0;
+        margin-right: 5px;
+      }
+    }
+
+
+    .banner-wrapper {
+      background-color: black;
+      padding: 15px;
+    }
+
+    .banner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .banner h1 {
+      font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+      padding-left: 10px;
+      margin-top: 0;
+      color: white;
+    }
+
+    .form-outline-inline {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .form-outline-inline input[type="search"] {
+      width: 100%;
+      margin-right: 5px;
+    }
+
+    .banner i {
+      font-size: x-large;
+      margin-right: 10px;
+    }
+
+    .icons {
+      align-items: center;
+    }
+
+    .icons a {
+      margin-right: 10px;
+    }
+
+    @media (min-width: 768px) {
+      .banner h1 {
+        margin-bottom: 0;
+      }
+
+      .form-outline-inline input[type="search"] {
+        width: auto;
+        margin-right: 0;
+      }
+    }
+
+    .banner .fa-heart {
+      color: red !important;
+    }
+
+    .banner .fa-shopping-cart {
+      color: orange !important;
+    }
+
+    .banner .fa-user {
+      color: Teal !important;
+    }
+
+    .social-icons i {
+      padding-right: 10px;
+    }
+
+    .product {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .product-border {
+      width: 1px;
+      background-color: #ccc;
+      height: 100px;
+      /* Adjust according to your needs */
+    }
+
+    .product:last-child .product-border {
+      display: none;
+    }
+
+    .breadcrumb {
+      background-color: #f5f5f5;
+      padding: 10px;
+      margin-bottom: 20px;
+    }
+
+    .breadcrumb-item+.breadcrumb-item::before {
+      content: ">";
+      padding: 0 5px;
+      color: #ccc;
+    }
+
+    .breadcrumb-item a {
+      color: #333;
+    }
+
+    .breadcrumb-item.active {
+      color: #777;
+    }
+
+    @media (max-width: 519px) {
+      .breadcrumb {
+        margin-top: 2rem;
+      }
+    }
+
+
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+      background-color: black;
+      /* Change to your desired background color */
+    }
+
+    #lens {
+      z-index: 2;
+      position: absolute;
+
+      height: 125px;
+      width: 125px;
+      border: 0;
+      background-repeat: no-repeat;
+      cursor: none;
+
+    }
+  </style>
+
+
+
+</head>
+
+<body>
+  <!-- Jumbotron -->
+
+  <div class="banner-wrapper fixed-top">
+    <div class="banner">
+      <h1>RISHI STUDIO</h1>
+      <form class="form-outline-inline" method="get" required>
+        <input type="search" id="form1" class="form-control" placeholder="Search" />
+        <button type="submit" class="btn btn-primary shadow-0">
+          <i class="fa fa-search"></i>
+        </button>
+      </form>
+      <div class="icons">
+        <a href=""><i class="fa fa-shopping-cart"></i></a>
+        <a href=""><i class="fa fa-heart"></i></a>
+        <a href=""><i class="fa fa-user"></i></a>
+        <a href="/user/logout"><i class="fa fa-power-off"></i></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="navbar-wrapper">
+    <nav class=" navbar-inverse  bg-dark">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <!-- Responsive button -->
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navi"
+            aria-label="Toggle navigation">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+        </div>
+        <div class="collapse navbar-collapse" id="navi">
+          <!-- Navigation links -->
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="#" class="roundbtn">HOME</a></li>
+            <li><a href="#" class="roundbtn">OFFERS</a></li>
+            <li><a href="#" class="roundbtn">KIDS</a></li>
+            <li><a href="#" class="roundbtn">MENS</a></li>
+            <li><a href="#" class="roundbtn">WOMENS</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+
+  <!-- breadcrumb content here -->
+  <div class="container mt-5">
+    <div class="row">
+      <div class="col-12 col-md-8">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/user/landing">Home</a></li>
+            <li class="breadcrumb-item"><a href="/user/products/<%=product.category%>">Products</a></li>
+            <li class="breadcrumb-item active" aria-current="page">View</li>
+          </ol>
+        </nav>
+      </div>
+      <div class="col-12 col-md-4"></div>
+    </div>
+  </div>
+
+  <!-- content -->
+  <section class="py-5">
+    <div class="container">
+      <div class="row gx-5">
+        <aside class="col-lg-6 text-center">
+          <div id="product-carousel" class="carousel slide border rounded-4 mb-3" data-bs-ride="carousel">
+            <div class="carousel-inner mx-auto">
+              <% product.images.forEach((image, index)=> { %>
+                <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+                  <div id="lens"></div>
+                  <img id='featured' style="max-width: 100%; max-height: 100vh; margin: auto;" class="rounded-4 fit"
+                    src="/<%= image %>" />
+                </div>
+                <% }); %>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#product-carousel" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#product-carousel" data-bs-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
+          </div>
+
+          <div class="d-flex justify-content-center mb-3">
+            <% for (let i=0; i < 4; i++) { %>
+              <img width="60" height="60" class="rounded-2 border mx-1 rounded-2" src="/<%= product.images[i] %>" />
+              <% } %>
+          </div>
+        </aside>
+        <!-- Image zoom script -->
+        <script>
+          document.getElementById('product-carousel').addEventListener('mouseover', function () {
+            imageZoom('featured')
+          })
+
+          function imageZoom(imgID) {
+            let img = document.getElementById(imgID)
+            let lens = document.getElementById('lens')
+
+            lens.style.backgroundImage = `url( ${img.src} )`
+
+            let ratio = 3
+
+            lens.style.backgroundSize = (img.width * ratio) + 'px ' + (img.height * ratio) + 'px';
+
+            img.addEventListener("mousemove", moveLens)
+            lens.addEventListener("mousemove", moveLens)
+            img.addEventListener("touchmove", moveLens)
+
+            function moveLens() {
+              let pos = getCursor()
+
+              let positionLeft = pos.x - (lens.offsetWidth / 2)
+              let positionTop = pos.y - (lens.offsetHeight / 2)
+
+              if (positionLeft < 0) {
+                positionLeft = 0
+              }
+
+              if (positionTop < 0) {
+                positionTop = 0
+              }
+
+              if (positionLeft > img.width - lens.offsetWidth / 3) {
+                positionLeft = img.width - lens.offsetWidth / 3
+              }
+
+              if (positionTop > img.height - lens.offsetHeight / 3) {
+                positionTop = img.height - lens.offsetHeight / 3
+              }
+
+              lens.style.left = positionLeft + 'px';
+              lens.style.top = positionTop + 'px';
+
+              lens.style.backgroundPosition = "-" + (pos.x * ratio) + 'px -' + (pos.y * ratio) + 'px'
+            }
+
+            function getCursor() {
+              let e = window.event
+              let bounds = img.getBoundingClientRect()
+
+              let x = e.pageX - bounds.left
+              let y = e.pageY - bounds.top
+              x = x - window.pageXOffset;
+              y = y - window.pageYOffset;
+
+              return { 'x': x, 'y': y }
+            }
+
+          }
+
+          imageZoom('featured')
+        </script>
+
+
+        <main class="col-lg-6">
+          <div class="ps-lg-3">
+            <h4 class="title text-dark">
+              <%=product.p_name%>
+            </h4>
+            <div class="d-flex flex-row my-3">
+              <div class="text-warning mb-1 me-2">
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star-half-alt"></i>
+                <span class="ms-1">
+                  4.5
+                </span>
+              </div>
+              <span class="text-muted"><i class="fa fa-shopping-basket fa-sm mx-1"></i>154 orders</span>
+              <% if(product.stock>0){ %>
+                <span class="text-success ms-2">In stock</span>
+                <%} else {%>
+                  <span class="text-danger ms-2">Out of Stock</span>
+                  <%}%>
+            </div>
+
+            <div class="mb-3">
+              <span class="h3">$<%=product.total_price%></span>
+              <span class="text-muted">&nbsp;<del>$<%=product.price%></del></span>
+            </div>
+
+            <p style="color: green; font-weight: 700;">
+              <%=product.discount%>% Discount
+            </p>
+
+            <p>
+              <%=product.description%>
+            </p>
+
+            <!-- <div class="row">
+              <dt class="col-3">Type:</dt>
+              <dd class="col-9">Regular</dd>
+
+              <dt class="col-3">Color</dt>
+              <dd class="col-9">Brown</dd>
+
+              <dt class="col-3">Material</dt>
+              <dd class="col-9">Cotton, Jeans</dd>
+
+              <dt class="col-3">Brand</dt>
+              <dd class="col-9">Reebook</dd>
+            </div> -->
+
+            <hr />
+
+            <div class="row mb-4">
+              <div class="col-md-4 col-6">
+                <label class="mb-2">Size</label>
+                <select class="form-select border border-secondary pb-1" style="height: 35px;">
+                  <option>Small</option>
+                  <option>Medium</option>
+                  <option>Large</option>
+                </select>
+              </div>
+              <!-- col.// -->
+              <div class="col-md-4 col-6 mb-3">
+                <label class="mb-2 d-block">Quantity</label>
+                <div class="input-group mb-3" style="width: 170px;">
+                  <button class="btn btn-white border border-secondary px-3" type="button" id="button-addon1"
+                    data-mdb-ripple-color="dark">
+                    <i class="fa fa-minus"></i>
+                  </button>
+                  <input type="text" class="form-control text-center border border-secondary" placeholder="1"
+                    aria-label="Example text with button addon" aria-describedby="button-addon1" />
+                  <button class="btn btn-white border border-secondary px-3" type="button" id="button-addon2"
+                    data-mdb-ripple-color="dark">
+                    <i class="fa fa-plus"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <a href="#" class="btn btn-warning shadow-0"> Buy now </a>
+            <a href="#" class="btn btn-primary shadow-0"> <i class="me-1 fa fa-shopping-basket"></i> Add to cart </a>
+            <a href="#" class="btn btn-light border border-secondary py-2 icon-hover px-3"> <i
+                class="me-1 fa fa-heart fa-lg"></i> Save </a>
+          </div>
+        </main>
+      </div>
+    </div>
+  </section>
+  <!-- content -->
+
+  <script>
+    function displayImage(element) {
+      var mainImage = document.getElementById("featured");
+      mainImage.src = element.getElementsByTagName("img")[0].src;
+    }
+  </script>
+
+  <%if(similar.length > 1){%>
+  <section class="bg-light border-top py-4">
+    <div class="container">
+      <div class="row gx-4">
+        <div class="col-lg-12">
+          <div class="px-0 border rounded-2 shadow-0">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Similar items</h5>
+                <div class="d-flex mb-3">
+                  <%for(i=0;i<similar.length;i++){%>
+                    <%if(similar[i]._id.toString()===product._id.toString()) {continue;}%>
+                      <div class="product">
+                        <a href="/user/productview/<%= similar[i]._id %>" class="me-3">
+                          <img src="/<%=similar[i].images[0]%>" style="min-width: 96px; height: 96px;"
+                            class="img-md img-thumbnail" />
+                        </a>
+                        <div class="info">
+                          <a href="/user/productview/<%= similar[i]._id %>" class="nav-link mb-1">
+                            <%=similar[i].p_name%>
+                          </a>
+                          <strong class="text-dark ms-3"> $<%=similar[i].total_price%>.00</strong>
+                        </div>
+                      </div>
+                      <%}%>
+                        <div class="product-border"></div> <!-- Border between products -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <%}%>
+  <!-- content -->
+
+  <!-- MDB -->
+  <script type="text/javascript" src="js/mdb.min.js"></script>
+  <!-- Custom scripts -->
+  <script type="text/javascript" src="js/script.js"></script>
+  <!-- Bootstrap -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+    crossorigin="anonymous"></script>
+
+  <%- include('footer') -%>

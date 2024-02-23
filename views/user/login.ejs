@@ -1,0 +1,78 @@
+<%- include('../partials/loginheader') -%>
+
+<body>
+
+     <nav class="py-3 bg-black  text-left w-full fixed top-0">
+          <h1 class="text-white pl-2 text-4xl font-black">RISHI STUDIO</h1>
+     </nav>
+
+     <div class="flex mt-11 text-white fixed justify-end items-center w-full">
+          <a href="/admin/" class="text-sm bg-black px-2 border-2 border-white">
+               <i class="fa-solid fa-circle-user mr-2"></i>
+               ADMIN
+          </a>
+     </div>
+
+     <div class="flex justify-center items-center mt-5 pt-16">
+          <div class="inline-block bg-slate-300 px-3 p-1">
+               <h1 class="text-4xl font-bold font-mono">LOGIN</h1>
+          </div>
+     </div>
+
+     <!-- <div class="flex justify-center items-center mt-5">
+          <div class="inline-block bg-slate-300 px-3 p-1 rounded-2xl">
+               <p class="font-medium text-xs">Continue with,</p>
+               <div class="mt-1 px-1 py-1 flex gap-6 text-3xl border-2">
+                    <a href=""><i class="fa-brands fa-google text-red-600"></i></a>
+                    <a href=""><i class="fa-brands fa-facebook text-blue-700"></i></a>
+                    <a href=""><i class="fa-brands fa-vk text-blue-600"></i></a>
+                    <a href=""><i class="fa-brands fa-github"></i></a>
+                    <a href=""><i class="fa-brands fa-x-twitter"></i></a>
+               </div>
+               <p class="mt-1 font-medium text-xs mb-1">Or,</p>
+          </div>
+     </div> -->
+
+     <div class="flex justify-center mt-4">
+          <form action="/user/login" method="post">
+               <div class="flex flex-col gap-y-2 rounded-2xl bg-slate-300 px-3 py-2">
+                    <label for="username" class="-mb-1">Username</label>
+                    <input type="text" name="username" class="h-8 w-64 border border-gray-700" required>
+                    <label for="password" class="mt-3 -mb-1">Password</label>
+                    <input type="password" name="password" class="h-8 w-64 border border-gray-700" required>
+               </div>
+               <div class="flex justify-center items-center mt-4">
+                    <input type="submit" class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded" name="submit" id="submit" value="Login">
+                </div>
+          </form>
+     </div>
+     
+     <div class="flex justify-center mt-6 gap-4">
+          <div class="p-0.5 mb-2 bg-black flex items-center">
+              <p class="text-xs text-white">Don't have an account?</p>
+          </div>
+          <div class="p-1 bg-orange-300 border-2 border-black rounded-xl flex items-center">
+              <a href="/user/register" class="text-xs font-bold text-black">Sign Up</a>
+          </div>
+     </div>
+      
+
+     <script> 
+          const urlParams = new URLSearchParams(window.location.search);
+          const error = urlParams.get('error');
+          if (typeof error !== 'undefined') {
+              if (error.includes('email')) {
+                  alert('Invalid email');
+                  window.history.replaceState({}, document.title, window.location.pathname);
+              } else if (error.includes('password')) {
+                  alert('Invalid password');
+                  window.history.replaceState({}, document.title, window.location.pathname);
+              } else if (error.includes('blocked')) {
+                  alert('User blocked');
+                  window.history.replaceState({}, document.title, window.location.pathname);
+              }
+          }
+      </script>    
+           
+</body>
+</html>
