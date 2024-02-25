@@ -9,248 +9,77 @@
           integrity="sha384-pzjw8f+ua7Kw1TIq0v8FqFjcJ6pajs/rfdfs3SO+kD4Ck5BdPtF+to8xMmcke49" crossorigin="anonymous">
 </head>
 <style>
-     .form-container {
-          max-width: 800px;
-          margin: 0 auto;
-          padding: 2rem;
-          background-color: #fff;
-          border-radius: 5px;
-          box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-     }
-
-     .form-group {
-          margin-bottom: 1.5rem;
-     }
-
-     .form-label {
-          font-weight: bold;
-          display: block;
-          margin-bottom: 0.5rem;
-     }
-
-     .form-control {
-          border-radius: 5px;
-          padding: 0.5rem;
-          font-size: 1rem;
-          width: 100%;
-     }
-
-     .form-control:focus {
-          box-shadow: 0 0 2px 1px rgba(0, 123, 255, 0.2);
-     }
-
-     .form-text {
-          font-size: 0.8rem;
-          color: #666;
-     }
-
-     .form-select {
-          border-radius: 5px;
-          padding: 0.5rem;
-          font-size: 1rem;
-          width: 100%;
-     }
-
-     .form-select:focus {
-          box-shadow: 0 0 2px 1px rgba(0, 123, 255, 0.2);
-     }
-
-     .preview-container {
-          max-width: 800px;
-          margin: 2rem auto;
-          display: flex;
-          flex-wrap: wrap;
-     }
-
-     .preview-item {
-          width: 100%;
-          margin-bottom: 1rem;
-     }
-
-     .preview-image {
-          width: 100%;
-          border-radius: 5px;
-          object-fit: cover;
-          height: 200px;
-     }
-
-     .delete-button {
-  border: none;
-  background-color: white;
-  color: black;
-  font-weight: bold;
-  font-size: 0.85rem;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0 0.25rem 0.25rem 0;
-}
-
-.delete-button:hover {
-  background-color: black;
-  color: white;
-}
-
-.image-container {
-  display: flex;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  overflow-y: hidden;
-  gap: 1rem;
-}
-
-.image-container > * {
-  flex-shrink: 0;
-}
-
-     /* body{
+     body {
           min-height: 100vh;
           background-color: #EEE;
           color: #222;
           font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
      }
-     #container{
-          margin: 1em; padding: 1.5em;
+
+     #container {
+          margin: 1em;
+          padding: 1.5em;
           border: 4px solid #456;
           height: calc(100vh - 2em);
      }
-     .breadcrumb{
+
+     .breadcrumb {
           list-style: none;
      }
-     .breadcrumb li{
+
+     .breadcrumb li {
+          font-size: 50px;
           display: inline-block;
           font-weight: bold;
      }
-     .breadcrumb li::after{
+
+     .breadcrumb li::after {
           content: "  >  ";
      }
-     .breadcrumb li:last-child::after{
+
+     .breadcrumb li:last-child::after {
           content: "";
      }
-     .breadcrumb a{
+
+     .breadcrumb a {
           font-weight: normal;
           text-decoration: none;
           color: #222;
      }
-     .breadcrumb a:hover{
+
+     .breadcrumb a:hover {
           text-decoration: underline;
-     } */
+     }
 </style>
 
 <body>
-     <!-- <div id="container">
+     <div id="container">
           <ol class="breadcrumb">
-               <li><a href="#">1</a></li>
-               <li><a href="#">2</a></li>
-               <li><a href="#">3</a></li>
+               <li><a onclick="display()">1</a></li>
+               <li><a onclick="display()">2</a></li>
+               <li><a onclick="display()">3</a></li>
                <li>4</li>
           </ol>
      </div>
- -->
-     <div class="container-fluid">
-          <div class="row">
-               <div class="col-md-8">
-                    <form>
-                         <div class="form-group">
-                              <label for="p_name">Product Name</label>
-                              <input type="text" class="form-control" id="p_name" placeholder="Enter product name"
-                                   required>
-                         </div>
-                         <div class="form-group">
-                              <label for="price">Price</label>
-                              <input type="number" class="form-control" id="price" placeholder="Enter price" required>
-                         </div>
-                         <div class="form-group">
-                              <label for="size">Size</label>
-                              <input type="text" class="form-control" id="size" placeholder="Enter size" required>
-                         </div>
-                         <div class="form-group">
-                              <label for="description">Description</label>
-                              <textarea class="form-control" id="description" rows="3" required></textarea>
-                         </div>
-                         <div class="form-group">
-                              <label for="discount">Discount</label>
-                              <input type="number" class="form-control" id="discount" placeholder="Enter discount"
-                                   required>
-                              <small id="discountHelp" class="form-text text-muted">Discount must be between 0 and
-                                   40%.</small>
-                         </div>
-                         <div class="form-group">
-                              <label for="stock">Stock</label>
-                              <input type="number" class="form-control" id="stock" placeholder="Enter stock" required>
-                         </div>
-                         <div class="form-group">
-                              <label for="images">Images</label>
-                              <input type="file" class="form-control-file" id="images" required multiple>
-                         </div>
-                         <div class="col-md-4">
-                              <div class="card">
-                                   <div class="card-body">
-                                        <h5 class="card-title">Images Preview</h5>
-                                        <div class="image-container">
-                                             <!-- Image previews will be inserted here -->
-                                        </div>
-                                   </div>
-                              </div>
-                         </div>
-          
-                         <div class="form-group">
-                              <label for="listing">Listing</label>
-                              <select class="form-control" id="listing" required>
-                                   <option value="listed">Listed</option>
-                                   <option value="unlisted">Unlisted</option>
-                              </select>
-                         </div>
-                    </form>
-               </div>
-          </div>
-     </div>
+
+
      <script>
-const imageContainer = document.querySelector('.image-container');
-const imageInput = document.querySelector('#images');
-
-imageInput.addEventListener('change', (event) => {
-  const files = event.target.files;
-
-  for (const file of files) {
-    if (['image/jpeg', 'image/png', 'image/gif'].includes(file.type) ||
-        ['image/jpeg', 'image/png', 'image/gif'].includes(file.type.split('/')[0] + '/' + file.type.split('/')[1].split('.')[1])) {
-      const image = new Image();
-      image.src = URL.createObjectURL(file);
-
-      image.onload = () => {
-        const imageElement = document.createElement('div');
-        imageElement.classList.add('image-element');
-        imageElement.style.height = '150px';
-        imageElement.style.width = '150px';
-        imageElement.style.position = 'relative';
-
-        const imageWrapper = document.createElement('img');
-        imageWrapper.classList.add('img-fluid', 'img-thumbnail');
-        imageWrapper.style.height = '100%';
-        imageWrapper.style.width = '100%';
-        imageWrapper.style.objectFit = 'contain';
-        imageWrapper.src = image.src;
-
-        imageElement.appendChild(imageWrapper);
-
-        const deleteButton = document.createElement('button');
-        deleteButton.classList.add('btn', 'btn-danger', 'btn-sm', 'delete-button');
-        deleteButton.textContent = 'Delete';
-        deleteButton.style.position = 'absolute';
-        deleteButton.style.top = '0';
-        deleteButton.style.right = '0';
-
-        imageElement.appendChild(deleteButton);
-
-        imageContainer.appendChild(imageElement);
-
-        deleteButton.addEventListener('click', () => {
-          imageElement.remove();
-        });
-      };
-    }
-  }
-});     
-
+          function display() {
+               Swal.fire({
+                    title: "Do you want to save the changes?",
+                    showDenyButton: true,
+                    showCancelButton: true,
+                    confirmButtonText: "Save",
+                    denyButtonText: `Don't save`
+               }).then((result) => {
+                    /* Read more about isConfirmed, isDenied below */
+                    if (result.isConfirmed) {
+                         Swal.fire("Saved!", "", "success");
+                    } else if (result.isDenied) {
+                         Swal.fire("Changes are not saved", "", "info");
+                    }
+               });
+          }
      </script>
      <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
           integrity="sha384-oBqDVmMz4fnFO9gybBud7RduPuemT//+jJXB16zg6i8UQD3lV5uDC3Yc7bz1Eeow"
@@ -258,6 +87,7 @@ imageInput.addEventListener('change', (event) => {
      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
           integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
           crossorigin="anonymous"></script>
+     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 
 </html>
