@@ -10,10 +10,10 @@ const otpGenerator = require("otp-generator");
 exports.login = async (req, res) => {
   const { username, password } = req.body;
   const users = await Userdb.findOne({ email: username });
-  
+
   if (users) {
-    if(users.status == "blocked"){
-      res.redirect("/?error=blocked")
+    if (users.status == "blocked") {
+      res.redirect("?error=blocked");
     }
     const passwordMatch = await bcrypt.compare(password, users.password);
     if (passwordMatch) {
@@ -25,14 +25,14 @@ exports.login = async (req, res) => {
       res.cookie("access", access, {
         httpOnly: true,
       });
-      res.redirect("/user/landing");
+      res.redirect("/user/landing?msg=loggedin");
     } else {
       // Password is incorrect, send error message
-      res.redirect("/?error=password");
+      res.redirect("?error=password");
     }
   } else {
     // Password is incorrect, send error message
-    res.redirect("/?error=email");
+    res.redirect("?error=email");
   }
 };
 
@@ -75,7 +75,7 @@ exports.cookieJwtAuth = (req, res, next) => {
 
 exports.logout = (req, res) => {
   res.cookie("access", "", { maxAge: 0 });
-  res.redirect("/");
+  res.redirect("/?error=logout");
 };
 
 let cate;
@@ -132,25 +132,46 @@ const sendOtpEmail = async (email, otp) => {
   }
 };
 
+let s = {};
+let q = {};
+
 exports.registerfirst = async (req, res) => {
   const { name, email, password } = req.body;
 
-  if (!name || !email || !password) {
-    return res.status(400).json({
-      status: "failed",
-      message: "All fields are required!",
-    });
-  } else if ((await Userdb.find({ email: email })) == null) {
-    return res.status(409).json({
-      status: "Conflict",
-      message: "This account already exists.",
-    });
+  const userExists = await Userdb.find({ email: email });
+  if (userExists) {
+      return res.redirect("/user/register?error=email");
   }
 
-  req.session.body = req.body;
+  s = req.body;
+  console.log(s);
 
   // Generate random OTP
   const otp = Math.floor(1000 + Math.random() * 9999);
+  console.log(otp);
+
+  // Send OTP via email
+  try {
+    await sendOtpEmail(email, otp);
+    q = { code: otp, expiryTime: Date.now() + 60000 };
+    res.render("user/otpverify");
+  } catch (error) {
+    console.error(error);
+    res.redirect("/user/register?error=unable");
+  }
+};
+
+exports.registerfirsterror = (req,res) => {
+  res.render("user/otpverify")
+}
+
+exports.resendOtp = async (req,res) =>{
+
+  const email = req.session.body.email
+
+  // Generate random OTP
+  const otp = Math.floor(1000 + Math.random() * 9999);
+  console.log(otp)
 
   // Send OTP via email
   try {
@@ -159,39 +180,25 @@ exports.registerfirst = async (req, res) => {
     res.render("user/otpverify");
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: "Failed to send OTP." });
+    res.redirect("/user/registerfirst?error=unable");
   }
-};
+}
 
 exports.register = async (req, res) => {
-  const { name, email, password } = req.session.body;
-  console.log(name, email, password);
+  console.log(s);
+  const { name, email, password } = s;
   const otp = req.body.otp;
-  console.log(otp, req.session.otp.code);
-  // Check for valid OTP
-  if (!otp || otp != req.session.otp.code) {
-    return res.status(400).json({
-      status: "Invalid",
-      message: "Wrong OTP.",
-    });
-  }
+  const storedOtp = q;
 
-  if (!name || !email || !password || !otp) {
-    return res
-      .status(400)
-      .json({ success: false, message: "All fields are required." });
-  }
-
-  const storedOtp = req.session.otp;
-
-  if (
-    !storedOtp ||
-    otp != storedOtp.code ||
-    Date.now() > storedOtp.expiryTime
-  ) {
+  //Check if expired
+  if (!q || otp != q.code || Date.now() > q.expiryTime) {
     console.log("Expired");
-    return res.status(400).json({ success: false, message: "Invalid OTP." });
+    return res.redirect("/user/registerfirst?error=expired");
   }
+  // Check for valid OTP
+  if (!otp || otp != q.code) {
+    return res.redirect("/user/registerfirst?error=otpwrong");
+  }  
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -203,11 +210,12 @@ exports.register = async (req, res) => {
 
     await users.save();
     // Clear session data after successful registration
-    delete req.session.otp, req.session.body;
+    s = {};
+    q = {};
     console.log("Registration successful");
-    res.redirect("/");
+    res.redirect("/?error=success");
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: "Internal server error." });
+    res.redirect("/user/register?error=error");
   }
 };

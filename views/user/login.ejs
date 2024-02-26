@@ -54,7 +54,7 @@
                     <p class="text-xs text-white">Don't have an account?</p>
                </div>
                <div class="p-1 bg-orange-300 border-2 border-black rounded-xl flex items-center">
-                    <a href="/user/register" class="text-xs font-bold text-black">Sign Up</a>
+                    <a href="/user/register" class="text-xs font-bold text-black">Register</a>
                </div>
           </div>
 
@@ -87,7 +87,17 @@
                               confirmButtonText: 'Cool'
                          })
                          window.history.replaceState({}, document.title, window.location.pathname);
+                    } else if (error.includes('logout')) {
+                         Swal.fire({
+                              position: 'top-end',
+                              icon: 'success',
+                              title: 'Logged Out',
+                              showConfirmButton: false,
+                              timer: 1500
+                         })
+                         window.history.replaceState({}, document.title, window.location.pathname);
                     }
+
                }
           </script>
           <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.all.min.js"></script>

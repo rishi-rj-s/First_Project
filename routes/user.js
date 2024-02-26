@@ -25,6 +25,9 @@ route.get('/productview/:id', cookieJwtAuth, usercontroller.productview)
 route.post("/login",usercontroller.login)
 
 route.post('/registerfirst', usercontroller.registerfirst)
+route.get('/registerfirst', usercontroller.registerfirsterror)
+
+route.get('/resendotp', usercontroller.resendOtp)
 
 route.post('/register',usercontroller.register)
 
