@@ -32,7 +32,7 @@ exports.login = async (req, res) => {
     }
   } else {
     // Password is incorrect, send error message
-    res.redirect("/?error=password");
+    res.redirect("/?error=email");
   }
 };
 
