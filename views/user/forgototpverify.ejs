@@ -7,31 +7,17 @@
           </nav>
 
           <div class="flex mt-11 text-white fixed justify-end items-center w-full">
-               <a href="/admin/" class="text-sm bg-black px-2 border-2 border-white">
+               <a href="/" class="text-sm bg-black px-2 border-2 border-white">
                     <i class="fa-solid fa-circle-user mr-2"></i>
-                    ADMIN
+                    BACK
                </a>
           </div>
 
           <div class="flex justify-center items-center mt-5 pt-16">
                <div class="inline-block bg-slate-300 px-3 p-1">
-                    <h1 class="text-4xl font-bold font-mono">LOGIN</h1>
+                    <h1 class="text-4xl font-bold font-mono">OTP Verify</h1>
                </div>
           </div>
-
-          <!-- <div class="flex justify-center items-center mt-5">
-          <div class="inline-block bg-slate-300 px-3 p-1 rounded-2xl">
-               <p class="font-medium text-xs">Continue with,</p>
-               <div class="mt-1 px-1 py-1 flex gap-6 text-3xl border-2">
-                    <a href=""><i class="fa-brands fa-google text-red-600"></i></a>
-                    <a href=""><i class="fa-brands fa-facebook text-blue-700"></i></a>
-                    <a href=""><i class="fa-brands fa-vk text-blue-600"></i></a>
-                    <a href=""><i class="fa-brands fa-github"></i></a>
-                    <a href=""><i class="fa-brands fa-x-twitter"></i></a>
-               </div>
-               <p class="mt-1 font-medium text-xs mb-1">Or,</p>
-          </div>
-     </div> -->
 
           <div class="flex justify-center mt-4">
                <form action="/user/checkotp" method="post" onsubmit="return validateForm()">
@@ -45,7 +31,7 @@
                     <div class="flex justify-center items-center mt-4">
                          <input type="submit"
                               class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded"
-                              name="submit" id="registerButton" value="Register">
+                              name="submit" id="registerButton" value="Verify">
                          <button type="button"
                               class="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded px-2 py-2 ml-2"
                               id="resendButton" style="display:none;">Resend OTP</button>

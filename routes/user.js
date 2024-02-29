@@ -31,13 +31,15 @@ route.get('/resendotp', usercontroller.resendOtp)
 
 route.post('/register',usercontroller.register)
 
-route.route('/forgot')
-     .get(usercontroller.forgot)
-     .post(usercontroller.forgotpass)
+route.get('/forgot',usercontroller.forgot)
+     
+route.post('/forgotpass',usercontroller.forgotpass)
 
 route.post('/checkotp', usercontroller.checkotp)
 
 route.get('/resetPassword', usercontroller.resetPage)
+
+route.post('/resetPassword', usercontroller.resetPass)
 
 route.get("**",(req,res)=>{
      res.render('pagenotfound');

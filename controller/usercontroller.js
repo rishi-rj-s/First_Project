@@ -29,11 +29,11 @@ exports.login = async (req, res) => {
       res.redirect("/user/landing?msg=loggedin");
     } else {
       // Password is incorrect, send error message
-      res.redirect("?error=password");
+      res.redirect("/?error=password");
     }
   } else {
     // Password is incorrect, send error message
-    res.redirect("?error=email");
+    res.redirect("/?error=email");
   }
 };
 
@@ -140,7 +140,7 @@ exports.registerfirst = async (req, res) => {
   const { name, email, password } = req.body;
 
   const userExists = await Userdb.find({ email: email });
-  const userExists2 = await AdminDb.find({username: email})
+  const userExists2 = await AdminDb.find({ username: email });
   if (userExists.length > 0 || userExists2.length > 0) {
     return res.redirect("/user/register?error=email");
   }
@@ -156,16 +156,16 @@ exports.registerfirst = async (req, res) => {
   try {
     await sendOtpEmail(email, otp);
     q = { code: otp, expiryTime: Date.now() + 60000 };
-    res.render("user/otpverify",{msg: "send"});
+    res.render("user/otpverify", { msg: "send" });
   } catch (error) {
     console.error(error);
     res.redirect("/user/register?error=unable");
   }
 };
 
-exports.registerfirsterror = (req,res) => {
-  res.render("user/otpverify")
-}
+exports.registerfirsterror = (req, res) => {
+  res.render("user/otpverify");
+};
 
 exports.register = async (req, res) => {
   const { name, email, password } = s;
@@ -180,7 +180,7 @@ exports.register = async (req, res) => {
   // Check for valid OTP
   if (!otp || otp != q.code) {
     return res.redirect("/user/registerfirst?error=otpwrong");
-  }  
+  }
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -202,13 +202,12 @@ exports.register = async (req, res) => {
   }
 };
 
-exports.resendOtp = async (req,res) =>{
-
-  const email = s.email
+exports.resendOtp = async (req, res) => {
+  const email = s.email;
 
   // Generate random OTP
   const otp = Math.floor(1000 + Math.random() * 9999);
-  console.log(otp)
+  console.log(otp);
 
   // Send OTP via email
   try {
@@ -219,21 +218,28 @@ exports.resendOtp = async (req,res) =>{
     console.error(error);
     res.redirect("/user/registerfirst?error=unable");
   }
-}
+};
 
-exports.forgot = (req,res) => {
-  res.render('user/forgotpass')
-}
+exports.forgot = (req, res) => {
+  res.render("user/forgotpass");
+};
 
-exports.forgotpass = async (req,res) =>{
-  const email = req.body.email
+let id = '';
+
+exports.forgotpass = async (req, res) => {
+  const email = req.body.email;
+  s = req.body;
 
   // checks if a user exists with this email
   const userExists = await Userdb.find({ email: email });
-  if (userExists.length > 0) {
-    // Generate random OTP
+  if (userExists.length === 0) {
+    return res.redirect("/user/forgot?error=noexist");
+  }
+  id = userExists[0]._id
+
+  // Generate random OTP
   const otp = Math.floor(1000 + Math.random() * 9999);
-  console.log(otp)
+  console.log(otp);
 
   // Send OTP via email
   try {
@@ -244,30 +250,47 @@ exports.forgotpass = async (req,res) =>{
     console.error(error);
     res.redirect("/user/forgot?error=unable");
   }
-  }else{
-    return res.redirect("/user/forgot?error=noexist");
-  }  
-}
+};
 
-exports.checkotp = async (req,res) =>{
+exports.checkotp = async (req, res) => {
   const otp = req.body.otp;
   const storedOtp = q;
 
   //Check if expired
   if (!q || otp != q.code || Date.now() > q.expiryTime) {
     console.log("Expired");
-    return res.redirect("/user/registerfirst?error=expired");
+    id = null;
+    return res.redirect("/user/forgot?error=expired");
   }
   // Check for valid OTP
   if (!otp || otp != q.code) {
-    return res.redirect("/user/registerfirst?error=otpwrong");
-  }  
+    id=null;
+    return res.redirect("/user/forgot?error=otpwrong");
+  }
 
   q = {};
 
-  res.redirect('/user/resetPassword');
-}
+  res.redirect("/user/resetPassword");
+};
 
-exports.resetPage = (req,res) =>{
-  res.render('user/resetPassword')
+exports.resetPage = (req, res) => {
+  res.render("user/resetPassword");
+};
+
+exports.resetPass = async(req, res) => {
+  const uid = id
+  const pass = req.body.password;
+  const hashedPassword = await bcrypt.hash(pass, 10);
+  Userdb.findByIdAndUpdate(uid, { password: hashedPassword })
+  .then((data) => {
+    if (!data) {
+      res.redirect('user/forgotpass?error=error');
+    } else {
+      res.redirect('/?error=reset');
+    }
+  })
+  .catch((err) => {
+    res.status(500).send({ message: "Error updating user information" });
+  });
+
 }

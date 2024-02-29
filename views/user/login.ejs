@@ -105,6 +105,15 @@
                               confirmButtonText: 'Cool'
                          })
                          window.history.replaceState({}, document.title, window.location.pathname);
+                    } else if (error.includes('reset')) {
+                         Swal.fire({
+                              position: 'top-start',
+                              icon: 'success',
+                              title: 'Password Changed',
+                              showConfirmButton: false,
+                              timer: 1500
+                         })
+                         window.history.replaceState({}, document.title, window.location.pathname);
                     }
 
                }
