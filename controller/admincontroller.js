@@ -19,7 +19,7 @@ exports.login = async (req, res) => {
       res.cookie("token", token, {
         httpOnly: true,
       });
-      res.redirect("/admin/dashboard");
+      res.redirect("/admin/dashboard?msg=loggedin");
     } else {
       // Password is incorrect, send error message
       res.redirect("/admin/?error=password");
@@ -32,7 +32,7 @@ exports.login = async (req, res) => {
 
 exports.logout = (req, res) => {
   res.cookie("token", "", { maxAge: 0 });
-  res.redirect("/");
+  res.redirect("/?error=logout");
 };
 
 exports.cookieJwtAuth = (req, res, next) => {
@@ -125,7 +125,7 @@ exports.addproduct = async(req,res) => {
       });  
 
       await data.save();
-      res.redirect('/admin/viewproducts');  
+      res.redirect('/admin/viewproducts?msg=success');  
   }
   catch(e) {
     console.log(e);
@@ -166,7 +166,7 @@ exports.editproduct = async (req, res) => {
     product.total_price = Math.round(editvalues.price - (editvalues.price * (editvalues.discount / 100)));
 
     await product.save();
-    res.redirect('/admin/viewproducts');
+    res.redirect('/admin/viewproducts?msg=updated');
   } catch (e) {
     console.log(e);
     res.status(500).send("Internal Error!");
@@ -186,11 +186,7 @@ exports.editproductpage = async (req,res)=>{
 }
 
 exports.addcategory = async(req,res) => {
-    //validate request
-    if (!req.body) {
-      res.status(400).send("Message content cannot be empty");
-      return;
-    }
+
     const {category} = req.body
     const cate = new CatDb({
       category: category
@@ -199,13 +195,28 @@ exports.addcategory = async(req,res) => {
     cate
       .save()
       .then((data) => {
-        res.redirect('/admin/category');
+        res.redirect('/admin/category?msg=success');
       })
       .catch((err) => {
-        res.status(500).send({
-          message: err.message || "Some error occured",
-        });
+        res.redirect('/admin/category?msg=error');
       });
+}
+
+exports.categorystatus = async(req, res) => {
+  try{
+    const id = req.params.id;
+    const category = await CatDb.findById(id);
+    if(category.listing === true){
+      category.listing = false;
+    }else{
+      category.listing = true;
+    }
+    await category.save();
+    res.status(200).json({ status: category.listing }); 
+  }catch(e){
+    console.log(e);
+    res.send("Internal Error");
+  }
 }
 
 exports.deletecategory = async (req, res) => {
@@ -244,9 +255,7 @@ exports.viewusers = async (req, res) => {
 exports.userstatus = async (req, res) => {
   try{
     const id = req.params.id;
-    console.log(id)
     const user = await Userdb.findById(id)
-    console.log(user.status)
     if(user.status === "active"){
       user.status = "blocked";
     }else{

@@ -137,6 +137,12 @@
           .image-container>* {
                flex-shrink: 0;
           }
+
+          .form-field {
+               border: 1px solid #ced4da;
+               border-radius: 5px;
+               padding: 10px;
+          }
      </style>
 </head>
 
@@ -226,8 +232,8 @@
                                    <div class="row">
                                         <div class="col-md-8">
                                              <form action="/admin/editproduct/<%= product._id%>" method="post"
-                                                  enctype="multipart/form-data">
-                                                  <div class="form-group">
+                                                  enctype="multipart/form-data" onsubmit="return validateForm()">
+                                                  <div class="form-group form-field">
                                                        <label for="stock">Category</label>
                                                        <select name="category" class="form-select">
                                                             <% cate.forEach(category=> { %>
@@ -244,40 +250,40 @@
                                                        </select>
                                                   </div>
 
-                                                  <div class="form-group">
+                                                  <div class="form-group form-field">
                                                        <label for="p_name">Product Name</label>
-                                                       <input type="text" class="form-control" id="p_name" name="p_name"
+                                                       <input type="text" class="form-control form-field" id="p_name" name="p_name"
                                                             placeholder="Enter product name"
                                                             value="<%= product.p_name%>" required>
                                                   </div>
-                                                  <div class="form-group">
+                                                  <div class="form-group form-field">
                                                        <label for="price">Price</label>
-                                                       <input type="number" class="form-control" id="price" name="price"
+                                                       <input type="number" class="form-control form-field" id="price" name="price"
                                                             placeholder="Enter price" value="<%= product.price%>"
                                                             required>
                                                   </div>
-                                                  <div class="form-group">
+                                                  <div class="form-group form-field">
                                                        <label for="description">Description</label>
-                                                       <textarea class="form-control" id="description"
+                                                       <textarea class="form-control form-field" id="description"
                                                             name="description" rows="3"
                                                             required><%= product.description%></textarea>
                                                   </div>
-                                                  <div class="form-group">
+                                                  <div class="form-group form-field">
                                                        <label for="discount">Discount</label>
                                                        <small id="discountHelp" class="form-text text-muted">(Discount
                                                             must be between 0 and
                                                             30%)</small>
-                                                       <input type="number" class="form-control" id="discount"
+                                                       <input type="number" class="form-control form-field" id="discount"
                                                             name="discount" placeholder="Enter discount"
                                                             value="<%= product.discount%>" required>
                                                   </div>
-                                                  <div class="form-group">
+                                                  <div class="form-group form-field">
                                                        <label for="stock">Stock</label>
-                                                       <input type="number" class="form-control" id="stock" name="stock"
+                                                       <input type="number" class="form-control form-field" id="stock" name="stock"
                                                             placeholder="Enter stock" value="<%= product.stock %>"
                                                             required>
                                                   </div>
-                                                  <div class="form-group">
+                                                  <div class="form-group form-field">
                                                        <label for="stock">Listing</label>
                                                        <select name="listing" id="listing">
                                                             <option value="Listed">Listed</option>
@@ -285,7 +291,7 @@
                                                        </select>
 
                                                   </div>
-                                                  <div class="form-group">
+                                                  <div class="form-group form-field">
                                                        <label for="images">Images</label>
                                                        <input type="file" class="form-control-file" id="images"
                                                             accept="image/*" name="images" multiple>
@@ -304,7 +310,7 @@
                                                             </div>
                                                        </div>
                                                   </div>
-                                                  <input type="submit" class="btn btn-primary" value="Save">
+                                                  <input type="submit" class="btn btn-primary mt-2" value="Save">
 
                                              </form>
                                              <script>
@@ -355,6 +361,31 @@
                                                   });
 
                                              </script>
+                                             <script>
+                                                  // Function to validate form
+                                                  function validateForm() {
+                                                       const p_name = document.querySelector('[name="p_name"]');
+                                                       const price = document.querySelector('[name="price"]');
+                                                       const description = document.querySelector('[name="description"]');
+                                                       const discount = document.querySelector('[name="discount"]');
+                                                       const stock = document.querySelector('[name="stock"]');
+                                                       const listing = document.querySelector('[name="listing"]');
+
+                                                       // Check if any field is empty or contains only whitespace
+                                                       if (!p_name.value.trim() || !price.value.trim() || !description.value.trim() || !discount.value.trim()
+                                                            || !stock.value.trim() || !listing.value.trim()) {
+                                                            Swal.fire({
+                                                                 title: 'Error!',
+                                                                 text: 'Requires all fields',
+                                                                 icon: 'error',
+                                                                 confirmButton: 'Retry'
+                                                            });
+                                                            return false; // Prevent form submission
+                                                       }
+
+                                                       return true; // Allow form submission
+                                                  }
+                                             </script>
 
                                         </div>
                                    </div>
@@ -370,6 +401,7 @@
      <script src="/js/admin/core/bootstrap.min.js"></script>
      <script src="/js/admin/plugins/perfect-scrollbar.min.js"></script>
      <script src="/js/admin/plugins/smooth-scrollbar.min.js"></script>
+     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.all.min.js"></script>
      <script>
           var win = navigator.platform.indexOf('Win') > -1;
           if (win && document.querySelector('#sidenav-scrollbar')) {
@@ -379,8 +411,6 @@
                Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
           }
      </script>
-     <!-- Github buttons -->
-     <script async defer src="https://buttons.github.io/buttons.js"></script>
      <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
      <script src="/js/admin/material-dashboard.min.js?v=3.1.0"></script>
 </body>

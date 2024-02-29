@@ -32,33 +32,29 @@ route.get("/dashboard", cookieJwtAuth, (req, res) => {
 //      res.render('admin/profile')
 // })
 
-route.get("/viewproducts", cookieJwtAuth, admincontroller.viewproducts);
-
-route.get("/viewusers", cookieJwtAuth, admincontroller.viewusers);
-
 route.get("/logout", cookieJwtAuth, admincontroller.logout);
-
 route.post("/login", admincontroller.login);
 
-route.post("/addproduct", cookieJwtAuth, upload.array("images", 4), admincontroller.addproduct);
-
 route.get("/addproduct", cookieJwtAuth, admincontroller.addproductpage);
-
-route.get("/category", cookieJwtAuth, admincontroller.category);
-
+route.post("/addproduct", cookieJwtAuth, upload.array("images", 4), admincontroller.addproduct);
+route.get("/viewproducts", cookieJwtAuth, admincontroller.viewproducts);
 route.get("/editproduct/:id", cookieJwtAuth, admincontroller.editproductpage);
+route.post("/editproduct/:id", cookieJwtAuth, upload.array("images", 4), admincontroller.editproduct);
+route.get("/deleteproduct/:id", cookieJwtAuth, admincontroller.deleteproduct);
 
 route.get("/addcategory", cookieJwtAuth, (req, res) => {
   res.render("admin/addcategory");
 });
+route.get("/category", cookieJwtAuth, admincontroller.category);
 route.post("/addcategory", cookieJwtAuth, admincontroller.addcategory);
-
+route.put('/categorystatus/:id',cookieJwtAuth, admincontroller.categorystatus)
 route.get("/deletecategory/:id", cookieJwtAuth, admincontroller.deletecategory);
 
-route.post("/editproduct/:id", cookieJwtAuth, upload.array("images", 4), admincontroller.editproduct);
-route.get("/deleteproduct/:id", cookieJwtAuth, admincontroller.deleteproduct);
-
+route.get("/viewusers", cookieJwtAuth, admincontroller.viewusers);
 route.put("/userstatus/:id", cookieJwtAuth, admincontroller.userstatus);
+
+
+
 
 // route.get('/admin/fetchproducts',admincontroller.findproducts)
 // route.get('/admin/users',admincontroller.findusers)

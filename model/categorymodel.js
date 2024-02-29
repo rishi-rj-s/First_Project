@@ -5,6 +5,11 @@ let schema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
+  },
+  listing: {
+    type: Boolean,
+    required: true,
+    default: true,
   }
 });
 
