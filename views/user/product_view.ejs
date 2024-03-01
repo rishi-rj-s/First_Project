@@ -263,7 +263,7 @@
                       class="rounded-4 fit" src="/<%= image %>" />
                   </div>
                 </div>
-                <% }); %>
+              <% }); %>
             </div>
             <button class="carousel-control-prev" type="button" data-bs-target="#product-carousel" data-bs-slide="prev">
               <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -274,79 +274,19 @@
               <span class="visually-hidden">Next</span>
             </button>
           </div>
-
+        
           <div class="d-flex justify-content-center mb-3">
             <% for (let i=0; i < 4; i++) { %>
-              <img width="60" height="60" class="rounded-2 border mx-1 rounded-2" src="/<%= product.images[i] %>" />
-              <% } %>
+              <img width="60" height="60" class="rounded-2 border mx-1 rounded-2" src="/<%= product.images[i] %>"
+                onclick="updateMainImage(this.src)" /> <!-- Add onclick event here -->
+            <% } %>
           </div>
         </aside>
-
+        
         <script>
-          document.querySelectorAll('.zoom-container').forEach((container, index) => {
-            const featuredImg = container.querySelector(`#featured-${index}`);
-            const lens = container.querySelector(`#lens-${index}`);
-
-            container.addEventListener('mouseover', () => {
-              imageZoom(featuredImg, lens);
-            });
-          });
-
-          function imageZoom(img, lens) {
-            lens.style.backgroundImage = `url(${img.src})`;
-
-            const ratio = 2;
-            lens.style.backgroundSize = `${img.width * ratio}px ${img.height * ratio}px`;
-
-            img.addEventListener('mousemove', moveLens);
-            lens.addEventListener('mousemove', moveLens);
-            img.addEventListener('touchmove', moveLens);
-
-            function moveLens(e) {
-              const pos = getCursor(e);
-              let positionLeft = pos.x - lens.offsetWidth / 2;
-              let positionTop = pos.y - lens.offsetHeight / 2;
-
-              if (positionLeft < 0) {
-                positionLeft = 0;
-              }
-
-              if (positionTop < 0) {
-                positionTop = 0;
-              }
-
-              if (positionLeft > img.width - lens.offsetWidth / 3) {
-                positionLeft = img.width - lens.offsetWidth / 3;
-              }
-
-              if (positionTop > img.height - lens.offsetHeight / 3) {
-                positionTop = img.height - lens.offsetHeight / 3;
-              }
-
-              lens.style.left = `${positionLeft}px`;
-              lens.style.top = `${positionTop}px`;
-
-              lens.style.backgroundPosition = `-${pos.x * ratio}px -${pos.y * ratio}px`;
-            }
-
-            function getCursor(e) {
-              const bounds = img.getBoundingClientRect();
-              let x, y;
-
-              if (e.pageX || e.pageY) {
-                x = e.pageX;
-                y = e.pageY;
-              } else {
-                const touch = e.touches[0] || e.changedTouches[0];
-                x = touch.pageX;
-                y = touch.pageY;
-              }
-
-              x -= bounds.left + window.pageXOffset;
-              y -= bounds.top + window.pageYOffset;
-
-              return { x, y };
-            }
+          function updateMainImage(src) {
+            var mainImage = document.querySelector('#product-carousel .carousel-item.active img');
+            mainImage.src = src;
           }
         </script>
 
@@ -441,13 +381,6 @@
     </div>
   </section>
   <!-- content -->
-
-  <script>
-    function displayImage(element) {
-      var mainImage = document.getElementById("featured");
-      mainImage.src = element.getElementsByTagName("img")[0].src;
-    }
-  </script>
 
   <%if(similar.length> 1){%>
     <section class="bg-light border-top py-4">
