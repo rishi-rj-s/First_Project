@@ -27,7 +27,7 @@ passport.use(
       UserDb.findOne({ email: profile._json.email }).then((currentUser) => {
         if (currentUser) {
           //already have user
-          console.log('User is: ', currentUser, profile);
+          // console.log('User is: ', currentUser, profile);
           done(null, currentUser);
         } else {
           //create a new user
@@ -38,7 +38,7 @@ passport.use(
           })
             .save()
             .then((newUser) => {
-              console.log("New User created: " + newUser);
+              // console.log("New User created: " + newUser);
               done(null, newUser)
             });
         }

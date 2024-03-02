@@ -12,15 +12,15 @@ route.get('/register',(req,res)=>{
      res.render('user/register')
 })
 
-route.get('/landing', cookieJwtAuth,(req,res)=>{
+route.get('/landing',checkBlocked, cookieJwtAuth,(req,res)=>{
      res.render('user/landing')
 })
 
 route.get('/logout',cookieJwtAuth, usercontroller.logout)
 
-route.get('/products/:cat' ,cookieJwtAuth, usercontroller.products)
+route.get('/products/:cat',checkBlocked ,cookieJwtAuth, usercontroller.products)
 
-route.get('/productview/:id' , cookieJwtAuth, usercontroller.productview)
+route.get('/productview/:id',checkBlocked , cookieJwtAuth, usercontroller.productview)
 
 route.post("/login",usercontroller.login)
 

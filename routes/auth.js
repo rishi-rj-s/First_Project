@@ -19,12 +19,13 @@ route.get(
   (req, res) => {
     // Generate JWT token for user
     const token = jwt.sign(req.user.toJSON(), process.env.MY_SECRET, {
-      expiresIn: "4h",
+      expiresIn: "15m",
     });
     // Set token as cookie
     res.cookie("access", token, {
       httpOnly: true,
     });
+    req.session.user = req.user;
     res.redirect("/user/landing?msg=loggedin");
   }
 );

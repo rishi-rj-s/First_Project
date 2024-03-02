@@ -1,5 +1,5 @@
 const bcrypt = require("bcrypt");
-let Userdb = require("../model/usermodel");
+const Userdb = require("../model/usermodel");
 const ProductDb = require("../model/productmodel");
 const CatDb = require("../model/categorymodel");
 const AdminDb = require("../model/adminmodel");
@@ -8,7 +8,7 @@ const nodemailer = require("nodemailer");
 const path = require("path");
 const otpGenerator = require("otp-generator");
 
-let uid = '';
+let uid = "";
 exports.login = async (req, res) => {
   const { username, password } = req.body;
   const users = await Userdb.findOne({ email: username });
@@ -19,11 +19,11 @@ exports.login = async (req, res) => {
     }
     const passwordMatch = await bcrypt.compare(password, users.password);
     if (passwordMatch) {
-      uid = users._id;
-      req.session.id = users._id;
+      console.log(users)
+      req.session.user = users;
       const userObj = users.toObject();
       const access = jwt.sign(userObj, process.env.MY_SECRET, {
-        expiresIn: "4h",
+        expiresIn: "15m",
       });
       res.cookie("access", access, {
         httpOnly: true,
@@ -39,17 +39,16 @@ exports.login = async (req, res) => {
   }
 };
 
-// exports.checkBlocked = async (req, res, next) => {
-//   const userid = req.session.id;
-//   console.log(userid)
-//   const user = await Userdb.findOne({_id: userid});
-//   if(user.status==='active'){
-//     next()
-//   }else{
-//     res.redirect('/user/logout')
-//   }
-// };
-
+exports.checkBlocked = async (req, res, next) => {
+  const email = req.session.user.email;
+  await Userdb.findOne({email: email}).then((user)=>{if(user.status === "active") {
+    next();
+  } else {
+    res.cookie("access", "", { maxAge: 0 });
+    delete req.session;
+    res.redirect("/?error=blocked");
+  }})
+};
 
 exports.cookieJwtAuth = (req, res, next) => {
   // Allow unauthenticated requests to access the logout route
@@ -79,7 +78,7 @@ exports.cookieJwtAuth = (req, res, next) => {
 
 exports.logout = (req, res) => {
   res.cookie("access", "", { maxAge: 0 });
-  uid = '';
+  uid = "";
   res.redirect("/?error=logout");
 };
 
@@ -228,7 +227,7 @@ exports.forgot = (req, res) => {
   res.render("user/forgotpass");
 };
 
-let id = '';
+let id = "";
 
 exports.forgotpass = async (req, res) => {
   const email = req.body.email;
@@ -239,7 +238,7 @@ exports.forgotpass = async (req, res) => {
   if (userExists.length === 0) {
     return res.redirect("/user/forgot?error=noexist");
   }
-  id = userExists[0]._id
+  id = userExists[0]._id;
 
   // Generate random OTP
   const otp = Math.floor(1000 + Math.random() * 9999);
@@ -268,7 +267,7 @@ exports.checkotp = async (req, res) => {
   }
   // Check for valid OTP
   if (!otp || otp != q.code) {
-    id=null;
+    id = null;
     return res.redirect("/user/forgot?error=otpwrong");
   }
 
@@ -281,20 +280,19 @@ exports.resetPage = (req, res) => {
   res.render("user/resetPassword");
 };
 
-exports.resetPass = async(req, res) => {
-  const uid = id
+exports.resetPass = async (req, res) => {
+  const uid = id;
   const pass = req.body.password;
   const hashedPassword = await bcrypt.hash(pass, 10);
   Userdb.findByIdAndUpdate(uid, { password: hashedPassword })
-  .then((data) => {
-    if (!data) {
-      res.redirect('user/forgotpass?error=error');
-    } else {
-      res.redirect('/?error=reset');
-    }
-  })
-  .catch((err) => {
-    res.status(500).send({ message: "Error updating user information" });
-  });
-
-}
+    .then((data) => {
+      if (!data) {
+        res.redirect("user/forgotpass?error=error");
+      } else {
+        res.redirect("/?error=reset");
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({ message: "Error updating user information" });
+    });
+};
