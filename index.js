@@ -4,6 +4,7 @@ const path = require('path')
 const nocache = require('nocache')
 const cookieParser = require('cookie-parser')
 const session = require('express-session')
+const passportSetup = require('./auth/passport-setup')
 
 
 const connectDB = require('./database/connection')
@@ -51,6 +52,7 @@ app.get("/",(req,res)=>{
 //load routers
 app.use('/user', require('./routes/user'))
 app.use('/admin',require('./routes/admin'))
+app.use('/auth',require('./routes/auth'))
 
 //mongodb connection
 connectDB()

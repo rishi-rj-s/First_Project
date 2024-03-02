@@ -8,6 +8,7 @@ const nodemailer = require("nodemailer");
 const path = require("path");
 const otpGenerator = require("otp-generator");
 
+let uid = '';
 exports.login = async (req, res) => {
   const { username, password } = req.body;
   const users = await Userdb.findOne({ email: username });
@@ -18,6 +19,7 @@ exports.login = async (req, res) => {
     }
     const passwordMatch = await bcrypt.compare(password, users.password);
     if (passwordMatch) {
+      uid = users._id;
       req.session.id = users._id;
       const userObj = users.toObject();
       const access = jwt.sign(userObj, process.env.MY_SECRET, {
@@ -37,16 +39,17 @@ exports.login = async (req, res) => {
   }
 };
 
-// exports.isBlocked = async (req, res, next) => {
-//   const id = req.session.id;
-//   await Userdb.findById(id).then((user) => {
-//     if (user && user.status === "blocked") {
-//       res.redirect("/user/logout");
-//     } else {
-//       next();
-//     }
-//   });
+// exports.checkBlocked = async (req, res, next) => {
+//   const userid = req.session.id;
+//   console.log(userid)
+//   const user = await Userdb.findOne({_id: userid});
+//   if(user.status==='active'){
+//     next()
+//   }else{
+//     res.redirect('/user/logout')
+//   }
 // };
+
 
 exports.cookieJwtAuth = (req, res, next) => {
   // Allow unauthenticated requests to access the logout route
@@ -76,6 +79,7 @@ exports.cookieJwtAuth = (req, res, next) => {
 
 exports.logout = (req, res) => {
   res.cookie("access", "", { maxAge: 0 });
+  uid = '';
   res.redirect("/?error=logout");
 };
 

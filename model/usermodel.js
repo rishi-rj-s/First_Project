@@ -1,28 +1,24 @@
 const mongoose = require("mongoose");
 
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-
 let schema = new mongoose.Schema({
   name: {
     type: String,
     required: [true, "Need the name"],
   },
+  // googleId:{
+  //   type:String,
+  //   unique: true,
+  // },
   email: {
     type: String,
-    required: [true, "Need the email"],
     unique: true,
-    validate: {
-      validator: function (value) {
-        return emailRegex.test(value);
-      },
-      message: "Invalid email format",
-
-    },
   },
+  // useremail:{
+  //   type : String,
+  //   unique: true,
+  // },
   password: {
     type: String,
-    required: [true, "Need a password"],
   },
   gender: {
     type: String,

@@ -3,7 +3,7 @@ const session = require('express-session');
 const app = express()
 const path = require('path')
 const usercontroller = require('../controller/usercontroller')
-const { cookieJwtAuth, isBlocked } = require("../controller/usercontroller");
+const { cookieJwtAuth, checkBlocked } = require("../controller/usercontroller");
 
 
 const route = express.Router()
@@ -18,9 +18,9 @@ route.get('/landing', cookieJwtAuth,(req,res)=>{
 
 route.get('/logout',cookieJwtAuth, usercontroller.logout)
 
-route.get('/products/:cat',cookieJwtAuth, usercontroller.products)
+route.get('/products/:cat' ,cookieJwtAuth, usercontroller.products)
 
-route.get('/productview/:id', cookieJwtAuth, usercontroller.productview)
+route.get('/productview/:id' , cookieJwtAuth, usercontroller.productview)
 
 route.post("/login",usercontroller.login)
 

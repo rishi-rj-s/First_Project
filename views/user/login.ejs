@@ -19,19 +19,20 @@
                </div>
           </div>
 
-          <!-- <div class="flex justify-center items-center mt-5">
-          <div class="inline-block bg-slate-300 px-3 p-1 rounded-2xl">
-               <p class="font-medium text-xs">Continue with,</p>
-               <div class="mt-1 px-1 py-1 flex gap-6 text-3xl border-2">
-                    <a href=""><i class="fa-brands fa-google text-red-600"></i></a>
-                    <a href=""><i class="fa-brands fa-facebook text-blue-700"></i></a>
-                    <a href=""><i class="fa-brands fa-vk text-blue-600"></i></a>
-                    <a href=""><i class="fa-brands fa-github"></i></a>
-                    <a href=""><i class="fa-brands fa-x-twitter"></i></a>
+          <div class="flex justify-center items-center mt-5">
+               <div class="inline-block bg-slate-300 px-3 p-1 rounded-2xl">
+                    <p class="font-medium text-xs">Continue with,</p>
+                    <div class="mt-1 px-1 py-1 flex justify-center items-center gap-6 text-3xl border-2">
+                         <a href="/auth/google"><i class="fa-brands fa-google text-blue-600"></i></a>
+                         <!-- <a href=""><i class="fa-brands fa-facebook text-blue-700"></i></a>
+                         <a href=""><i class="fa-brands fa-vk text-blue-600"></i></a>
+                         <a href=""><i class="fa-brands fa-github"></i></a>
+                         <a href=""><i class="fa-brands fa-x-twitter"></i></a> -->
+
+                    </div>
+                    <p class="mt-1 font-medium text-xs mb-1">Or,</p>
                </div>
-               <p class="mt-1 font-medium text-xs mb-1">Or,</p>
           </div>
-     </div> -->
 
           <div class="flex justify-center mt-4">
                <form action="/user/login" method="post">
@@ -40,7 +41,9 @@
                          <input type="text" name="username" class="h-8 w-64 border border-gray-700" required>
                          <label for="password" class="mt-3 -mb-1">Password</label>
                          <input type="password" name="password" class="h-8 w-64 border border-gray-700" required>
-                         <a href="/user/forgot" class="font-medium text-blue-600 dark:text-blue-500 hover:underline text-sm text-right">forgot password?</a>
+                         <a href="/user/forgot"
+                              class="font-medium text-blue-600 dark:text-blue-500 hover:underline text-sm text-right">forgot
+                              password?</a>
                     </div>
                     <div class="flex justify-center items-center mt-4">
                          <input type="submit"
@@ -84,6 +87,14 @@
                          Swal.fire({
                               title: 'Error!',
                               text: 'User Blocked',
+                              icon: 'error',
+                              confirmButtonText: 'Cool'
+                         })
+                         window.history.replaceState({}, document.title, window.location.pathname);
+                    } else if (error.includes('server')) {
+                         Swal.fire({
+                              title: 'Error!',
+                              text: 'Server Error',
                               icon: 'error',
                               confirmButtonText: 'Cool'
                          })
