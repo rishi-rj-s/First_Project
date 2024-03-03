@@ -19,11 +19,11 @@ exports.login = async (req, res) => {
     }
     const passwordMatch = await bcrypt.compare(password, users.password);
     if (passwordMatch) {
-      console.log(users)
+      // console.log(users)
       req.session.user = users;
       const userObj = users.toObject();
       const access = jwt.sign(userObj, process.env.MY_SECRET, {
-        expiresIn: "15m",
+        expiresIn: "4h",
       });
       res.cookie("access", access, {
         httpOnly: true,
@@ -296,3 +296,7 @@ exports.resetPass = async (req, res) => {
       res.status(500).send({ message: "Error updating user information" });
     });
 };
+
+exports.profile = (req,res) =>{
+  res.render('user/userprofile')
+}

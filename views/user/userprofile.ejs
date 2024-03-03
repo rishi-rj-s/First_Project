@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Times New Roman', Times, serif sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .profile-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            height: 100vh;
+        }
+        .profile-card {
+            width: 250px;
+            margin: 10px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .profile-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+        }
+        .profile-card img {
+            width: 100%;
+            height: auto;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+        .profile-card .card-body {
+            text-align: left;
+            padding: 20px;
+        }
+        .profile-card .card-body h5 {
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+            color: #333;
+        }
+        .profile-card .card-link {
+            text-decoration: none;
+            color: #007bff;
+            transition: all 0.3s ease;
+            display: block;
+            text-align: center;
+            margin-bottom: 10px;
+            margin-left: 0;
+            padding: 10px;
+            border: 1px solid #007bff;
+            border-radius: 5px;
+        }
+        .profile-card .card-link:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+        .banner-wrapper {
+            background-color: black;
+            padding: 10px;
+        }
+
+        .banner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .banner h1 {
+            font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+            padding-left: 10px;
+            margin-top: 0;
+            color: white;
+        }
+
+        .form-outline-inline {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .form-outline-inline input[type="search"] {
+            width: 100%;
+            margin-right: 5px;
+        }
+
+        .icons {
+            align-items: center;
+        }
+
+        .icons a {
+            margin-right: 10px;
+        }
+
+        @media (min-width: 768px) {
+            .banner h1 {
+                margin-bottom: 0;
+            }
+
+            .form-outline-inline input[type="search"] {
+                width: auto;
+                margin-right: 0;
+            }
+        }
+
+        .banner .fa-heart {
+            color: red !important;
+        }
+
+        .banner .fa-shopping-cart {
+            color: orange !important;
+        }
+
+        .banner .fa-user {
+            color: Teal !important;
+        }
+        .social-icons i{
+            padding-right: 10px;
+        }
+
+    </style>
+</head>
+<body>
+
+     <div class="banner-wrapper fixed-top">
+          <div class="banner">
+              <h1>RISHI STUDIO</h1>
+              <!-- <form class="form-outline-inline" action="/product/search" method="get" required>
+                  <input type="search" id="form1" class="form-control" placeholder="Search" />
+                  <button type="submit" class="btn btn-primary shadow-0">
+                      <i class="fa fa-search"></i>
+                  </button>
+              </form> -->
+              <div class="icons">
+                  <a><i class="fa fa-shopping-cart"></i></a>
+                  <a><i class="fa fa-heart"></i></a>
+                  <a href="/user/profile"><i class="fa fa-user"></i></a>
+                  <a href="/user/logout"><i class="fa fa-power-off"></i></a>
+              </div>
+          </div>
+      </div>
+  
+    <div class="container mt-5">
+        <div class="profile-container">
+            <div class="profile-card">
+                <img src="/img/landing/User Icon.webp" alt="Profile Picture">
+                <div class="card-body">
+                    <h5>Username</h5>
+                </div>
+            </div>
+            <div class="profile-card">
+                <div class="card-body">
+                    <a href="#" class="card-link"><i class="fas fa-map-marker-alt fa-2x"></i><br> Addresses</a>
+                    <a href="#" class="card-link"><i class="fas fa-credit-card fa-2x"></i><br> Payment Methods</a>
+                    <a href="#" class="card-link"><i class="fas fa-shopping-bag fa-2x"></i><br> Orders</a>
+                    <a href="#" class="card-link"><i class="fas fa-heart fa-2x"></i><br> Wishlist</a>
+                    <a href="#" class="card-link"><i class="fas fa-lock fa-2x"></i><br> Change Password</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <%-include('footer')%>
+</body>
+</html>

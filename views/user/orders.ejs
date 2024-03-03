@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Orders</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Times New Roman', Times, serif sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        .profile {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .profile img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+
+        .profile h5 {
+            font-weight: bold;
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .sidebar {
+            background-color: black;
+            padding: 20px;
+            border-right: 2px solid blue;
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        @media (max-width: 767px) {
+            .sidebar {
+                min-height: 40vh;
+            }
+        }
+
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 10px;
+        }
+
+        .sidebar ul li a {
+            text-decoration: none;
+            color: #fff;
+            font-size: 1.1rem;
+        }
+
+        .sidebar ul li a:hover {
+            color: #cce0ff;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .orders-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .orders-table th,
+        .orders-table td {
+            border: 1px solid #dee2e6;
+            padding: .75rem;
+            text-align: left;
+        }
+
+        .orders-table th {
+            background-color: #f2f2f2;
+        }
+
+        .pagination {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .pagination .page-link {
+            color: #007bff;
+            border: 1px solid #007bff;
+            margin: 0 5px;
+            cursor: pointer;
+        }
+
+        .pagination .page-link:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .pagination .page-item.disabled .page-link {
+            color: #6c757d;
+            border-color: #6c757d;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar">
+                <div class="profile">
+                    <img src="User Icon.webp" alt="Profile Picture">
+                    <h5>Username</h5>
+                </div>
+                <ul class="nav flex-column">
+                    <li class="nav-item"><a class="nav-link" href="#"><i class="fas fa-user"></i> Profile</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#"><i class="fas fa-shopping-bag"></i> Orders</a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="#"><i class="fas fa-map-marker-alt"></i>
+                            Addresses</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#"><i class="fas fa-credit-card"></i> Payment
+                            Methods</a></li>
+                </ul>
+            </nav>
+            <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+                <div class="content">
+                    <h1>Orders</h1>
+                    <div class="table-responsive">
+                        <table id="ordersTable" class="table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Product</th>
+                                    <th>Quantity</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>2</td>
+                                    <td>2</td>
+                                    <td>2</td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>3</td>
+                                    <td>3</td>
+                                    <td>3</td>
+                                </tr>
+                                <tr>
+                                    <td>4</td>
+                                    <td>4</td>
+                                    <td>4</td>
+                                    <td>4</td>
+                                </tr>
+                                <tr>
+                                    <td>5</td>
+                                    <td>5</td>
+                                    <td>5</td>
+                                    <td>5</td>
+                                </tr>
+                                <tr>
+                                    <td>6</td>
+                                    <td>6</td>
+                                    <td>6</td>
+                                    <td>6</td>
+                                </tr>
+                                <tr>
+                                    <td>7</td>
+                                    <td>7</td>
+                                    <td>7</td>
+                                    <td>7</td>
+                                </tr>
+                                <tr>
+                                    <td>8</td>
+                                    <td>8</td>
+                                    <td>8</td>
+                                    <td>8</td>
+                                </tr>
+                                <tr>
+                                    <td>9</td>
+                                    <td>9</td>
+                                    <td>9</td>
+                                    <td>9</td>
+                                </tr>
+                                <tr>
+                                    <td>10</td>
+                                    <td>10</td>
+                                    <td>10</td>
+                                    <td>10</td>
+                                </tr>
+                                <tr>
+                                    <td>11</td>
+                                    <td>11</td>
+                                    <td>11</td>
+                                    <td>11</td>
+                                </tr>
+                                <tr>
+                                    <td>12</td>
+                                    <td>12</td>
+                                    <td>12</td>
+                                    <td>12</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pagination">
+                        <button id="prevPage" class="page-link">&laquo; Prev</button>
+                        <button id="nextPage" class="page-link">Next &raquo;</button>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        const ordersPerPage = 4; // Number of orders to display per page
+        let currentPage = 1;
+
+        // Function to display orders based on current page
+        function displayOrders() {
+            const ordersTable = document.getElementById('ordersTable');
+            const rows = ordersTable.querySelectorAll('tbody tr');
+            const numPages = Math.ceil(rows.length / ordersPerPage);
+
+            // Hide all rows
+            rows.forEach(row => row.style.display = 'none');
+
+            // Calculate start and end index for current page
+            const startIndex = (currentPage - 1) * ordersPerPage;
+            const endIndex = Math.min(startIndex + ordersPerPage, rows.length);
+
+            // Display rows for current page
+            for (let i = startIndex; i < endIndex; i++) {
+                rows[i].style.display = '';
+            }
+
+            // Disable/enable prev/next buttons based on current page
+            const prevButton = document.getElementById('prevPage');
+            const nextButton = document.getElementById('nextPage');
+
+            prevButton.style.display = (currentPage === 1 || numPages <= 1) ? 'none' : 'inline-block';
+            nextButton.style.display = (currentPage === numPages || numPages <= 1) ? 'none' : 'inline-block';
+        }
+
+        // Event listener for next page button
+        document.getElementById('nextPage').addEventListener('click', () => {
+            const numPages = Math.ceil(document.getElementById('ordersTable').querySelectorAll('tbody tr').length / ordersPerPage);
+            if (currentPage < numPages) {
+                currentPage++;
+                displayOrders();
+            }
+        });
+
+        // Event listener for previous page button
+        document.getElementById('prevPage').addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                displayOrders();
+            }
+        });
+
+        // Initial display of orders
+        displayOrders();
+    </script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+
+</html>

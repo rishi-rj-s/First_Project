@@ -47,7 +47,9 @@ route.get("/addcategory", cookieJwtAuth, (req, res) => {
 });
 route.get("/category", cookieJwtAuth, admincontroller.category);
 route.post("/addcategory", cookieJwtAuth, admincontroller.addcategory);
-route.put('/categorystatus/:id',cookieJwtAuth, admincontroller.categorystatus)
+route.put('/categorystatus/:id',cookieJwtAuth, admincontroller.categorystatus);
+route.get('/editcategory/:id', cookieJwtAuth, admincontroller.editcategory)
+route.post('/editcategory/:id', cookieJwtAuth, admincontroller.updatecategory)
 route.get("/deletecategory/:id", cookieJwtAuth, admincontroller.deletecategory);
 
 route.get("/viewusers", cookieJwtAuth, admincontroller.viewusers);

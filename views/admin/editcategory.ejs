@@ -223,13 +223,13 @@
                               <div class="container-fluid">
                                    <div class="row">
                                         <div class="col-md-8">
-                                             <form action="/admin/addcategory" method="post" onsubmit="return validateForm()">
+                                             <form action="/admin/editcategory/<%= cate._id %>" method="post" onsubmit="return validateForm()">
                                                   <div class="form-group">
-                                                       <label for="category">New Category</label>
+                                                       <label for="category">Category</label>
                                                        <input type="text" class="form-control" name="category"
-                                                            placeholder="Enter category name" required>
+                                                            placeholder="Enter category name" value="<%= cate.category %>" required>
                                                   </div>
-                                                  <input type="submit" class="btn btn-primary" value="Add">
+                                                  <input type="submit" class="btn btn-primary" value="Save">
                                              </form>
                                              <script>
                                                   function validateForm() {

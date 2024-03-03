@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+     <meta charset="UTF-8" />
+     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+     <title>Wishlist</title>
+     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+     <style>
+          body {
+               font-family: "Times New Roman", Times, serif sans-serif;
+               background-color: #f8f9fa;
+               color: #333;
+          }
+
+          .profile {
+               text-align: center;
+               margin-bottom: 20px;
+          }
+
+          .profile img {
+               width: 100px;
+               height: 100px;
+               border-radius: 50%;
+               margin-bottom: 10px;
+          }
+
+          .profile h5 {
+               font-weight: bold;
+               margin: 0;
+               font-size: 1.2rem;
+          }
+
+          .sidebar {
+               background-color: black;
+               padding: 20px;
+               border-right: 2px solid blue;
+               min-height: 100vh;
+               color: #fff;
+          }
+
+          @media (max-width: 767px) {
+               .sidebar {
+                    min-height: 40vh;
+               }
+          }
+
+          .sidebar ul {
+               list-style-type: none;
+               padding: 0;
+               margin: 0;
+          }
+
+          .sidebar ul li {
+               margin-bottom: 10px;
+          }
+
+          .sidebar ul li a {
+               text-decoration: none;
+               color: #fff;
+               font-size: 1.1rem;
+          }
+
+          .sidebar ul li a:hover {
+               color: #cce0ff;
+          }
+
+          .content {
+               padding: 10px;
+          }
+
+          .object-fit-cover {
+               object-fit: cover;
+               height: 150px;
+                width: 150px
+          }
+
+          .wishlist-items .card {
+               max-height: 200px;
+               /* Adjust this value to decrease the height */
+               overflow: hidden;
+               /* Hide any overflow content */
+               padding: 10px;
+               /* Adjust padding as needed */
+               margin-bottom: 10px;
+               /* Adjust margin as needed */
+          }
+
+          .wishlist-items .card-title {
+               font-size: 1rem;
+               /* Adjust font size of the card title */
+               margin-bottom: 0.5rem;
+               /* Adjust margin as needed */
+          }
+
+          .wishlist-items .card-text {
+               font-size: small;
+               /* Adjust font size of the card text */
+               margin-bottom: 0;
+          }
+
+          .wishlist-items .btn {
+               padding: 0.25rem 0.5rem;
+               /* Adjust padding of buttons as needed */
+               font-size: smaller;
+               /* Adjust font size of buttons as needed */
+          }
+     </style>
+</head>
+
+<body>
+     <div class="container-fluid">
+          <div class="row">
+               <nav class="col-md-3 col-lg-2 d-md-block sidebar">
+                    <div class="profile">
+                         <img src="User Icon.webp" alt="Profile Picture" />
+                         <h5>Username</h5>
+                    </div>
+                    <ul class="nav flex-column">
+                         <li class="nav-item">
+                              <a class="nav-link" href="#"><i class="fas fa-user"></i> Profile</a>
+                         </li>
+                         <li class="nav-item">
+                              <a class="nav-link" href="#"><i class="fas fa-shopping-bag"></i> Orders</a>
+                         </li>
+                         <li class="nav-item">
+                              <a class="nav-link" href="#"><i class="fas fa-map-marker-alt"></i> Addresses</a>
+                         </li>
+                         <li class="nav-item">
+                              <a class="nav-link" href="#"><i class="fas fa-heart"></i> Wishlist</a>
+                         </li>
+                    </ul>
+               </nav>
+               <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+                    <div class="container mt-4">
+                         <div class="row">
+                              <div class="col-md-8 offset-md-2">
+                                   <h1 class="text-center mb-4">My Wish List</h1>
+                                   <div class="wishlist-items">
+                                        <div class="card">
+                                             <div class="card-body">
+                                                  <div class="row align-items-center">
+                                                       <div class="col-md-4">
+                                                            <img src="Subru.jpg"  
+                                                                 alt="Product Image"
+                                                                 class="img-fluid object-fit-cover" />
+                                                       </div>
+                                                       <div class="col-md-8">
+                                                            <h4 class="card-title">Men Printed Casual Jacket</h4>
+                                                            <p class="card-text">
+                                                                 A stylish and contemporary addition to your wardrobe.
+                                                                 Crafted with a keen eye for fashion, this jacket
+                                                                 combines comfort and trendsetting design.
+                                                            </p>
+                                                            <h5>$109.04</h5>
+                                                            <div class="d-flex">
+                                                                 <a href="#" class="btn btn-primary me-2">
+                                                                      <i class="fas fa-shopping-cart"></i> Add to Cart
+                                                                 </a>
+                                                                 <button type="button" class="btn btn-danger"
+                                                                      onclick="removeFromWishlist(this)">
+                                                                      <i class="fas fa-trash"></i> Remove
+                                                                 </button>
+                                                            </div>
+                                                       </div>
+                                                  </div>
+                                             </div>
+                                        </div> 
+                                        <div class="card">
+                                             <div class="card-body">
+                                                  <div class="row align-items-center">
+                                                       <div class="col-md-4">
+                                                            <img src="Subru.jpg"  
+                                                                 alt="Product Image"
+                                                                 class="img-fluid object-fit-cover" />
+                                                       </div>
+                                                       <div class="col-md-8">
+                                                            <h4 class="card-title">Men Printed Casual Jacket</h4>
+                                                            <p class="card-text">
+                                                                 A stylish and contemporary addition to your wardrobe.
+                                                                 Crafted with a keen eye for fashion, this jacket
+                                                                 combines comfort and trendsetting design.
+                                                            </p>
+                                                            <h5>$109.04</h5>
+                                                            <div class="d-flex">
+                                                                 <a href="#" class="btn btn-primary me-2">
+                                                                      <i class="fas fa-shopping-cart"></i> Add to Cart
+                                                                 </a>
+                                                                 <button type="button" class="btn btn-danger"
+                                                                      onclick="removeFromWishlist(this)">
+                                                                      <i class="fas fa-trash"></i> Remove
+                                                                 </button>
+                                                            </div>
+                                                       </div>
+                                                  </div>
+                                             </div>
+                                        </div> 
+                                   </div>
+                                   <div class="pagination justify-content-center">
+                                        <button id="prevPage" class="page-link">&laquo; Prev</button>
+                                        <button id="nextPage" class="page-link">Next &raquo;</button>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+               </main>
+
+               <script>
+                    const itemsPerPage = 2; // Number of wishlist items to display per page
+                    let currentPage = 1;
+
+                    // Function to display wishlist items based on current page
+                    function displayWishlistItems() {
+                         const wishlistItems = document.querySelectorAll('.wishlist-items .card');
+                         const numPages = Math.ceil(wishlistItems.length / itemsPerPage);
+
+                         // Hide all wishlist items
+                         wishlistItems.forEach(item => item.style.display = 'none');
+
+                         // Calculate start and end index for current page
+                         const startIndex = (currentPage - 1) * itemsPerPage;
+                         const endIndex = Math.min(startIndex + itemsPerPage, wishlistItems.length);
+
+                         // Display wishlist items for current page
+                         for (let i = startIndex; i < endIndex; i++) {
+                              wishlistItems[i].style.display = 'block';
+                         }
+
+                         // Disable/enable prev/next buttons based on current page
+                         const prevButton = document.getElementById('prevPage');
+                         const nextButton = document.getElementById('nextPage');
+
+                         prevButton.style.display = (currentPage === 1 || numPages <= 1) ? 'none' : 'inline-block';
+                         nextButton.style.display = (currentPage === numPages || numPages <= 1) ? 'none' : 'inline-block';
+                    }
+
+                    // Event listener for next page button
+                    document.getElementById('nextPage').addEventListener('click', () => {
+                         const numPages = Math.ceil(document.querySelectorAll('.wishlist-items .card').length / itemsPerPage);
+                         if (currentPage < numPages) {
+                              currentPage++;
+                              displayWishlistItems();
+                         }
+                    });
+
+                    // Event listener for previous page button
+                    document.getElementById('prevPage').addEventListener('click', () => {
+                         if (currentPage > 1) {
+                              currentPage--;
+                              displayWishlistItems();
+                         }
+                    });
+
+                    // Initial display of wishlist items
+                    displayWishlistItems();
+               </script>
+          </div>
+     </div>
+
+     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

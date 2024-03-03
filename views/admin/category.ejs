@@ -115,6 +115,7 @@
           </ol>
           <h6 class="font-weight-bolder mb-0">Category</h6>
         </nav>
+      </div>
     </nav>
     <!-- End Navbar -->
     <div class="container-fluid py-4">
@@ -135,12 +136,13 @@
                 <table class="table mb-0">
                   <thead>
                     <tr>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Available</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Listing</th>
+                      <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-8">Name</th>
+                      <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-8">Listing</th>
+                      <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-8">Edit</th>
                       <th></th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody id="categoryTableBody">
                     <% category.forEach(category=> { %>
                       <tr>
                         <td>
@@ -160,6 +162,11 @@
                           </button>
                         </td>
                         <td>
+                          <a href="/admin/editcategory/<%= category._id %>">
+                            <button class="btn btn-warning">Edit</button>
+                          </a>
+                        </td>
+                        <td>
                           <a href="/admin/deletecategory/<%= category._id %>" onclick="return deleteC(event)">
                             <button class="btn btn-danger delete-btn">Delete</button>
                           </a>
@@ -168,108 +175,9 @@
                       <% }); %>
                   </tbody>
                 </table>
-                <script>
-                  document.addEventListener('DOMContentLoaded', () => {
-                    const statusElements = document.querySelectorAll('.category-status');
-                    statusElements.forEach(statusElement => {
-                      statusElement.addEventListener('click', async () => {
-                        const categoryId = statusElement.getAttribute('data-category-id');
-
-                        try {
-                          const response = await fetch(`/admin/categorystatus/${categoryId}`, {
-                            method: 'PUT',
-                            headers: {
-                              'Content-Type': 'application/json'
-                            },
-                          });
-
-                          if (!response.ok) {
-                            Swal.fire({
-                              title: "Error!",
-                              text: "Error Updating",
-                              icon: "error",
-                              confirmButtonText: "Ok"
-                            });
-                            return;
-                          }
-
-                          const data = await response.json(); // Parse JSON response
-
-                          // Update status text in the UI based on the response
-                          if (data.status === true) {
-                            statusElement.textContent = true;
-                          } else {
-                            statusElement.textContent = false;
-                          }
-
-                          // Alert for successful update
-                          Swal.fire({
-                            title: "Success!",
-                            text: "Listing status updated successfully",
-                            icon: "success",
-                            confirmButtonText: "Ok"
-                          });
-
-                        } catch (error) {
-                          console.error('Error:', error);
-                        }
-                      });
-                    });
-                  });
-                </script>
-
-
-                <script>
-                  function deleteC(event) {
-                    event.preventDefault(); // Prevent the default behavior of the anchor tag
-                    const deleteUrl = event.currentTarget.getAttribute('href'); // Retrieve the href attribute
-                    console.log("Delete URL:", deleteUrl); // Debugging statement
-
-                    Swal.fire({
-                      title: "Are you sure?",
-                      text: "You won't be able to revert this!",
-                      icon: "warning",
-                      showCancelButton: true,
-                      confirmButtonColor: "#3085d6",
-                      cancelButtonColor: "#d33",
-                      confirmButtonText: "Yes, delete it!"
-                    }).then((result) => {
-                      if (result.isConfirmed) {
-                        // Redirect to the delete URL
-                        window.location.href = deleteUrl;
-                        Swal.fire({
-                          title: "Deleted!",
-                          text: "Your file has been deleted.",
-                          icon: "success",
-                          confirmButtonText: "Ok"
-                        });
-                      }
-                    });
-                  }
-                </script>
-                <script>
-                  const urlParams = new URLSearchParams(window.location.search);
-                  const message = urlParams.get('msg');
-                  if (typeof message !== 'undefined') {
-                    if (message.includes('success')) {
-                      Swal.fire({
-                        title: 'Success!',
-                        text: 'Category added',
-                        icon: 'success',
-                        confirmButtonText: 'Cool'
-                      })
-                      window.history.replaceState({}, document.title, window.location.pathname);
-                    } else if (message.includes('error')) {
-                      Swal.fire({
-                        title: 'Error!',
-                        text: 'Unable to add category',
-                        icon: 'error',
-                        confirmButtonText: 'Cool'
-                      })
-                      window.history.replaceState({}, document.title, window.location.pathname);
-                    }
-                  }
-                </script>
+              </div>
+              <div class="pagination mt-3 d-flex justify-content-center gap-1" id="pagination">
+                <!-- Pagination buttons will be added here dynamically -->
               </div>
             </div>
           </div>
@@ -277,17 +185,182 @@
       </div>
     </div>
   </main>
-  <!--   Core JS Files   -->
-  <!-- <script>
-    $(document).ready(function () {
-      $(".delete-btn").click(function (event) {
-        event.preventDefault();
-        if (confirm("Are you sure you want to delete this product?")) {
-          window.location.href = $(this).attr('href');
-        }
+  <script>
+    const categoriesPerPage = 4; // Number of categories to display per page
+    let currentPage = 1;
+
+    // Function to display categories based on current page
+    function displayCategories() {
+      const categoryTableBody = document.getElementById('categoryTableBody');
+      const categories = document.querySelectorAll('tbody tr');
+      const numPages = Math.ceil(categories.length / categoriesPerPage);
+
+      // Hide all categories
+      categories.forEach(category => category.style.display = 'none');
+
+      // Calculate start and end index for current page
+      const startIndex = (currentPage - 1) * categoriesPerPage;
+      const endIndex = Math.min(startIndex + categoriesPerPage, categories.length);
+
+      // Display categories for current page
+      for (let i = startIndex; i < endIndex; i++) {
+        categories[i].style.display = '';
+      }
+
+      // Create pagination buttons
+      const paginationDiv = document.getElementById('pagination');
+      paginationDiv.innerHTML = '';
+
+      if (numPages > 1) {
+        const prevButton = document.createElement('button');
+        prevButton.textContent = 'Prev';
+        prevButton.className = 'btn btn-primary';
+        prevButton.disabled = currentPage === 1;
+        prevButton.addEventListener('click', () => {
+          if (currentPage > 1) {
+            currentPage--;
+            displayCategories();
+          }
+        });
+        paginationDiv.appendChild(prevButton);
+
+        const nextButton = document.createElement('button');
+        nextButton.textContent = 'Next';
+        nextButton.className = 'btn btn-primary';
+        nextButton.disabled = currentPage === numPages;
+        nextButton.addEventListener('click', () => {
+          if (currentPage < numPages) {
+            currentPage++;
+            displayCategories();
+          }
+        });
+        paginationDiv.appendChild(nextButton);
+      }
+    }
+
+    // Initial display of categories
+    displayCategories();
+  </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const statusElements = document.querySelectorAll('.category-status');
+      statusElements.forEach(statusElement => {
+        statusElement.addEventListener('click', async () => {
+          const categoryId = statusElement.getAttribute('data-category-id');
+
+          try {
+            const response = await fetch(`/admin/categorystatus/${categoryId}`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+            });
+
+            if (!response.ok) {
+              Swal.fire({
+                title: "Error!",
+                text: "Error Updating",
+                icon: "error",
+                confirmButtonText: "Ok"
+              });
+              return;
+            }
+
+            const data = await response.json(); // Parse JSON response
+
+            // Update status text in the UI based on the response
+            if (data.status === true) {
+              statusElement.textContent = true;
+            } else {
+              statusElement.textContent = false;
+            }
+
+            // Alert for successful update
+            Swal.fire({
+              title: "Success!",
+              text: "Listing status updated successfully",
+              icon: "success",
+              confirmButtonText: "Ok"
+            });
+
+          } catch (error) {
+            console.error('Error:', error);
+          }
+        });
       });
     });
-  </script> -->
+  </script>
+
+
+  <script>
+    function deleteC(event) {
+      event.preventDefault(); // Prevent the default behavior of the anchor tag
+      const deleteUrl = event.currentTarget.getAttribute('href'); // Retrieve the href attribute
+      // console.log("Delete URL:", deleteUrl); // Debugging statement
+
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Redirect to the delete URL
+          window.location.href = deleteUrl;
+          Swal.fire({
+            title: "Deleted!",
+            text: "Your file has been deleted.",
+            icon: "success",
+            confirmButtonText: "Ok"
+          });
+        }
+      });
+    }
+  </script>
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const message = urlParams.get('msg');
+    if (typeof message !== 'undefined') {
+      if (message.includes('success')) {
+        Swal.fire({
+          title: 'Success!',
+          text: 'Category added',
+          icon: 'success',
+          confirmButtonText: 'Cool'
+        })
+        window.history.replaceState({}, document.title, window.location.pathname);
+      } else if (message.includes('error')) {
+        Swal.fire({
+          title: 'Error!',
+          text: 'Unable to add category',
+          icon: 'error',
+          confirmButtonText: 'Cool'
+        })
+        window.history.replaceState({}, document.title, window.location.pathname);
+      } else if (message.includes('upfail')) {
+        Swal.fire({
+          title: 'Error!',
+          text: 'Unable to update category',
+          icon: 'error',
+          confirmButtonText: 'Ok'
+        })
+        window.history.replaceState({}, document.title, window.location.pathname);
+      } else if (message.includes('upsucc')) {
+        Swal.fire({
+          title: 'Success!',
+          text: 'Saved category edit',
+          icon: 'success',
+          confirmButtonText: 'Cool'
+        })
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    }
+  </script>
+
+  <!--   Core JS Files   -->
   <script src="/js/admin/core/popper.min.js"></script>
   <script src="/js/admin/core/bootstrap.min.js"></script>
   <script src="/js/admin/plugins/perfect-scrollbar.min.js"></script>
