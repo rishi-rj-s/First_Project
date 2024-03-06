@@ -290,12 +290,6 @@
         if (result.isConfirmed) {
           // Redirect to the delete URL
           window.location.href = deleteUrl;
-          Swal.fire({
-            title: "Deleted!",
-            text: "Your file has been deleted.",
-            icon: "success",
-            confirmButtonText: "Ok"
-          });
         }
       });
     }
@@ -317,6 +311,14 @@
         Swal.fire({
           title: 'Success!',
           text: 'Successfully updated the product',
+          icon: 'success',
+          confirmButtonText: 'Cool'
+        })
+        window.history.replaceState({}, document.title, window.location.pathname);
+      } else if (message.includes('deleted')) {
+        Swal.fire({
+          title: 'Success!',
+          text: 'Successfully deleted the product',
           icon: 'success',
           confirmButtonText: 'Cool'
         })

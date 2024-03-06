@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Profile</title>
+    <title>RISHI STUDIO</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.all.min.js"></script>
+   <style>
         body {
             font-family: 'Times New Roman', Times, serif sans-serif;
             background-color: #f8f9fa;
@@ -14,6 +17,7 @@
             margin: 0;
             padding: 0;
         }
+
         .profile-container {
             display: flex;
             justify-content: center;
@@ -21,6 +25,7 @@
             flex-wrap: wrap;
             height: 100vh;
         }
+
         .profile-card {
             width: 250px;
             margin: 10px;
@@ -29,25 +34,30 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
         }
+
         .profile-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
         }
+
         .profile-card img {
             width: 100%;
             height: auto;
             border-top-left-radius: 10px;
             border-top-right-radius: 10px;
         }
+
         .profile-card .card-body {
             text-align: left;
             padding: 20px;
         }
+
         .profile-card .card-body h5 {
             margin-bottom: 10px;
             font-size: 1.5rem;
             color: #333;
         }
+
         .profile-card .card-link {
             text-decoration: none;
             color: #007bff;
@@ -60,38 +70,46 @@
             border: 1px solid #007bff;
             border-radius: 5px;
         }
+
         .profile-card .card-link:hover {
             background-color: #007bff;
             color: #fff;
         }
+
         .banner-wrapper {
             background-color: black;
-            padding: 10px;
         }
 
         .banner {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: center;
             flex-wrap: wrap;
+            background-color: black;
+            padding: 10px;
         }
 
         .banner h1 {
             font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
-            padding-left: 10px;
-            margin-top: 0;
+            margin: 0;
             color: white;
+            margin-left: auto;
+            margin-right: auto;
+            width: fit-content;
         }
 
-        .form-outline-inline {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
+        .back-button {
+            color: white;
+            background-color: transparent;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            margin-left: 0;
+            margin-right: auto;
         }
 
-        .form-outline-inline input[type="search"] {
-            width: 100%;
-            margin-right: 5px;
+        .back-button:hover {
+            color: #ccc;
         }
 
         .icons {
@@ -113,43 +131,22 @@
             }
         }
 
-        .banner .fa-heart {
-            color: red !important;
-        }
-
-        .banner .fa-shopping-cart {
-            color: orange !important;
-        }
-
-        .banner .fa-user {
-            color: Teal !important;
-        }
-        .social-icons i{
+        .social-icons i {
             padding-right: 10px;
         }
-
     </style>
 </head>
+
 <body>
 
-     <div class="banner-wrapper fixed-top">
-          <div class="banner">
-              <h1>RISHI STUDIO</h1>
-              <!-- <form class="form-outline-inline" action="/product/search" method="get" required>
-                  <input type="search" id="form1" class="form-control" placeholder="Search" />
-                  <button type="submit" class="btn btn-primary shadow-0">
-                      <i class="fa fa-search"></i>
-                  </button>
-              </form> -->
-              <div class="icons">
-                  <a><i class="fa fa-shopping-cart"></i></a>
-                  <a><i class="fa fa-heart"></i></a>
-                  <a href="/user/profile"><i class="fa fa-user"></i></a>
-                  <a href="/user/logout"><i class="fa fa-power-off"></i></a>
-              </div>
-          </div>
-      </div>
-  
+    <div class="banner-wrapper">
+        <div class="banner">
+            <a href="/user/landing"><button class="back-button"><i class="fas fa-arrow-left"></i></button></a>
+            <h1 class="title">RISHI STUDIO</h1>
+            <!-- Add other elements here if needed -->
+        </div>
+    </div>
+
     <div class="container mt-5">
         <div class="profile-container">
             <div class="profile-card">
@@ -160,19 +157,55 @@
             </div>
             <div class="profile-card">
                 <div class="card-body">
-                    <a href="#" class="card-link"><i class="fas fa-map-marker-alt fa-2x"></i><br> Addresses</a>
-                    <a href="#" class="card-link"><i class="fas fa-credit-card fa-2x"></i><br> Payment Methods</a>
-                    <a href="#" class="card-link"><i class="fas fa-shopping-bag fa-2x"></i><br> Orders</a>
-                    <a href="#" class="card-link"><i class="fas fa-heart fa-2x"></i><br> Wishlist</a>
-                    <a href="#" class="card-link"><i class="fas fa-lock fa-2x"></i><br> Change Password</a>
+                    <a href="/user/address" class="card-link"><i class="fas fa-map-marker-alt fa-2x"></i><br>
+                        Addresses</a>
+                    <a href="/user/cart" class="card-link"><i class="fas fa-shopping-cart fa-2x"></i><br> Cart</a>
+                    <a href="/user/orders" class="card-link"><i class="fas fa-shopping-bag fa-2x"></i><br> Orders</a>
+                    <a href="/user/Wishlist" class="card-link"><i class="fas fa-heart fa-2x"></i><br> Wishlist</a>
+                    <!-- <a href="/user/" class="card-link"><i class="fas fa-credit-card fa-2x"></i><br> Wallet</a> -->
+                    <a href="/user/" class="card-link"><i class="fas fa-lock fa-2x"></i><br> Change Password</a>
+                    <a href="/user/logout" class="card-link"><i class="fas fa-power-off fa-2x"></i><br> Logout</a>
                 </div>
             </div>
         </div>
     </div>
 
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const error = urlParams.get('msg');
+        if (typeof error !== 'undefined') {
+            if (error.includes('adserr')) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Error fetching Address',
+                    icon: 'error',
+                    confirmButtonText: 'Cool'
+                })
+                window.history.replaceState({}, document.title, window.location.pathname);
+            } else if (error.includes('carterr')) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Error fetching cart',
+                    icon: 'error',
+                    confirmButtonText: 'Cool'
+                })
+                window.history.replaceState({}, document.title, window.location.pathname);
+            } else if (error.includes('oderr')) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Error fetching orders',
+                    icon: 'error',
+                    confirmButtonText: 'Cool'
+                })
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        }
+    </script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.all.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <%-include('footer')%>
 </body>
+
 </html>

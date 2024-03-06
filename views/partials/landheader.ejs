@@ -15,7 +15,9 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.all.min.js"></script>
     <style>
-        @media (min-width: 768px) {
+
+        /* search box */
+        /* @media (min-width: 768px) {
             .form-outline-inline {
                 flex-direction: row;
                 align-items: center;
@@ -27,7 +29,7 @@
                 margin-bottom: 0;
                 margin-right: 5px;
             }
-        }
+        } */
 
 
         .banner-wrapper {
@@ -112,8 +114,8 @@
                 </button>
             </form> -->
             <div class="icons">
-                <a><i class="fa fa-shopping-cart"></i></a>
-                <a><i class="fa fa-heart"></i></a>
+                <a href="/user/cart"><i class="fa fa-shopping-cart"></i></a>
+                <a href="/user/wishlist"><i class="fa fa-heart"></i></a>
                 <a href="/user/profile"><i class="fa fa-user"></i></a>
                 <a href="/user/logout"><i class="fa fa-power-off"></i></a>
             </div>
@@ -136,6 +138,7 @@
                     <!-- Navigation links -->
                     <ul class="nav navbar-nav navbar-right">
                         <li><a href="/user/landing" class="roundbtn">HOME</a></li>
+                        <li><a href="/user/products/All" class="roundbtn">ALL</a></li>
                         <li><a href="/user/products/Offer's" class="roundbtn">OFFERS</a></li>
                         <li><a href="/user/products/Kid's" class="roundbtn">KIDS</a></li>
                         <li><a href="/user/products/Men's" class="roundbtn">MENS</a></li>

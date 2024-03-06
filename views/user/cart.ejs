@@ -14,56 +14,31 @@
                color: #333;
           }
 
-          .profile {
-               text-align: center;
-               margin-bottom: 20px;
-          }
-
-          .profile img {
-               width: 100px;
-               height: 100px;
-               border-radius: 50%;
-               margin-bottom: 10px;
-          }
-
-          .profile h5 {
-               font-weight: bold;
-               margin: 0;
-               font-size: 1.2rem;
-          }
-
-          .sidebar {
+          .banner-wrapper {
                background-color: black;
-               padding: 20px;
-               border-right: 2px solid blue;
-               min-height: 100vh;
-               color: #fff;
+               padding: 10px;
           }
 
-          @media (max-width: 767px) {
-               .sidebar {
-                    min-height: 40vh;
-               }
+          .banner {
+               display: flex;
+               justify-content: space-between;
+               align-items: center;
+               flex-wrap: wrap;
           }
 
-          .sidebar ul {
-               list-style-type: none;
-               padding: 0;
-               margin: 0;
+          .banner h1 {
+               font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+               padding-left: 10px;
+               margin-top: 0;
+               color: white;
           }
 
-          .sidebar ul li {
-               margin-bottom: 10px;
+          .icons {
+               align-items: center;
           }
 
-          .sidebar ul li a {
-               text-decoration: none;
-               color: #fff;
-               font-size: 1.1rem;
-          }
-
-          .sidebar ul li a:hover {
-               color: #cce0ff;
+          .icons a {
+               margin-right: 10px;
           }
 
           .content {
@@ -73,69 +48,90 @@
           .object-fit-cover {
                object-fit: cover;
                height: 150px;
-               width: 150px
+               width: 150px;
           }
 
           .cart-items .card {
                max-height: 200px;
-               /* Adjust this value to decrease the height */
                overflow: hidden;
-               /* Hide any overflow content */
                padding: 10px;
-               /* Adjust padding as needed */
                margin-bottom: 10px;
-               /* Adjust margin as needed */
           }
 
           .cart-items .card-title {
                font-size: 1rem;
-               /* Adjust font size of the card title */
                margin-bottom: 0.5rem;
-               /* Adjust margin as needed */
           }
 
           .cart-items .card-text {
                font-size: small;
-               /* Adjust font size of the card text */
                margin-bottom: 0;
           }
 
           .cart-items .btn {
-               padding: 0.25rem 0.5rem;
-               /* Adjust padding of buttons as needed */
-               font-size: smaller;
-               /* Adjust font size of buttons as needed */
+               padding: 0.375rem 0.75rem;
+               font-size: 0.875rem;
+          }
+
+          .input-group {
+               width: 120px;
+          }
+
+          .input-group .btn {
+               padding: 0.375rem 0.5rem;
+          }
+
+          .input-group input[type="text"] {
+               text-align: center;
+          }
+
+          @media (min-width: 768px) {
+               .banner h1 {
+                    margin-bottom: 0;
+               }
+          }
+
+          .banner .fa-heart {
+               color: red !important;
+          }
+
+          .banner .fa-shopping-cart {
+               color: orange !important;
+          }
+
+          .banner .fa-user {
+               color: Teal !important;
+          }
+
+          .social-icons i {
+               padding-right: 10px;
+          }
+
+          .icons i {
+               font-size: 30px;
           }
      </style>
 </head>
 
 <body>
+     <div class="banner-wrapper fixed-top">
+          <div class="banner">
+               <h1>RISHI STUDIO</h1>
+               <div class="icons text-xxl">
+                    <a href="/user/cart"><i class="fa fa-shopping-cart"></i></a>
+                    <a href="/user/wishlist"><i class="fa fa-heart"></i></a>
+                    <a href="/user/profile"><i class="fa fa-user"></i></a>
+                    <a href="/user/logout"><i class="fa fa-power-off"></i></a>
+               </div>
+          </div>
+     </div>
+
      <div class="container-fluid">
           <div class="row">
-               <nav class="col-md-3 col-lg-2 d-md-block sidebar">
-                    <div class="profile">
-                         <img src="User Icon.webp" alt="Profile Picture" />
-                         <h5>Username</h5>
-                    </div>
-                    <ul class="nav flex-column">
-                         <li class="nav-item">
-                              <a class="nav-link" href="#"><i class="fas fa-user"></i> Profile</a>
-                         </li>
-                         <li class="nav-item">
-                              <a class="nav-link" href="#"><i class="fas fa-shopping-bag"></i> Orders</a>
-                         </li>
-                         <li class="nav-item">
-                              <a class="nav-link" href="#"><i class="fas fa-map-marker-alt"></i> Addresses</a>
-                         </li>
-                         <li class="nav-item">
-                              <a class="nav-link" href="#"><i class="fas fa-shopping-cart"></i> Cart</a>
-                         </li>
-                    </ul>
-               </nav>
-               <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+               <main role="main" class="col-md-8 offset-md-2" style="margin-top: 5rem;">
                     <div class="container mt-4">
                          <div class="row">
-                              <div class="col-md-8 offset-md-2">
+                              <div class="col-md-12">
                                    <h1 class="text-center mb-4">Shopping Cart</h1>
                                    <div class="cart-items">
                                         <div class="card">
@@ -147,46 +143,27 @@
                                                        </div>
                                                        <div class="col-md-8">
                                                             <h4 class="card-title">Men Printed Casual Jacket</h4>
-                                                            <p class="card-text">
-                                                                 A stylish and contemporary addition to your wardrobe.
-                                                                 Crafted with a keen eye for fashion, this jacket
-                                                                 combines comfort and trendsetting design.
+                                                            <p class="card-text">A stylish and contemporary addition to
+                                                                 your wardrobe. Crafted with a keen eye for fashion,
+                                                                 this jacket combines comfort and trendsetting design.
                                                             </p>
                                                             <h5>$109.04</h5>
                                                             <div class="d-flex align-items-center">
-                                                                 <div class="input-group me-2" style="width: 100px;">
-                                                                     <button class="btn btn-primary" type="button" id="minusBtn">
-                                                                         <i class="fas fa-minus"></i>
-                                                                     </button>
-                                                                     <input type="text" class="form-control text-center" value="1" id="quantityInput">
-                                                                     <button class="btn btn-primary" type="button" id="plusBtn">
-                                                                         <i class="fas fa-plus"></i>
-                                                                     </button>
+                                                                 <div class="input-group me-2">
+                                                                      <button class="btn btn-primary" type="button"
+                                                                           id="minusBtn"><i
+                                                                                class="fas fa-minus"></i></button>
+                                                                      <input type="text"
+                                                                           class="form-control text-center" value="1"
+                                                                           id="quantityInput">
+                                                                      <button class="btn btn-primary" type="button"
+                                                                           id="plusBtn"><i
+                                                                                class="fas fa-plus"></i></button>
                                                                  </div>
-                                                                 <button type="button" class="btn btn-danger ms-2" style="padding: 0.5rem 0.75rem; margin-left: 5px;">
-                                                                     <i class="fas fa-trash"></i> Remove
-                                                                 </button>
-                                                             </div>                                                            <script>
-                                                                 // Get the input element and plus/minus buttons
-                                                                 const quantityInput = document.getElementById('quantityInput');
-                                                                 const minusBtn = document.getElementById('minusBtn');
-                                                                 const plusBtn = document.getElementById('plusBtn');
-
-                                                                 // Add event listener for minus button
-                                                                 minusBtn.addEventListener('click', () => {
-                                                                      let currentValue = parseInt(quantityInput.value);
-                                                                      if (currentValue > 1) {
-                                                                           quantityInput.value = currentValue - 1;
-                                                                      }
-                                                                 });
-
-                                                                 // Add event listener for plus button
-                                                                 plusBtn.addEventListener('click', () => {
-                                                                      let currentValue = parseInt(quantityInput.value);
-                                                                      quantityInput.value = currentValue + 1;
-                                                                 });
-                                                            </script>
-
+                                                                 <button type="button" class="btn btn-danger ms-2"
+                                                                      style="margin-left: 10px;"><i
+                                                                           class="fas fa-trash"></i> Remove</button>
+                                                            </div>
                                                        </div>
                                                   </div>
                                              </div>

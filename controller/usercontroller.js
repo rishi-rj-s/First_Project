@@ -3,6 +3,8 @@ const Userdb = require("../model/usermodel");
 const ProductDb = require("../model/productmodel");
 const CatDb = require("../model/categorymodel");
 const AdminDb = require("../model/adminmodel");
+const AddressDb = require('../model/addressmodel');
+const CartDb = require('../model/cartmodel');
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const path = require("path");
@@ -40,14 +42,23 @@ exports.login = async (req, res) => {
 };
 
 exports.checkBlocked = async (req, res, next) => {
-  const email = req.session.user.email;
-  await Userdb.findOne({email: email}).then((user)=>{if(user.status === "active") {
-    next();
+  if (req.session.user && req.session.user.email) {
+    const email = req.session.user.email;
+    await Userdb.findOne({ email: email }).then((user) => {
+      if (user && user.status === "active") {
+        next();
+      } else {
+        res.cookie("access", "", { maxAge: 0 });
+        delete req.session;
+        res.redirect("/?error=blocked");
+      }
+    });
   } else {
     res.cookie("access", "", { maxAge: 0 });
     delete req.session;
-    res.redirect("/?error=blocked");
-  }})
+    res.redirect("/?error=bad");
+  }
+  
 };
 
 exports.cookieJwtAuth = (req, res, next) => {
@@ -82,20 +93,35 @@ exports.logout = (req, res) => {
   res.redirect("/?error=logout");
 };
 
-let cate;
-
 exports.products = async (req, res) => {
-  cate = req.params.cat;
-  const cat = await CatDb.find({ category: cate });
-  if (!cat) {
-    res.status(404).send("Category not found!");
+  try {
+    let cate = req.params.cat;
+    
+    if (cate === "All") {
+      const products = await ProductDb.find();
+      if (products.length === 0) {
+        return res.redirect("/user/landing?msg=nodata");
+      }
+      res.render("user/products", {
+        pdt: products, all: "All"
+      });
+    } else {
+      const cat = await CatDb.find({ category: cate });
+      if (cat.length === 0) {
+        return res.status(404).send("Category not found!");
+      }
+      const pdt = await ProductDb.find({ category: cate });
+      if (pdt.length === 0) {
+        return res.status(404).send("Products not found");
+      }
+      res.render("user/products", { category: cate, pdt: pdt, all:false });
+    }
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    res.redirect("/user/landing?msg=errdata");
   }
-  const pdt = await ProductDb.find({ category: cate });
-  if (!pdt) {
-    res.status(404).send("Products not found");
-  }
-  res.render("user/products", { category: cate, products: pdt });
 };
+
 
 exports.productview = async (req, res) => {
   const p_id = req.params.id;
@@ -297,6 +323,40 @@ exports.resetPass = async (req, res) => {
     });
 };
 
-exports.profile = (req,res) =>{
-  res.render('user/userprofile')
+exports.profile = (req, res) => {
+  res.render("user/userprofile");
+};
+
+exports.showAddress = async (req,res) => {
+  const id = req.session.user._id;
+  try{
+    const address  = await AddressDb.find({user_id: id});
+    res.render( 'user/address',{ads: address});
+  }catch(e){
+    res.redirect('/user/profile?msg=adserr');
+  }
+}
+
+exports.showCart = async (req,res) => {
+  const id = req.session.user._id;
+  try{
+    const cart  = await CartDb.find({user_id: id});
+    res.render( 'user/cart',{cart: cart});
+  }catch(e){
+    res.redirect('/user/profile?msg=carterr');
+  }
+}
+
+exports.showOrders = async (req,res) => {
+  const id = req.session.user._id;
+  try{
+    const orders  = await OrderDb.find({user_id: id});
+    res.render( 'user/cart',{orders: orders});  
+  }catch(e){
+    res.redirect('/user/profile?msg=oderr');
+  }
+}
+
+exports.showAddressPage = (req, res) => {
+  res.render('user/addaddress')
 }

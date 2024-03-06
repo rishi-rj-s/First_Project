@@ -1,102 +1,307 @@
-<%-include('../partials/productheader')%>
+<!DOCTYPE html>
+<html lang="en">
 
-<body>
+<head>
+  <meta charset="UTF-8">
+  <title>RISHI STUDIO</title>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <!-- Google Fonts Roboto -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" />
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    crossorigin="anonymous">
+  <link rel="stylesheet" href="/css/user/style2.css">
+  <link rel="icon" href="/img/landing/favicon.png">
+  <style>
+    html,body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
 
-     <div class="banner-wrapper fixed-top">
-          <div class="banner">
-              <h1>RISHI STUDIO</h1>
-              <!-- <form class="form-outline-inline" method="get" required>
+    .wrapper {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .banner-wrapper {
+      background-color: black;
+      padding: 10px;
+    }
+
+    .banner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .banner h1 {
+      font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+      padding-left: 10px;
+      margin-top: 0;
+      color: white;
+    }
+
+    .form-outline-inline {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .form-outline-inline input[type="search"] {
+      width: 100%;
+      margin-right: 5px;
+    }
+
+    .icons {
+      align-items: center;
+    }
+
+    .icons a {
+      margin-right: 10px;
+    }
+
+    @media (min-width: 768px) {
+      .banner h1 {
+        margin-bottom: 0;
+      }
+
+      .form-outline-inline input[type="search"] {
+        width: auto;
+        margin-right: 0;
+      }
+    }
+
+    .banner .icons i {
+      font-size: xx-large;
+      padding-right: 10px;
+    }
+
+    .banner .fa-heart {
+      color: red !important;
+    }
+
+    .banner .fa-shopping-cart {
+      color: orange !important;
+    }
+
+    .banner .fa-user {
+      color: Teal !important;
+    }
+
+    .social-icons i {
+      padding-right: 10px;
+      color: white;
+    }
+
+    .breadcrumb {
+      background-color: #f5f5f5;
+      padding: 10px;
+      margin-bottom: 20px;
+    }
+
+    .breadcrumb-item+.breadcrumb-item::before {
+      content: ">";
+      padding: 0 5px;
+      color: #ccc;
+    }
+
+    .breadcrumb-item a {
+      color: #333;
+    }
+
+    .breadcrumb-item.active {
+      color: #777;
+    }
+
+    @media (max-width: 519px) {
+      .breadcrumb {
+        margin-top: 2rem;
+      }
+    }
+  </style>
+</head>
+
+<body class="wrapper">
+
+  <div class="banner-wrapper fixed-top">
+    <div class="banner">
+      <h1>RISHI STUDIO</h1>
+      <!-- <form class="form-outline-inline" method="get" required>
                   <input type="search" id="form1" class="form-control" placeholder="Search" />
                   <button type="submit" class="btn btn-primary shadow-0">
                       <i class="fa fa-search"></i>
                   </button>
               </form> -->
-              <div class="icons">
-                  <a><i class="fa fa-shopping-cart"></i></a>
-                  <a><i class="fa fa-heart"></i></a>
-                  <a href="/user/profile"><i class="fa fa-user"></i></a>
-                  <a href="/user/logout"><i class="fa fa-power-off text-primary"></i></a>
-              </div>
-          </div>
+      <div class="icons">
+        <a><i class="fa fa-shopping-cart"></i></a>
+        <a><i class="fa fa-heart"></i></a>
+        <a href="/user/profile"><i class="fa fa-user"></i></a>
+        <a href="/user/logout"><i class="fa fa-power-off text-primary"></i></a>
       </div>
-  
-      <div class="navbar-wrapper">
-          <nav class=" navbar-inverse bg-dark">
-              <div class="container-fluid">
-                  <div class="navbar-header">
-                      <!-- Responsive button -->
-                      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navi"
-                          aria-label="Toggle navigation">
-                          <span class="icon-bar"></span>
-                          <span class="icon-bar"></span>
-                          <span class="icon-bar"></span>
-                      </button>
-                  </div>
-                  <div class="collapse navbar-collapse" id="navi">
-                      <!-- Navigation links -->
-                      <ul class="nav navbar-nav navbar-right">
-                          <li><a href="#" class="roundbtn">HOME</a></li>
-                          <li><a href="#" class="roundbtn">OFFERS</a></li>
-                          <li><a href="#" class="roundbtn">KIDS</a></li>
-                          <li><a href="#" class="roundbtn">MENS</a></li>
-                          <li><a href="#" class="roundbtn">WOMENS</a></li>
-                      </ul>
-                  </div>
-              </div>
-          </nav>
-      </div>
-  
-      <!-- Breadcrumbs -->
-      <div class="container mt-5">
-        <div class="row">
-          <div class="col-12 col-md-8">
-            <nav aria-label="breadcrumb">
-              <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/user/landing">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Products</li>
-              </ol>
-            </nav>
-          </div>
-          <div class="col-12 col-md-4"></div>
+    </div>
+  </div>
+
+  <div class="navbar-wrapper">
+    <nav class=" navbar-inverse bg-dark">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <!-- Responsive button -->
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navi"
+            aria-label="Toggle navigation">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+        </div>
+        <div class="collapse navbar-collapse" id="navi">
+          <!-- Navigation links -->
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/user/landing" class="roundbtn">HOME</a></li>
+            <li><a href="/user/products" class="roundbtn">ALL</a></li>
+            <li><a href="/user/products/Offer's" class="roundbtn">OFFERS</a></li>
+            <li><a href="/user/products/Kid's" class="roundbtn">KIDS</a></li>
+            <li><a href="/user/products/Men's" class="roundbtn">MENS</a></li>
+            <li><a href="/user/products/Women's" class="roundbtn">WOMENS</a></li>
+          </ul>
         </div>
       </div>
-    
+    </nav>
+  </div>
 
-<!-- partial:index.partial.html -->
-<section class="section-products">
-		<div class="container">
-				<div class="row justify-content-center text-center">
-						<div class="col-md-8 col-lg-6">
-							<h2 class="mb-5"><%= category%> Collection</h2>
-						</div>
-				</div>
-				<div class="row">
-                        <% products.filter(pdt => pdt.listing !== "Unlisted").forEach((pdt) => { %>
-                              <!-- Single Product -->
-                              <div class="col-md-6 col-lg-4 col-xl-3">
-                                        <div id="product-1" class="single-product">
-                                                  <div class="part-1">
-                                                    <!-- <div class="part-1 product-image" style="background-image: url('/<%= pdt.images[0] %>'); background-repeat: no-repeat; background-size: cover; background-position: center;"></div> -->
-                                                    <img src="/<%= pdt.images[0] %>" alt="" style="height: 100%; width: 100%; background-repeat: no-repeat; background-size: cover; background-position: center;" >
-                                                            <ul>
-                                                                      <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
-                                                                      <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                                                      <li><a href="#"><i class="fa fa-plus"></i></a></li>
-                                                                      <li><a href="/user/productview/<%= pdt._id %>"><i class="fa fa-expand"></i></a></li>
-                                                            </ul>
-                                                  </div>
-                                                  <div class="part-2">
-                                                            <h3 class="product-title"><%= pdt.p_name %></h3>
-                                                            <h4 class="product-old-price">$<%= pdt.price %></h4>
-                                                            <h4 class="product-price text-lg">$<%= pdt.total_price %></h4>
-                                                  </div>
-                                        </div>
+  <!-- Breadcrumbs -->
+  <div class="container mt-5">
+    <div class="row">
+      <div class="col-12 col-md-8">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/user/landing">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Products</li>
+          </ol>
+        </nav>
+      </div>
+      <div class="col-12 col-md-4"></div>
+    </div>
+  </div>
+  <div class="container mt-3">
+    <div class="row justify-content-end">
+      <div class="col-md-4">
+        <label for="sortSelect">Sort By:</label>
+        <select id="sortSelect" class="form-control">
+          <option value="nameAsc">Name (A-Z)</option>
+          <option value="nameDesc">Name (Z-A)</option>
+          <option value="priceAsc">Price (Low to High)</option>
+          <option value="priceDesc">Price (High to Low)</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- partial:index.partial.html -->
+  <section class="section-products">
+    <div class="container">
+      <div class="row justify-content-center text-center">
+        <div class="col-md-8 col-lg-6">
+          <h2 class="mb-5">
+            <%if(all){%>All<%}else{%>
+                <%=category%>
+                  <%}%> Collection
+          </h2>
+        </div>
+      </div>
+      <% let products=pdt.filter(pdt=> pdt.listing !== "Unlisted"); %>
+        <% const productsPerPage=6; %>
+          <% const pageCount=Math.ceil(products.length / productsPerPage); %>
+            <% for (let i=0; i < pageCount; i++) { %>
+              <div class="page-container" id="page<%= i + 1 %>">
+                <div class="row">
+                  <% const startIndex=i * productsPerPage; %>
+                    <% const endIndex=Math.min((i + 1) * productsPerPage, products.length); %>
+                      <% const currentProducts=products.slice(startIndex, endIndex); %>
+                        <% currentProducts.forEach((pdt)=> { %>
+                          <div class="col-md-4">
+                            <div id="product-<%= pdt._id %>" class="single-product">
+                              <div class="part-1">
+                                <img src="/<%= pdt.images[0] %>" alt=""
+                                  style="height: 100%; width: 100%; background-repeat: no-repeat; background-size: cover; background-position: center;">
+                                <ul>
+                                  <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
+                                  <li><a href="#"><i class="fa fa-heart"></i></a></li>
+                                  <li><a href="/user/productview/<%= pdt._id %>"><i class="fa fa-expand"></i></a></li>
+                                </ul>
                               </div>
-                         <% }) %>
-				</div>
-		</div>
-</section>
-<!-- partial -->
-<%-include('footer')%>
+                              <div class="part-2">
+                                <h3 class="product-title">
+                                  <%= pdt.p_name %>
+                                </h3>
+                                <% if(pdt.stock<=0){%>
+                                  <p class="text-danger">Out of Stock</p>
+                                  <%}else{%>
+                                    <h4 class="product-old-price">$<%= pdt.price %>
+                                    </h4>
+                                    <h4 class="product-price text-lg">$<%= pdt.total_price %>
+                                    </h4>
+                                    <%}%>
+                              </div>
+                            </div>
+                          </div>
+                          <% }); %>
+                </div>
+              </div>
+              <% } %>
+                <div class="pagination justify-content-center">
+                  <% for (let i=1; i <=pageCount; i++) { %>
+                    <button class="page-link <%= i === 1 ? 'active' : '' %>" onclick="showPage(<%= i %>)">
+                      <%= i %>
+                    </button>
+                    <% } %>
+                </div>
+    </div>
+  </section>
+  <script>
+    function showPage(pageNumber) {
+      const pages = document.querySelectorAll('.page-container');
+      pages.forEach((page) => {
+        page.style.display = 'none';
+      });
+      const currentPage = document.getElementById('page' + pageNumber);
+      if (currentPage) {
+        currentPage.style.display = 'block';
+      }
+    }
+    showPage(1); // Show the first page initially
+  </script>
+  <!--  FOOTER MARKUP STARTS  -->
+
+  <footer class="bg-dark text-light py-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <h3>Connect with Us</h3>
+          <p>Follow us on social media for updates:</p>
+          <div class="social-icons">
+            <a href="#" class="text-light me-2"><i class="fa fa-facebook"></i></a>
+            <a href="#" class="text-light me-2"><i class="fa fa-twitter"></i></a>
+            <a href="#" class="text-light me-2"><i class="fa fa-instagram"></i></a>
+            <a href="#" class="text-light me-2"><i class="fa fa-linkedin"></i></a>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <h3>Contact Us</h3>
+          <p>Email: info@example.com</p>
+          <p>Phone: +1 234 567 890</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!--  FOOTER MARKUP ENDS  -->
+
 </body>
+
 </html>

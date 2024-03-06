@@ -125,12 +125,17 @@
                               timer: 1500
                          })
                          window.history.replaceState({}, document.title, window.location.pathname);
+                    } else if (error.includes('bad')) {
+                         Swal.fire({
+                              title: 'Error!',
+                              text: 'Bad Connection',
+                              icon: 'error',
+                              confirmButtonText: 'Cool'
+                         })
+                         window.history.replaceState({}, document.title, window.location.pathname);
                     }
-
                }
           </script>
-          <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.all.min.js"></script>
-
      </body>
 
      </html>

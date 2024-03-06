@@ -381,10 +381,18 @@
                                                                  confirmButton: 'Retry'
                                                             });
                                                             return false; // Prevent form submission
-                                                       } else if (price.value <= 40) {
+                                                       } else if (price.value < 40) {
                                                             Swal.fire({
                                                                  title: 'Error!',
                                                                  text: 'The product price needs atleast to be $40',
+                                                                 icon: 'error',
+                                                                 confirmButton: 'Retry'
+                                                            });
+                                                            return false; // Prevent form submission
+                                                       } else if (discount.value > 30 || discount.value <= 0) {
+                                                            Swal.fire({
+                                                                 title: 'Error!',
+                                                                 text: 'Discounts can only of 0-30%!',
                                                                  icon: 'error',
                                                                  confirmButton: 'Retry'
                                                             });

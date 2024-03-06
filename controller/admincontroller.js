@@ -263,7 +263,7 @@ exports.deleteproduct = (req, res) => {
             message: `Cannot delete product with id ${id}. Maybe id is wrong!`,
           });
       } else {
-        res.redirect("/admin/viewproducts");
+        res.redirect("/admin/viewproducts?msg=deleted");
       }
     })
     .catch((err) => {

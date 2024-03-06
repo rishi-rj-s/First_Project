@@ -21,12 +21,7 @@ let schema = new mongoose.Schema({
   },
   discount: {
      type: Number,
-     validate: {
-          validator: function (v) {
-            return v >= 0 && v <= 30;
-          },
-          message: "Discount must be between 0 and 30%",
-        },
+     required: true,
   },
   stock: {
      type: Number,

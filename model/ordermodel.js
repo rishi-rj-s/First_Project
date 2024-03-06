@@ -1,20 +1,64 @@
-const mongoose = require("mongoose");
+const mongoose =require('mongoose');
 
-let schema = new mongoose.Schema({
-  username: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  password: {
-     type: String,
-  },
-  name: {
-     type: String,
-     required: true,
-  }
+const schema = new mongoose.Schema({
+    user_id: {
+        type: mongoose.Types.ObjectId,
+        ref: "User",
+        required: true
+    },
+    orderedItems: [{
+        productId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Product',
+            required: true
+        },
+        quantity: {
+            type: Number,
+            required: true
+        }
+    }],
+    deliveryDate: {
+        type: Date,
+        default: null
+    },
+    payment: {
+        type: mongoose.Types.ObjectId
+    },
+    paymentStatus: {
+        type: String,
+        enum: ['Pending', 'Processing', 'Completed', 'Failed', 'Refunded'],
+        default: 'Pending'
+    },
+    paymentMethod: {
+        type: String,
+        required: true,
+        enum: ['Cash On Delivery','Wallet','Razorpay']
+    },
+    shippingAddress: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Address',
+        required: true
+    },
+    orderDate: {
+        type: Date,
+        default: Date.now
+    },
+    coupons: {
+        type: String,
+        default: ''
+    },
+    totalAmount: {
+        type: Number,
+        required: true
+    },
+    orderStatus: {
+        type: String,
+        default: 'Pending',
+        enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Returned']
+    }
 });
 
-const OrdersDb = mongoose.model("order", schema);
 
-module.exports = OrdersDb;
+const OrderDb = mongoose.model('order', schema)
+
+module.exports = OrderDb;

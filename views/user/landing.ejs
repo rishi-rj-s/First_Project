@@ -303,6 +303,22 @@
                         timer: 1500
                     });
                     window.history.replaceState({}, document.title, window.location.pathname);
+                } else if (message.includes('errdata')) {
+                    Swal.fire({
+                        title: "Error",
+                        text: "Error fetching data",
+                        icon: "error",
+                        confirmButtonText: 'OK'
+                    });
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }  else if (message.includes('nodata')) {
+                    Swal.fire({
+                        title: "Failure",
+                        text: "No data in database!",
+                        icon: "error",
+                        confirmButtonText: 'OK'
+                    });
+                    window.history.replaceState({}, document.title, window.location.pathname);
                 }
             }
         </script>

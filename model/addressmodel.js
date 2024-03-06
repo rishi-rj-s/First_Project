@@ -1,16 +1,16 @@
 const mongoose = require('mongoose');
 
 const schema = new mongoose.Schema({
-    userid:{
+    user_id:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:'User',
+        ref:'user',
         required:true
     },
     name: {
         type: String,
         required: true
     },
-    mobileNumber: {
+    phone: {
         type: String,
         required: true
     },
@@ -20,7 +20,6 @@ const schema = new mongoose.Schema({
     },
     locality: {
         type: String,
-        required: true
     },
     address: {
         type: String,
