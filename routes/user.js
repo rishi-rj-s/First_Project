@@ -3,6 +3,9 @@ const session = require('express-session');
 const app = express()
 const path = require('path')
 const usercontroller = require('../controller/usercontroller')
+const cartcontroller = require('../controller/cartcontroller')
+const ordercontroller = require('../controller/ordercontroller')
+const wishcontrolller = require('../controller/wishlistcontroller')
 const { cookieJwtAuth, checkBlocked } = require("../controller/usercontroller");
 
 
@@ -35,12 +38,16 @@ route.get('/register',(req,res)=>{
 
 route.get('/profile',checkBlocked, cookieJwtAuth, usercontroller.profile);
 route.get('/address',checkBlocked, cookieJwtAuth, usercontroller.showAddress);
-route.get('/addaddress',checkBlocked, cookieJwtAuth, usercontroller.showAddressPage);
-route.get('/cart',checkBlocked, cookieJwtAuth, usercontroller.showCart);
-// route.get('/wishlist',checkBlocked, cookieJwtAuth, usercontroller.showWishlist);
-route.get('/orders',checkBlocked, cookieJwtAuth, usercontroller.showOrders);
+route.get('/addaddress',checkBlocked, cookieJwtAuth, usercontroller.showAddAddress);
+route.post('/addaddress',checkBlocked, cookieJwtAuth, usercontroller.addAddress)
 
+route.get('/cart',checkBlocked, cookieJwtAuth, cartcontroller.showCart);
+route.get('/wishlist',checkBlocked, cookieJwtAuth, wishcontrolller.showWishlist);
+route.get('/orders',checkBlocked, cookieJwtAuth, ordercontroller.showOrders);
 
+route.get('/changepass',checkBlocked, cookieJwtAuth, usercontroller.showChangePass);
+route.post('/checkpass', checkBlocked, cookieJwtAuth, usercontroller.checkPass);
+route.post('/changepass',checkBlocked, cookieJwtAuth, usercontroller.changePass);
 
 
 route.get("**",(req,res)=>{

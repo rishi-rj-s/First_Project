@@ -152,7 +152,7 @@
             <div class="profile-card">
                 <img src="/img/landing/User Icon.webp" alt="Profile Picture">
                 <div class="card-body">
-                    <h5>Username</h5>
+                    <h5>Hey, <%=user.name%></h5>
                 </div>
             </div>
             <div class="profile-card">
@@ -163,7 +163,7 @@
                     <a href="/user/orders" class="card-link"><i class="fas fa-shopping-bag fa-2x"></i><br> Orders</a>
                     <a href="/user/Wishlist" class="card-link"><i class="fas fa-heart fa-2x"></i><br> Wishlist</a>
                     <!-- <a href="/user/" class="card-link"><i class="fas fa-credit-card fa-2x"></i><br> Wallet</a> -->
-                    <a href="/user/" class="card-link"><i class="fas fa-lock fa-2x"></i><br> Change Password</a>
+                    <a href="/user/changepass" class="card-link"><i class="fas fa-lock fa-2x"></i><br> Change Password</a>
                     <a href="/user/logout" class="card-link"><i class="fas fa-power-off fa-2x"></i><br> Logout</a>
                 </div>
             </div>
@@ -195,6 +195,22 @@
                     title: 'Error!',
                     text: 'Error fetching orders',
                     icon: 'error',
+                    confirmButtonText: 'Cool'
+                })
+                window.history.replaceState({}, document.title, window.location.pathname);
+            } else if (error.includes('cannotp')) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'You cannot change password of a google account',
+                    icon: 'error',
+                    confirmButtonText: 'Cool'
+                })
+                window.history.replaceState({}, document.title, window.location.pathname);
+            } else if (error.includes('chpasu')) {
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Password changed successfully!',
+                    icon: 'success',
                     confirmButtonText: 'Cool'
                 })
                 window.history.replaceState({}, document.title, window.location.pathname);

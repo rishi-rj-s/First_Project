@@ -12,6 +12,10 @@ const schema = new mongoose.Schema( new mongoose.Schema ({
             ref: "Product",
             required: true,
         },
+        size: {
+            type: String,
+            default: "Small"
+        },
         quantity: {
             type: Number,
             default: 1,

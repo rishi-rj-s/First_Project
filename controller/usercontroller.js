@@ -323,8 +323,13 @@ exports.resetPass = async (req, res) => {
     });
 };
 
-exports.profile = (req, res) => {
-  res.render("user/userprofile");
+exports.profile = async (req, res) => {
+  let id = req.session.user._id;
+  const user = await Userdb.findById(id)
+  if(!user){
+    res.redirect('/user/logout');
+  }
+  res.render("user/userprofile",{user});
 };
 
 exports.showAddress = async (req,res) => {
@@ -337,26 +342,84 @@ exports.showAddress = async (req,res) => {
   }
 }
 
-exports.showCart = async (req,res) => {
-  const id = req.session.user._id;
-  try{
-    const cart  = await CartDb.find({user_id: id});
-    res.render( 'user/cart',{cart: cart});
-  }catch(e){
-    res.redirect('/user/profile?msg=carterr');
-  }
-}
-
-exports.showOrders = async (req,res) => {
-  const id = req.session.user._id;
-  try{
-    const orders  = await OrderDb.find({user_id: id});
-    res.render( 'user/cart',{orders: orders});  
-  }catch(e){
-    res.redirect('/user/profile?msg=oderr');
-  }
-}
-
-exports.showAddressPage = (req, res) => {
+exports.showAddAddress = (req, res) => {
   res.render('user/addaddress')
 }
+
+exports.addAddress = async (req,res) => {
+  const id = req.session.user._id;
+  try{
+    const address = new AddressDb({
+      user_id: id,
+      name: req.body.name,
+      phone: req.body.phone,
+      pincode: req.body.pincode,
+      locality: req.body.locality,
+      address: req.body.address,
+      city: req.body.city,
+      state: req.body.state,
+      addressType: req.body.addressType,
+    });
+    await address.save();
+    res.redirect("/user/address?msg=succ");
+  }catch(e){
+    console.log(e);
+    res.redirect('/user/address?msg=err');
+  }
+}
+
+exports.deleteAddress = async(req, res) => {
+  let adId = req.params.id
+}
+
+exports.showChangePass = async (req, res) => {
+  try {
+    const id = req.session.user._id;
+    const user = await Userdb.findById(id);
+    if (!user.password) {
+      return res.redirect('/user/profile?msg=cannotp');
+    }
+    res.render('user/changepass');
+  } catch (error) {
+    console.error('Error in showChangePass:', error);
+    res.status(500).send('Internal Server Error');
+  }
+};
+
+exports.checkPass = async (req, res) => {
+  try {
+    const pass = req.body.password;
+    const id = req.session.user._id;
+    const user = await Userdb.findById(id);
+    if (user.password) {
+      const passwordMatch = await bcrypt.compare(pass, user.password);
+      res.status(passwordMatch ? 200 : 401).send(passwordMatch);
+    } else {
+      res.status(401).send(false);
+    }
+  } catch (error) {
+    console.error('Error in checkPass:', error);
+    res.status(500).send('Internal Server Error');
+  }
+};
+
+exports.changePass = async (req, res) => {
+  try {
+    const id = req.session.user._id;
+    const newPassword = req.body.newpassword;
+    console.log(newPassword)
+
+    const user = await Userdb.findById(id);
+
+    // Corrected part
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    user.password = hashedPassword;
+    await user.save();
+
+    res.redirect('/user/profile?msg=chpasu');
+  } catch (error) {
+    console.error('Error in changePass:', error);
+    res.status(500).send('Internal Server Error');
+  }
+};
