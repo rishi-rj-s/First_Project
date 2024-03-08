@@ -1,0 +1,345 @@
+<!--
+=========================================================
+* Material Dashboard 2 - v3.1.0
+=========================================================
+
+* Product Page: https://www.creative-tim.com/product/material-dashboard
+* Copyright 2023 Creative Tim (https://www.creative-tim.com)
+* Licensed under MIT (https://www.creative-tim.com/license)
+* Coded by Creative Tim
+
+=========================================================
+
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/admin/apple-icon.png">
+  <link rel="icon" type="image/png" href="/img/admin/favicon.png">
+  <title>RISHI STUDIO</title>
+  <!--     Fonts and icons     -->
+  <link rel="stylesheet" type="text/css"
+    href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700" />
+  <!-- Nucleo Icons -->
+  <link href="/css/admin/nucleo-icons.css" rel="stylesheet" />
+  <link href="/css/admin/nucleo-svg.css" rel="stylesheet" />
+  <!-- Font Awesome Icons -->
+  <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <!-- CSS Files -->
+  <link id="pagestyle" href="/css/admin/material-dashboard.css?v=3.1.0" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.all.min.js"></script>
+  <style>
+    .text-end {
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-35%);
+    }
+  </style>
+</head>
+
+<body class="g-sidenav-show  bg-gray-200">
+  <aside
+    class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3   bg-gradient-dark"
+    id="sidenav-main">
+    <hr class="horizontal light mt-0 mb-2">
+    <div class="collapse navbar-collapse  w-auto " id="sidenav-collapse-main">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link text-white " href="/admin/dashboard">
+            <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+              <i class="material-icons opacity-10">dashboard</i>
+            </div>
+            <span class="nav-link-text ms-1">Dashboard</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white active bg-gradient-primary" href="/admin/viewproducts">
+            <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+              <i class="material-icons opacity-10">table_view</i>
+            </div>
+            <span class="nav-link-text ms-1">Products</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white" href="/admin/category">
+            <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+              <i class="material-icons opacity-10">table_view</i>
+            </div>
+            <span class="nav-link-text ms-1">Category</span>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link text-white " href="/admin/viewusers">
+            <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+              <i class="material-icons opacity-10">person</i>
+            </div>
+            <span class="nav-link-text ms-1">Users</span>
+          </a>
+        </li>
+        <!-- <li class="nav-item">
+          <a class="nav-link text-white " href="/profile">
+            <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+              <i class="material-icons opacity-10">person</i>
+            </div>
+            <span class="nav-link-text ms-1">Profile</span>
+          </a>
+        </li> -->
+        <li class="nav-item">
+          <a class="nav-link text-white " href="/admin/logout">
+            <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+              <i class="material-icons opacity-10">logout</i>
+            </div>
+            <span class="nav-link-text ms-1">Logout</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </aside>
+  <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
+    <!-- Navbar -->
+    <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur"
+      data-scroll="true">
+      <div class="container-fluid py-1 px-3">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
+            <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Pages</a></li>
+            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Orders</li>
+          </ol>
+          <h6 class="font-weight-bolder mb-0">Orders</h6>
+        </nav>
+      </div>
+    </nav>
+    <!-- End Navbar -->
+    <div class="container-fluid py-4">
+      <div class="row">
+        <div class="col-12">
+          <div class="card my-4">
+            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+              <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
+                <h6 class="text-white text-capitalize ps-3">Orders</h6>
+            </div>
+            <div class="card-body px-0 pb-2">
+              <div class="table-responsive p-0">
+                <table id="productsTable" class="table align-items-center mb-0">
+                  <thead>
+                    <tr>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Product Name</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Description
+                      </th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Category</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Total
+                        Price</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Stock
+                      </th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                        Listing</th>
+                      <th class="text-secondary opacity-7"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% products.forEach((pdt)=> { %>
+                      <tr>
+                        <td>
+                          <div class="d-flex px-2 py-1">
+                            <div>
+                              <img src="/<%= pdt.images[0] %>" class="avatar avatar-sm me-3 border-radius-lg"
+                                alt="user1">
+                            </div>
+                            <div class="d-flex flex-column justify-content-center">
+                              <h6 class="mb-0 text-sm">
+                                <%= pdt.p_name %>
+                              </h6>
+                            </div>
+                          </div>
+                        </td>
+                        <td class="align-middle">
+                          <p class="text-xs text-secondary mb-0"
+                            style="word-wrap: break-word; width: 250px; white-space: normal;">
+                            <%= pdt.description %>
+                          </p>
+                        </td>
+                        <td class="align-middle text-lg">
+                          <p class="text-xs fw-bold mb-1">
+                            <%= pdt.category %>
+                          </p>
+                        </td>
+                        <td class="align-middle text-center text-lg">
+                          <p class="text-xs fw-bold mb-1">$<%= pdt.total_price %>
+                          </p>
+                        </td>
+                        <td class="align-middle text-center">
+                          <span class="text-secondary text-xs font-weight-bold">
+                            <%= pdt.stock %>
+                          </span>
+                        </td>
+                        <td class="align-middle text-center">
+                          <span class="text-secondary text-xs font-weight-bold">
+                            <%= pdt.listing %>
+                          </span>
+                        </td>
+                        <td class="align-middle">
+                          <a class="text-white font-weight-bold" href="/admin/editproduct/<%= pdt._id %>">
+                            <button type="button" class="btn btn-warning text-xs mb-1"><i
+                                class="fas fa-pencil-alt"></i></button>
+                          </a>
+                          <a class="text-white font-weight-bold delete" href="/admin/deleteproduct/<%= pdt._id %>" onclick="return deleteP(event)">
+                            <button type="button" class="btn btn-danger text-xs mb-1"><i
+                                class="fas fa-trash-alt"></i></button>
+                          </a>
+                        </td>
+                      </tr>
+                      <% }) %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="pagination mt-3 d-flex justify-content-center" id="pagination">
+              <!-- Pagination buttons will be added here dynamically -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const productsPerPage = 6; // Number of products to display per page
+    let currentPage = 1;
+
+    // Function to display products based on current page
+    function displayProducts() {
+      const productsTable = document.getElementById('productsTable');
+      const rows = productsTable.querySelectorAll('tbody tr');
+      const numPages = Math.ceil(rows.length / productsPerPage);
+
+      // Hide all rows
+      rows.forEach(row => row.style.display = 'none');
+
+      // Calculate start and end index for current page
+      const startIndex = (currentPage - 1) * productsPerPage;
+      const endIndex = Math.min(startIndex + productsPerPage, rows.length);
+
+      // Display rows for current page
+      for (let i = startIndex; i < endIndex; i++) {
+        rows[i].style.display = '';
+      }
+
+      // Create pagination buttons
+      const paginationDiv = document.getElementById('pagination');
+      paginationDiv.innerHTML = '';
+
+      if (numPages > 1) {
+        const prevButton = document.createElement('button');
+        prevButton.textContent = 'Prev';
+        prevButton.className = 'btn btn-primary me-2';
+        prevButton.disabled = currentPage === 1;
+        prevButton.addEventListener('click', () => {
+          if (currentPage > 1) {
+            currentPage--;
+            displayProducts();
+          }
+        });
+        paginationDiv.appendChild(prevButton);
+
+        const nextButton = document.createElement('button');
+        nextButton.textContent = 'Next';
+        nextButton.className = 'btn btn-primary';
+        nextButton.disabled = currentPage === numPages;
+        nextButton.addEventListener('click', () => {
+          if (currentPage < numPages) {
+            currentPage++;
+            displayProducts();
+          }
+        });
+        paginationDiv.appendChild(nextButton);
+      }
+    }
+
+    // Initial display of products
+    displayProducts();
+  </script>
+
+  onclick="return deleteC(event)"<script>
+    function deleteP(event) {
+      event.preventDefault(); // Prevent the default behavior of the anchor tag
+      const deleteUrl = event.currentTarget.getAttribute('href'); // Retrieve the href attribute
+      // console.log("Delete URL:", deleteUrl); // Debugging statement
+
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Redirect to the delete URL
+          window.location.href = deleteUrl;
+        }
+      });
+    }
+  </script>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const message = urlParams.get('msg');
+    if (typeof message !== 'undefined') {
+      if (message.includes('success')) {
+        Swal.fire({
+          title: 'Success!',
+          text: 'Product added successfully',
+          icon: 'success',
+          confirmButtonText: 'Cool'
+        })
+        window.history.replaceState({}, document.title, window.location.pathname);
+      } else if (message.includes('updated')) {
+        Swal.fire({
+          title: 'Success!',
+          text: 'Successfully updated the product',
+          icon: 'success',
+          confirmButtonText: 'Cool'
+        })
+        window.history.replaceState({}, document.title, window.location.pathname);
+      } else if (message.includes('deleted')) {
+        Swal.fire({
+          title: 'Success!',
+          text: 'Successfully deleted the product',
+          icon: 'success',
+          confirmButtonText: 'Cool'
+        })
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    }
+  </script>
+  <!--   Core JS Files   -->
+  <script src="/js/admin/core/popper.min.js"></script>
+  <script src="/js/admin/core/bootstrap.min.js"></script>
+  <script src="/js/admin/plugins/perfect-scrollbar.min.js"></script>
+  <script src="/js/admin/plugins/smooth-scrollbar.min.js"></script>
+  <script>
+    var win = navigator.platform.indexOf('Win') > -1;
+    if (win && document.querySelector('#sidenav-scrollbar')) {
+      var options = {
+        damping: '0.5'
+      }
+      Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+    }
+  </script>
+  <!-- Github buttons -->
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
+  <script src="/js/admin/material-dashboard.min.js?v=3.1.0"></script>
+  <script src="/js/admin/function.js"></script>
+</body>
+
+</html>

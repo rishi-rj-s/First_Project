@@ -5,7 +5,7 @@ const path = require('path')
 const usercontroller = require('../controller/usercontroller')
 const cartcontroller = require('../controller/cartcontroller')
 const ordercontroller = require('../controller/ordercontroller')
-const wishcontrolller = require('../controller/wishlistcontroller')
+const wishcontroller = require('../controller/wishcontroller')
 const { cookieJwtAuth, checkBlocked } = require("../controller/usercontroller");
 
 
@@ -21,9 +21,7 @@ route.post('/checkotp', usercontroller.checkotp)
 route.get('/resetPassword', usercontroller.resetPage)
 route.post('/resetPassword', usercontroller.resetPass)
 
-route.get('/landing',checkBlocked, cookieJwtAuth,(req,res)=>{
-     res.render('user/landing')
-})
+route.get('/landing',checkBlocked, cookieJwtAuth, usercontroller.showLanding)
 
 route.get('/logout',cookieJwtAuth, usercontroller.logout)
 
@@ -46,12 +44,15 @@ route.get('/editaddress/:id',checkBlocked, cookieJwtAuth, usercontroller.showEdi
 route.post('/saveaddress/:id',checkBlocked, cookieJwtAuth, usercontroller.saveAddress)
 
 route.get('/cart',checkBlocked, cookieJwtAuth, cartcontroller.showCart);
-route.get('/wishlist',checkBlocked, cookieJwtAuth, wishcontrolller.showWishlist);
 route.get('/orders',checkBlocked, cookieJwtAuth, ordercontroller.showOrders);
 
 route.get('/changepass',checkBlocked, cookieJwtAuth, usercontroller.showChangePass);
 route.post('/checkpass', checkBlocked, cookieJwtAuth, usercontroller.checkPass);
 route.post('/changepass',checkBlocked, cookieJwtAuth, usercontroller.changePass);
+
+route.get('/wishlist',checkBlocked, cookieJwtAuth, wishcontroller.showWishlist);
+route.get('/addwishlist/:id', checkBlocked, cookieJwtAuth, wishcontroller.addToWishlist);  
+route.get('/removewish/:id', checkBlocked, cookieJwtAuth, wishcontroller.removeWish);  
 
 
 route.get("**",(req,res)=>{

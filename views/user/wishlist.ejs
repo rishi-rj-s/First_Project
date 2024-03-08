@@ -7,6 +7,8 @@
      <title>Wishlist</title>
      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.min.css">
+     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.all.min.js"></script>
      <style>
           body {
                font-family: "Times New Roman", Times, serif sans-serif;
@@ -14,56 +16,53 @@
                color: #333;
           }
 
-          .profile {
-               text-align: center;
-               margin-bottom: 20px;
-          }
-
-          .profile img {
-               width: 100px;
-               height: 100px;
-               border-radius: 50%;
-               margin-bottom: 10px;
-          }
-
-          .profile h5 {
-               font-weight: bold;
-               margin: 0;
-               font-size: 1.2rem;
-          }
-
-          .sidebar {
+          .banner-wrapper {
                background-color: black;
-               padding: 20px;
-               border-right: 2px solid blue;
-               min-height: 100vh;
-               color: #fff;
+               padding: 10px;
           }
 
-          @media (max-width: 767px) {
-               .sidebar {
-                    min-height: 40vh;
+          .banner {
+               display: flex;
+               justify-content: space-between;
+               align-items: center;
+               flex-wrap: wrap;
+          }
+
+          .banner h1 {
+               font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+               padding-left: 10px;
+               margin-top: 0;
+               color: white;
+          }
+
+          .icons {
+               align-items: center;
+          }
+
+          .icons a {
+               margin-right: 10px;
+          }
+
+          @media (min-width: 768px) {
+               .banner h1 {
+                    margin-bottom: 0;
                }
           }
 
-          .sidebar ul {
-               list-style-type: none;
-               padding: 0;
-               margin: 0;
+          .banner .fa-heart {
+               color: red !important;
           }
 
-          .sidebar ul li {
-               margin-bottom: 10px;
+          .banner .fa-shopping-cart {
+               color: orange !important;
           }
 
-          .sidebar ul li a {
-               text-decoration: none;
-               color: #fff;
-               font-size: 1.1rem;
+          .banner .fa-user {
+               color: Teal !important;
           }
 
-          .sidebar ul li a:hover {
-               color: #cce0ff;
+          .social-icons i {
+               padding-right: 10px;
           }
 
           .content {
@@ -73,7 +72,7 @@
           .object-fit-cover {
                object-fit: cover;
                height: 150px;
-                width: 150px
+               width: 150px
           }
 
           .wishlist-items .card {
@@ -106,11 +105,49 @@
                font-size: smaller;
                /* Adjust font size of buttons as needed */
           }
+          .icons i {
+               font-size: 30px;
+          }
      </style>
 </head>
 
 <body>
-     <div class="container-fluid">
+     <div class="banner-wrapper fixed-top">
+          <div class="banner">
+               <a href="/"><h1>RISHI STUDIO</h1></a>
+               <!-- <form class="form-outline-inline" action="/product/search" method="get" required>
+                  <input type="search" id="form1" class="form-control" placeholder="Search" />
+                  <button type="submit" class="btn btn-primary shadow-0">
+                      <i class="fa fa-search"></i>
+                  </button>
+              </form> -->
+               <div class="icons">
+                    <a href="/user/cart"><i class="fa fa-shopping-cart"></i></a>
+                    <a href="/user/wishlist"><i class="fa fa-heart"></i></a>
+                    <a href="/user/profile"><i class="fa fa-user"></i></a>
+                    <a href="/user/logout"><i class="fa fa-power-off"></i></a>
+               </div>
+          </div>
+     </div>
+
+     <div class="navbar-wrapper">
+          <nav class=" navbar-inverse  bg-dark">
+               <div class="container-fluid">
+                    <div class="navbar-header">
+                         <!-- Responsive button -->
+                         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navi"
+                              aria-label="Toggle navigation">
+                              <span class="icon-bar"></span>
+                              <span class="icon-bar"></span>
+                              <span class="icon-bar"></span>
+                         </button>
+                    </div>
+               </div>
+          </nav>
+     </div>
+
+     <!--  NAVIGATION ENDS  -->
+     <div class="container-fluid mt-5 mb-3">
           <div class="row">
                <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
                     <div class="container mt-4">
@@ -118,64 +155,47 @@
                               <div class="col-md-8 offset-md-2">
                                    <h1 class="text-center mb-4">My Wish List</h1>
                                    <div class="wishlist-items">
-                                        <div class="card">
-                                             <div class="card-body">
-                                                  <div class="row align-items-center">
-                                                       <div class="col-md-4">
-                                                            <img src="Subru.jpg"  
-                                                                 alt="Product Image"
-                                                                 class="img-fluid object-fit-cover" />
-                                                       </div>
-                                                       <div class="col-md-8">
-                                                            <h4 class="card-title">Men Printed Casual Jacket</h4>
-                                                            <p class="card-text">
-                                                                 A stylish and contemporary addition to your wardrobe.
-                                                                 Crafted with a keen eye for fashion, this jacket
-                                                                 combines comfort and trendsetting design.
-                                                            </p>
-                                                            <h5>$109.04</h5>
-                                                            <div class="d-flex">
-                                                                 <a href="#" class="btn btn-primary me-2">
-                                                                      <i class="fas fa-shopping-cart"></i> Add to Cart
-                                                                 </a>
-                                                                 <button type="button" class="btn btn-danger"
-                                                                      onclick="removeFromWishlist(this)">
-                                                                      <i class="fas fa-trash"></i> Remove
-                                                                 </button>
+                                        <% items.forEach((item)=> { %>
+                                             <div class="card">
+                                                  <div class="card-body">
+                                                       <div class="row align-items-center">
+                                                            <div class="col-md-4">
+                                                                 <img src="/<%= item.product.images[0] %>"
+                                                                      alt="Product Image"
+                                                                      class="img-fluid object-fit-cover" />
+                                                            </div>
+                                                            <div class="col-md-8">
+                                                                 <h4 class="card-title">
+                                                                      <%= item.product.name %>
+                                                                 </h4>
+                                                                 <p class="card-text">
+                                                                      <%= item.product.description %>
+                                                                 </p>
+                                                                 <h5>
+                                                                      $<%= item.product.total_price %> <strike
+                                                                                style="font-size: medium;">$<%=
+                                                                                     item.product.price %></strike>
+                                                                 </h5>
+                                                                 <h7 class="text-success">
+                                                                      <%= item.product.discount %>% Discount
+                                                                 </h7>
+                                                                 <div class="d-flex mt-1">
+                                                                      <a href="#" class="btn btn-primary me-2">
+                                                                           <i class="fas fa-shopping-cart"></i> Add to
+                                                                           Cart
+                                                                      </a>
+                                                                      <a
+                                                                           href="/user/removeWish/<%= item.product._id %>"><button
+                                                                                type="button" class="btn btn-danger">
+                                                                                <i class="fas fa-trash"></i> Remove
+                                                                           </button></a>
+                                                                 </div>
                                                             </div>
                                                        </div>
                                                   </div>
                                              </div>
-                                        </div> 
-                                        <div class="card">
-                                             <div class="card-body">
-                                                  <div class="row align-items-center">
-                                                       <div class="col-md-4">
-                                                            <img src="Subru.jpg"  
-                                                                 alt="Product Image"
-                                                                 class="img-fluid object-fit-cover" />
-                                                       </div>
-                                                       <div class="col-md-8">
-                                                            <h4 class="card-title">Men Printed Casual Jacket</h4>
-                                                            <p class="card-text">
-                                                                 A stylish and contemporary addition to your wardrobe.
-                                                                 Crafted with a keen eye for fashion, this jacket
-                                                                 combines comfort and trendsetting design.
-                                                            </p>
-                                                            <h5>$109.04</h5>
-                                                            <div class="d-flex">
-                                                                 <a href="#" class="btn btn-primary me-2">
-                                                                      <i class="fas fa-shopping-cart"></i> Add to Cart
-                                                                 </a>
-                                                                 <button type="button" class="btn btn-danger"
-                                                                      onclick="removeFromWishlist(this)">
-                                                                      <i class="fas fa-trash"></i> Remove
-                                                                 </button>
-                                                            </div>
-                                                       </div>
-                                                  </div>
-                                             </div>
-                                        </div> 
+                                             <%})%>
+
                                    </div>
                                    <div class="pagination justify-content-center">
                                         <button id="prevPage" class="page-link">&laquo; Prev</button>
@@ -235,8 +255,43 @@
                     // Initial display of wishlist items
                     displayWishlistItems();
                </script>
+               <script>
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const message = urlParams.get('msg'); // Change 'message' to 'msg'
+                    if (typeof message !== 'undefined') {
+                         if (message.includes('exist')) {
+                              Swal.fire({
+                                   title: "Exists",
+                                   text: "Items already exists in Wishlist",
+                                   icon: "error",
+                                   confirmButtonText: 'OK'
+                              });
+                              window.history.replaceState({}, document.title, window.location.pathname);
+                         } else if (message.includes('added')) {
+                              Swal.fire({
+                                   title: "Success",
+                                   text: "Item successfully added",
+                                   icon: "success",
+                                   confirmButtonText: 'Cool'
+                              });
+                              window.history.replaceState({}, document.title, window.location.pathname);
+                         } else if (message.includes('delete')) {
+                              Swal.fire({
+                                   title: "Success",
+                                   text: "Item removed from wishlist",
+                                   icon: "success",
+                                   confirmButtonText: 'OK'
+                              });
+                              window.history.replaceState({}, document.title, window.location.pathname);
+                         }
+                    }
+               </script>
           </div>
      </div>
+
+     <!-- FOOTER MARKUP STARTS -->
+
+     <%- include('footer') %>
 
      <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
      <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>

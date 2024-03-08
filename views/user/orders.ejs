@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RISHI STUDIO</title>
     <link rel="icon" href="/img/landing/favicon.png">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         body {
@@ -71,44 +71,66 @@
             padding: 20px;
         }
 
-        .orders-table {
-            width: 100%;
-            border-collapse: collapse;
+        .tab-content {
+            padding: 20px;
         }
 
-        .orders-table th,
-        .orders-table td {
+        .tab-pane {
+            padding: 20px;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .table th,
+        .table td {
             border: 1px solid #dee2e6;
             padding: .75rem;
             text-align: left;
         }
 
-        .orders-table th {
+        .table th {
             background-color: #f2f2f2;
         }
 
-        .pagination {
-            margin-top: 20px;
-            display: flex;
-            justify-content: center;
+        .nav-tabs {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            border-radius: 5px;
         }
 
-        .pagination .page-link {
-            color: #007bff;
-            border: 1px solid #007bff;
-            margin: 0 5px;
-            cursor: pointer;
+        .nav-tabs .nav-item {
+            margin-bottom: -1px;
         }
 
-        .pagination .page-link:hover {
-            background-color: #007bff;
-            color: #fff;
+        .nav-tabs .nav-link {
+            border: 1px solid transparent;
+            border-radius: 5px 5px 0 0;
+            color: #333;
+            background-color: transparent;
         }
 
-        .pagination .page-item.disabled .page-link {
-            color: #6c757d;
-            border-color: #6c757d;
-            cursor: not-allowed;
+        .nav-tabs .nav-link.active {
+            border-color: #dee2e6 #dee2e6 #f8f9fa;
+            background-color: #fff;
+            color: #000;
+        }
+
+        .nav-tabs .nav-link:hover {
+            border-color: #dee2e6 #dee2e6 #fff;
+            background-color: #f8f9fa;
+            color: #000;
+        }
+
+        .tab-pane {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
@@ -133,188 +155,105 @@
             <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
                 <div class=" col-9">
                     <div class="col border">
-                        <div class="bg-light p-30">
+                        <div class="bg-light p-4">
                             <div class="nav nav-tabs mb-4" role="tablist">
-                                <a class="nav-item nav-link text-dark active" data-toggle="tab" href="#nav-pending">Orders</a>
-                                <a class="nav-item nav-link text-dark" data-toggle="tab" href="#nav-delivered">Delivered</a>
-                                <a class="nav-item nav-link text-dark" data-toggle="tab" href="#nav-cancelled">Cancelled</a>
-                                <a class="nav-item nav-link text-dark" data-toggle="tab" href="#nav-returned">Returned</a>
-                            
+                                <a class="nav-item nav-link active" data-bs-toggle="tab" href="#nav-pending">Pending</a>
+                                <a class="nav-item nav-link" data-bs-toggle="tab" href="#nav-delivered">Delivered</a>
+                                <a class="nav-item nav-link" data-bs-toggle="tab" href="#nav-cancelled">Cancelled</a>
+                                <a class="nav-item nav-link" data-bs-toggle="tab" href="#nav-returned">Returned</a>
                             </div>
                             <div class="tab-content">
                                 <div class="tab-pane fade show active" id="nav-pending">
-                                    <table class="table table-hover col-12">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">Product Name</th>
-                                                <th scope="col">Product Image</th>
-                                                <th scope="col">Total Amount</th>
-                                                <th scope="col">Quantity</th>
-                                                <th scope="col">Order Date</th>
-                                                <th scope="col">Order Status</th>
-                                                <th scope="col">Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <% orders.forEach((order) => { %>
-                                                <% if (order.orderStatus === 'Pending') { %>
-                                                    <% order.orderedItems.forEach((item) => { %>
-                                                        <tr>
-                                                            <td>
-                                                                <a href="/orderdetails/<%= order._id %>/<%= item.productId._id %>"><%= item.productId.name %></a>
-                                                            </td>
-                                                            <td><img src="<%= item.productId.images[0] %>" alt="<%= item.productId.name %>" style="width: 100px; height: 100px;"></td>
-                                                            <td>₹<%= order.totalAmount %></td>
-                                                            <td><%= item.quantity %></td>
-                                                            <td><%= order.orderDate.toDateString() %></td>
-                                                            <td><%= order.orderStatus %></td>
-                                                            <td>
-                                                                <% if (order.orderStatus !== 'Cancelled') { %>
-                                                                    <button class="btn btn-danger cancel-order-btn" data-order-id="<%= order._id %>">Cancel Order</button>
-                                                                <% } %>
-                                                            </td>
-                                                        </tr>
-                                                    <% }); %>
-                                                <% } %>
-                                            <% }); %>
-                                        </tbody>
-                                    </table>
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Order Name</th>
+                                                    <th>Order Details</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Pending Order 1</td>
+                                                    <td>Pending Data 1</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Pending Order 2</td>
+                                                    <td>Pending Data 2</td>
+                                                </tr>
+                                                <!-- Add more rows as needed -->
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                                 <div class="tab-pane fade" id="nav-delivered">
-                                    <table class="table table-hover col-12">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">Product Name</th>
-                                                <th scope="col">Product Image</th>
-                                                <th scope="col">Total Amount</th>
-                                                <th scope="col">Quantity</th>
-                                                <th scope="col">Order Date</th>
-                                                <th scope="col">Order Status</th>
-                                                <th scope="col">Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <% orders.forEach((order) => { %>
-                                                <% if (order.orderStatus === 'Delivered' || order.orderStatus === 'ReturnRequested') { %>
-                                                    <% order.orderedItems.forEach((item) => { %>
-                                                        <tr>
-                                                            <td>
-                                                                <a href="/orderdetails/<%= order._id %>/<%= item.productId._id %>"><%= item.productId.name %></a>
-                                                            </td>
-                                                            <td><img src="<%= item.productId.images[0] %>" alt="<%= item.productId.name %>" style="width: 100px; height: 100px;"></td>
-                                                            <td>₹<%= order.totalAmount %></td>
-                                                            <td><%= item.quantity %></td>
-                                                            <td><%= order.orderDate.toDateString() %></td>
-                                                            <td><%= order.orderStatus %></td>
-                                                            <td>
-                                                                <% if (order.orderStatus !== 'ReturnRequested') { %>
-                                                                    <button class="btn btn-danger" onclick="requestReturn('<%= order._id %>')">Return</button>
-                                                                <% } %>
-                                                            </td>
-                                                            
-                                                           
-                                                            </td>
-                                                        </tr>
-                                                    <% }); %>
-                                                <% } %>
-                                            <% }); %>
-                                        </tbody>
-                                    </table>
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Order Name</th>
+                                                    <th>Order Details</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Delivered Order 1</td>
+                                                    <td>Delivered Data 1</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Delivered Order 2</td>
+                                                    <td>Delivered Data 2</td>
+                                                </tr>
+                                                <!-- Add more rows as needed -->
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                                 <div class="tab-pane fade" id="nav-cancelled">
-                                    <table class="table table-hover col-12">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">Product Name</th>
-                                                <th scope="col"></th> 
-                                                <th scope="col">Product Image</th>
-                                                <th scope="col">Total Amount</th>
-                                                <th scope="col"></th> <!-- Empty column for spacing -->
-                                                <th scope="col">Quantity</th>
-                                                <th scope="col"></th> 
-                                                <th scope="col">Order Date</th>
-                                                <th scope="col"></th> 
-                                                <th scope="col">Cancelled Date</th> <!-- Added column for Cancelled Date -->
-                                            </tr>
-                                        </thead>
-                                        <!-- Rest of the table content -->
-                                    
-                                    
-                                        <tbody>
-                                            <% orders.forEach((order) => { %>
-                                                <% if (order.orderStatus === 'Cancelled') { %>
-                                                    <% order.orderedItems.forEach((item) => { %>
-                                                        <tr>
-                                                            <td>
-                                                                <a href="/orderdetails/<%= order._id %>/<%= item.productId._id %>"><%= item.productId.name %></a>
-                                                            </td>
-                                                            <td></td>
-                                                            <td><img src="<%= item.productId.images[0] %>" alt="<%= item.productId.name %>" style="width: 100px; height: 100px;"></td>
-                                                            <td>₹<%= order.totalAmount %></td>
-                                                            <td></td>
-                                                           
-                                                            <td><%= item.quantity %></td>
-                                                            <td></td>
-            
-                                                            <td><%= order.orderDate.toDateString() %></td>
-                                                            <td></td>
-            
-                                                            <td>
-                                                                <% if (order.cancelledDate) { %>
-                                                                    <%= order.cancelledDate.toDateString() %>
-                                                                <% } else { %>
-                                                                    N/A
-                                                                <% } %>
-                                                            </td>
-                                                        </tr>
-                                                    <% }); %>
-                                                <% } %>
-                                            <% }); %>
-                                        </tbody>
-                                    </table>
-                                    
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Order Name</th>
+                                                    <th>Order Details</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Cancelled Order 1</td>
+                                                    <td>Cancelled Data 1</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Cancelled Order 2</td>
+                                                    <td>Cancelled Data 2</td>
+                                                </tr>
+                                                <!-- Add more rows as needed -->
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                                 <div class="tab-pane fade" id="nav-returned">
-                                    <table class="table table-hover col-12">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">Product Name</th>
-                                                <th scope="col"></th> 
-                                                <th scope="col">Product Image</th>
-                                                <th scope="col">Total Amount</th>
-                                                <th scope="col"></th> 
-                                                <th scope="col">Quantity</th>
-                                                <th scope="col"></th> 
-                                                <th scope="col">Order Date</th>
-                                                <th scope="col"></th> 
-                                                <th scope="col">Order Status</th>
-                                           
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <% orders.forEach((order) => { %>
-                                                <% if (order.orderStatus === 'Returned') { %>
-                                                    <% order.orderedItems.forEach((item) => { %>
-                                                        <tr>
-                                                            <td>
-                                                                <a href="/orderdetails/<%= order._id %>/<%= item.productId._id %>"><%= item.productId.name %></a>
-                                                            </td>
-                                                            <td></td>
-                                                            <td><img src="<%= item.productId.images[0] %>" alt="<%= item.productId.name %>" style="width: 100px; height: 100px;"></td>
-                                                            <td>₹<%= order.totalAmount %></td>
-                                                            <td></td>
-                                                            <td><%= item.quantity %></td>
-                                                            <td></td>
-                                                            <td><%= order.orderDate.toDateString() %></td>
-                                                            <td></td>
-                                                            <td><%= order.orderStatus %></td>
-                                                          
-                                                        </tr>
-                                                    <% }); %>
-                                                <% } %>
-                                            <% }); %>
-                                        </tbody>
-                                    </table>
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Order Name</th>
+                                                    <th>Order Details</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Returned Order 1</td>
+                                                    <td>Returned Data 1</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Returned Order 2</td>
+                                                    <td>Returned Data 2</td>
+                                                </tr>
+                                                <!-- Add more rows as needed -->
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -324,60 +263,8 @@
         </div>
     </div>
 
-    <script>
-        const ordersPerPage = 4; // Number of orders to display per page
-        let currentPage = 1;
-
-        // Function to display orders based on current page
-        function displayOrders() {
-            const ordersTable = document.getElementById('ordersTable');
-            const rows = ordersTable.querySelectorAll('tbody tr');
-            const numPages = Math.ceil(rows.length / ordersPerPage);
-
-            // Hide all rows
-            rows.forEach(row => row.style.display = 'none');
-
-            // Calculate start and end index for current page
-            const startIndex = (currentPage - 1) * ordersPerPage;
-            const endIndex = Math.min(startIndex + ordersPerPage, rows.length);
-
-            // Display rows for current page
-            for (let i = startIndex; i < endIndex; i++) {
-                rows[i].style.display = '';
-            }
-
-            // Disable/enable prev/next buttons based on current page
-            const prevButton = document.getElementById('prevPage');
-            const nextButton = document.getElementById('nextPage');
-
-            prevButton.style.display = (currentPage === 1 || numPages <= 1) ? 'none' : 'inline-block';
-            nextButton.style.display = (currentPage === numPages || numPages <= 1) ? 'none' : 'inline-block';
-        }
-
-        // Event listener for next page button
-        document.getElementById('nextPage').addEventListener('click', () => {
-            const numPages = Math.ceil(document.getElementById('ordersTable').querySelectorAll('tbody tr').length / ordersPerPage);
-            if (currentPage < numPages) {
-                currentPage++;
-                displayOrders();
-            }
-        });
-
-        // Event listener for previous page button
-        document.getElementById('prevPage').addEventListener('click', () => {
-            if (currentPage > 1) {
-                currentPage--;
-                displayOrders();
-            }
-        });
-
-        // Initial display of orders
-        displayOrders();
-    </script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </body>
 
 </html>

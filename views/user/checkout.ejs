@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Order Checkout</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.all.min.js"></script>
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+
+    .container {
+      margin-top: 50px;
+    }
+
+    .order-details,
+    .address-selection,
+    .payment-method,
+    .total-amount {
+      background-color: #fff;
+      padding: 20px;
+      margin-top: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-place-order {
+      margin-top: 20px;
+    }
+
+    .object-fit-cover {
+      object-fit: cover;
+      height: 150px;
+      width: 150px
+    }
+
+    .banner-wrapper {
+      background-color: black;
+      padding: 10px;
+    }
+
+    .banner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .banner h1 {
+      font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+      padding-left: 10px;
+      margin-top: 0;
+      color: white;
+    }
+
+    .form-outline-inline {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .form-outline-inline input[type="search"] {
+      width: 100%;
+      margin-right: 5px;
+    }
+
+    .icons {
+      align-items: center;
+    }
+
+    .icons a {
+      margin-right: 10px;
+    }
+
+    @media (min-width: 768px) {
+      .banner h1 {
+        margin-bottom: 0;
+      }
+
+      .form-outline-inline input[type="search"] {
+        width: auto;
+        margin-right: 0;
+      }
+    }
+
+    .banner .fa-heart {
+      color: red !important;
+    }
+
+    .banner .fa-shopping-cart {
+      color: orange !important;
+    }
+
+    .banner .fa-user {
+      color: Teal !important;
+    }
+
+    .social-icons i {
+      padding-right: 10px;
+    }
+
+    .icons i {
+      font-size: 30px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="banner-wrapper fixed-top">
+    <div class="banner">
+      <a href="/">
+        <h1 class="title">RISHI STUDIO</h1>
+      </a>
+      <!-- <form class="form-outline-inline" action="/product/search" method="get" required>
+            <input type="search" id="form1" class="form-control" placeholder="Search" />
+            <button type="submit" class="btn btn-primary shadow-0">
+                <i class="fa fa-search"></i>
+            </button>
+        </form> -->
+      <div class="icons">
+        <a href="/user/cart"><i class="fa fa-shopping-cart"></i></a>
+        <a href="/user/wishlist"><i class="fa fa-heart"></i></a>
+        <a href="/user/profile"><i class="fa fa-user"></i></a>
+        <a href="/user/logout"><i class="fa fa-power-off"></i></a>
+      </div>
+    </div>
+  </div>
+
+
+  <!--  NAVIGATION ENDS  -->
+  <div class="container mt-4">
+    <h1 class="text-center mb-4">Order Checkout</h1>
+    <form id="checkoutForm" action="/place-order" method="POST">
+      <div class="row">
+        <div class="col-md-8 mx-auto">
+          <!-- Order Details -->
+          <div class="order-details">
+            <h3>Your Order</h3>
+            <hr />
+            <div class="cart-items">
+              <div class="card">
+                <div class="card-body">
+                  <div class="row align-items-center">
+                    <div class="col-md-4">
+                      <img src="Subru.jpg" alt="Product Image" class="img-fluid object-fit-cover" />
+                    </div>
+                    <div class="col-md-8">
+                      <h4 class="card-title">Men Printed Casual Jacket</h4>
+                      <p class="card-text">
+                        A stylish and contemporary addition to your wardrobe. Crafted with a keen eye for fashion, this
+                        jacket combines comfort and trendsetting design.
+                      </p>
+                      <h5>$109.04</h5>
+                      <div class="d-flex align-items-center">
+                        <div class="input-group me-2">
+                          <p>10 No.s</p>
+                        </div>
+                        <button type="button" class="btn btn-danger ms-2">
+                          <i class="fas fa-trash"></i> Remove
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Address Selection -->
+          <div class="address-selection">
+            <h3>Choose Address</h3>
+            <hr>
+            <div class="form-scroll">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="address" id="address1" value="address1" checked>
+                <label class="form-check-label" for="address1">
+                  Address 1: 123 Main Street, City, Country
+                </label> <br>
+                <label class="form-check-label" for="address1">
+                  Address 2: 123 Main Street, City, Country
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Total Amount -->
+          <div class="total-amount">
+            <h3>Grand Total</h3>
+            <hr />
+            <p><strong>Total Amount: $30</strong></p>
+          </div>
+
+          <!-- Payment Method -->
+          <div class="payment-method">
+            <h3>Payment Method</h3>
+            <hr />
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="paymentMethod" id="paymentMethod3" value="option3" />
+              <label class="form-check-label" for="paymentMethod3">
+                Cash On Delivery
+              </label>
+            </div>
+          </div>
+
+          <!-- Place Order Button -->
+          <button type="submit" class="btn btn-primary btn-block btn-place-order" id="placeOrderBtn" disabled>
+            Place Order
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+
+  <script>
+    // Disable place order button until all required fields are filled
+    document.addEventListener("DOMContentLoaded", function () {
+      const placeOrderBtn = document.getElementById("placeOrderBtn");
+      const requiredFields = document.querySelectorAll(
+        "input[required], select[required]"
+      );
+
+      function checkFields() {
+        let allFilled = true;
+        requiredFields.forEach(function (field) {
+          if (!field.value.trim()) {
+            allFilled = false;
+          }
+        });
+        placeOrderBtn.disabled = !allFilled;
+      }
+
+      requiredFields.forEach(function (field) {
+        field.addEventListener("change", checkFields);
+      });
+    });
+  </script>
+</body>
+
+</html>

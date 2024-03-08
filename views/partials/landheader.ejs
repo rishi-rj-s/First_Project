@@ -137,12 +137,11 @@
                 <div class="collapse navbar-collapse" id="navi">
                     <!-- Navigation links -->
                     <ul class="nav navbar-nav navbar-right">
-                        <li><a href="/user/landing" class="roundbtn">HOME</a></li>
-                        <li><a href="/user/products/All" class="roundbtn">ALL</a></li>
-                        <li><a href="/user/products/Offer's" class="roundbtn">OFFERS</a></li>
-                        <li><a href="/user/products/Kid's" class="roundbtn">KIDS</a></li>
-                        <li><a href="/user/products/Men's" class="roundbtn">MENS</a></li>
-                        <li><a href="/user/products/Women's" class="roundbtn">WOMENS</a></li>
+                        <li><a href="/user/landing" class="roundbtn">Home</a></li>
+                        <li><a href="/user/products/All" class="roundbtn">All</a></li>
+                        <%cate.forEach((cat)=>{%>
+                            <li><a href="/user/products/<%=cat.category%>" class="roundbtn"><%=cat.category%></a></li>
+                        <%})%>
                     </ul>
                 </div>
             </div>

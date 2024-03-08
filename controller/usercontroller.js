@@ -92,29 +92,36 @@ exports.logout = (req, res) => {
   res.redirect("/?error=logout");
 };
 
+exports.showLanding = async(req, res) => {
+  let category = await CatDb.find({listing: true});
+  res.render('user/landing',{cate: category});
+}
+
 exports.products = async (req, res) => {
   try {
     let cate = req.params.cat;
 
     if (cate === "All") {
       const products = await ProductDb.find();
+      const categ = await CatDb.find({listing:true})
       if (products.length === 0) {
         return res.redirect("/user/landing?msg=nodata");
       }
       res.render("user/products", {
         pdt: products,
         all: "All",
+        categ
       });
     } else {
-      const cat = await CatDb.find({ category: cate });
-      if (cat.length === 0) {
+      if (cate.length === 0) {
         return res.status(404).send("Category not found!");
       }
-      const pdt = await ProductDb.find({ category: cate });
-      if (pdt.length === 0) {
+      const products = await ProductDb.find({ category: cate });
+      if (products.length === 0) {
         return res.status(404).send("Products not found");
       }
-      res.render("user/products", { category: cate, pdt: pdt, all: false });
+      const categ = await CatDb.find({listing:false})
+      res.render("user/products", { category: cate, pdt: products, all: false, categ });
     }
   } catch (error) {
     console.error("Error fetching products:", error);
