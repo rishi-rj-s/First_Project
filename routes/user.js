@@ -37,9 +37,13 @@ route.get('/register',(req,res)=>{
 })
 
 route.get('/profile',checkBlocked, cookieJwtAuth, usercontroller.profile);
+
 route.get('/address',checkBlocked, cookieJwtAuth, usercontroller.showAddress);
 route.get('/addaddress',checkBlocked, cookieJwtAuth, usercontroller.showAddAddress);
 route.post('/addaddress',checkBlocked, cookieJwtAuth, usercontroller.addAddress)
+route.delete('/deleteaddress/:id',checkBlocked, cookieJwtAuth, usercontroller.deleteAddress)
+route.get('/editaddress/:id',checkBlocked, cookieJwtAuth, usercontroller.showEditAddress)
+route.post('/saveaddress/:id',checkBlocked, cookieJwtAuth, usercontroller.saveAddress)
 
 route.get('/cart',checkBlocked, cookieJwtAuth, cartcontroller.showCart);
 route.get('/wishlist',checkBlocked, cookieJwtAuth, wishcontrolller.showWishlist);

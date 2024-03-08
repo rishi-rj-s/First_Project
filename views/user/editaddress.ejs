@@ -4,9 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Address</title>
+    <title>RISHI STUDIO</title>
+    <link rel="icon" href="/img/landing/favicon.png">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.all.min.js"></script>
     <style>
         body {
@@ -79,7 +81,7 @@
             <aside class="col-md-3 col-lg-2 d-md-block sidebar">
                 <div class="profile">
                     <img src="/img/landing/User Icon.webp" alt="Profile Picture">
-                    <h5> Hi, <%= user.name %></h5>
+                    <h5> Hi, <%= name %></h5>
                 </div>
                 <ul class="nav flex-column">
                     <li class="nav-item"><a class="nav-link" href="/user/profile"><i class="fas fa-user"></i> Profile</a></li>
@@ -92,47 +94,47 @@
             </aside>
             <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
                 <div class="content">
-                    <h1>Add New Address</h1>
+                    <h1>Edit Address</h1>
                     <div class="add-address-form">
-                        <form action="/user/addaddress" method="post" onsubmit="return validateForm()">
+                        <form action="/user/saveaddress/<%= addr._id %>" method="post" onsubmit="return validateForm()">
                             <div class="form-group">
                                 <label for="addressType">Address Type</label>
                                 <select id="addressType" name="addressType" class="form-control" style="width: 150px;" required>
-                                    <option value="">Select Address Type</option>
+                                    <option value="<%= addr.addressType %>"><%= addr.addressType %></option>
                                     <option value="Home">Home</option>
                                     <option value="Work">Work</option>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label for="name">Name</label>
-                                <input type="text" id="name" name="name" class="form-control" required>
+                                <input type="text" id="name" name="name" class="form-control" value="<%= addr.name %>" required>
                             </div>
 
                             <div class="form-group">
                                 <label for="phone">Phone No.</label>
-                                <input type="text" id="phone" name="phone" class="form-control" required>
+                                <input type="text" id="phone" value="<%= addr.phone %>" name="phone" class="form-control" required>
                             </div>
                             <div class="form-group">
                                 <label for="pincode">Pincode</label>
-                                <input type="text" id="pincode" name="pincode" class="form-control" required>
+                                <input type="text" id="pincode" value="<%= addr.pincode %>" name="pincode" class="form-control" required>
                             </div>
                             <div class="form-group">
                                 <label for="city">City</label>
-                                <input type="text" id="city" name="city" class="form-control" required>
+                                <input type="text" id="city" name="city" value="<%= addr.city %>" class="form-control" required>
                             </div>
                             <div class="form-group">
                                 <label for="address">Address:</label>
-                                <input type="text" id="address" name="address" class="form-control" required>
+                                <input type="textbox" id="address" name="address" value="<%= addr.address %>" class="form-control" required>
                             </div>
                             <div class="form-group">
                                 <label for="locality">Locality</label>
-                                <input type="text" id="locality" name="locality" class="form-control" required>
+                                <input type="text" id="locality" name="locality" value="<%= addr.locality %>" class="form-control" required>
                             </div>
                             <div class="form-group">
                                 <label for="state">State</label>
-                                <input type="text" id="state" name="state" class="form-control" required>
+                                <input type="text" id="state" name="state" value="<%= addr.state %>" class="form-control" required>
                             </div>
-                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="submit" class="btn btn-primary">Save</button>
                         </form>
                     </div>
                 </div>

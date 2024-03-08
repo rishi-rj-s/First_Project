@@ -3,8 +3,8 @@ const Userdb = require("../model/usermodel");
 const ProductDb = require("../model/productmodel");
 const CatDb = require("../model/categorymodel");
 const AdminDb = require("../model/adminmodel");
-const AddressDb = require('../model/addressmodel');
-const CartDb = require('../model/cartmodel');
+const AddressDb = require("../model/addressmodel");
+const CartDb = require("../model/cartmodel");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const path = require("path");
@@ -58,7 +58,6 @@ exports.checkBlocked = async (req, res, next) => {
     delete req.session;
     res.redirect("/?error=bad");
   }
-  
 };
 
 exports.cookieJwtAuth = (req, res, next) => {
@@ -96,14 +95,15 @@ exports.logout = (req, res) => {
 exports.products = async (req, res) => {
   try {
     let cate = req.params.cat;
-    
+
     if (cate === "All") {
       const products = await ProductDb.find();
       if (products.length === 0) {
         return res.redirect("/user/landing?msg=nodata");
       }
       res.render("user/products", {
-        pdt: products, all: "All"
+        pdt: products,
+        all: "All",
       });
     } else {
       const cat = await CatDb.find({ category: cate });
@@ -114,14 +114,13 @@ exports.products = async (req, res) => {
       if (pdt.length === 0) {
         return res.status(404).send("Products not found");
       }
-      res.render("user/products", { category: cate, pdt: pdt, all:false });
+      res.render("user/products", { category: cate, pdt: pdt, all: false });
     }
   } catch (error) {
     console.error("Error fetching products:", error);
     res.redirect("/user/landing?msg=errdata");
   }
 };
-
 
 exports.productview = async (req, res) => {
   const p_id = req.params.id;
@@ -325,30 +324,31 @@ exports.resetPass = async (req, res) => {
 
 exports.profile = async (req, res) => {
   let id = req.session.user._id;
-  const user = await Userdb.findById(id)
-  if(!user){
-    res.redirect('/user/logout');
+  const user = await Userdb.findById(id);
+  if (!user) {
+    res.redirect("/user/logout");
   }
-  res.render("user/userprofile",{user});
+  res.render("user/userprofile", { user });
 };
 
-exports.showAddress = async (req,res) => {
-  const id = req.session.user._id;
-  try{
-    const address  = await AddressDb.find({user_id: id});
-    res.render( 'user/address',{ads: address});
-  }catch(e){
-    res.redirect('/user/profile?msg=adserr');
+exports.showAddress = async (req, res) => {
+  const user = req.session.user;
+  try {
+    const address = await AddressDb.find({ user_id: user._id });
+    res.render("user/address", { ads: address, name: user.name });
+  } catch (e) {
+    res.redirect("/user/profile?msg=adserr");
   }
-}
+};
 
 exports.showAddAddress = (req, res) => {
-  res.render('user/addaddress')
-}
+  let user = req.session.user;
+  res.render("user/addaddress", { user });
+};
 
-exports.addAddress = async (req,res) => {
+exports.addAddress = async (req, res) => {
   const id = req.session.user._id;
-  try{
+  try {
     const address = new AddressDb({
       user_id: id,
       name: req.body.name,
@@ -362,27 +362,57 @@ exports.addAddress = async (req,res) => {
     });
     await address.save();
     res.redirect("/user/address?msg=succ");
-  }catch(e){
+  } catch (e) {
     console.log(e);
-    res.redirect('/user/address?msg=err');
+    res.redirect("/user/address?msg=err");
   }
-}
+};
 
-exports.deleteAddress = async(req, res) => {
-  let adId = req.params.id
-}
+exports.deleteAddress = async (req, res) => {
+  let addId = req.params.id;
+  try {
+    await AddressDb.findByIdAndDelete(addId);
+    res
+      .status(200)
+      .json({ success: true, message: "Address deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: "An error occurred while deleting the address",
+      });
+  }
+};
+
+exports.showDeleteAddress = async (req, res) => {
+  let id = req.params.id;
+};
+
+exports.deleteAddress = async (req, res) => {
+  let id = req.params.id;
+  await AddressDb.findByIdAndDelete(id)
+    .then(() => {
+      res.json(true);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.json(false);
+    });
+};
 
 exports.showChangePass = async (req, res) => {
   try {
     const id = req.session.user._id;
     const user = await Userdb.findById(id);
     if (!user.password) {
-      return res.redirect('/user/profile?msg=cannotp');
+      return res.redirect("/user/profile?msg=cannotp");
     }
-    res.render('user/changepass');
+    res.render("user/changepass", { user });
   } catch (error) {
-    console.error('Error in showChangePass:', error);
-    res.status(500).send('Internal Server Error');
+    console.error("Error in showChangePass:", error);
+    res.status(500).send("Internal Server Error");
   }
 };
 
@@ -398,8 +428,8 @@ exports.checkPass = async (req, res) => {
       res.status(401).send(false);
     }
   } catch (error) {
-    console.error('Error in checkPass:', error);
-    res.status(500).send('Internal Server Error');
+    console.error("Error in checkPass:", error);
+    res.status(500).send("Internal Server Error");
   }
 };
 
@@ -407,7 +437,7 @@ exports.changePass = async (req, res) => {
   try {
     const id = req.session.user._id;
     const newPassword = req.body.newpassword;
-    console.log(newPassword)
+    console.log(newPassword);
 
     const user = await Userdb.findById(id);
 
@@ -417,9 +447,36 @@ exports.changePass = async (req, res) => {
     user.password = hashedPassword;
     await user.save();
 
-    res.redirect('/user/profile?msg=chpasu');
+    res.redirect("/user/profile?msg=chpasu");
   } catch (error) {
-    console.error('Error in changePass:', error);
-    res.status(500).send('Internal Server Error');
+    console.error("Error in changePass:", error);
+    res.status(500).send("Internal Server Error");
   }
 };
+
+exports.showEditAddress = async (req, res) => {
+  const id = req.params.id;
+  const name = req.session.user.name;
+  const address = await AddressDb.findById(id);
+  res.render('user/editaddress',{addr: address, name})
+};
+
+exports.saveAddress = async (req,res) => {
+  const id = req.params.id;
+  try{
+    await AddressDb.findByIdAndUpdate(id, req.body)
+    .then((data) => {
+      if (!data) {
+        res.redirect("/user/address?msg=erredit");
+      } else {
+        res.redirect("/user/address?msg=editsucc");
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({ message: "Error updating user information" });
+    });
+  }catch (error) {
+    console.error("Error fetching products:", error);
+    res.redirect("/user/address?msg=erredit");
+  }
+}
