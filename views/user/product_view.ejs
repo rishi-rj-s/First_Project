@@ -204,31 +204,6 @@
     </div>
   </div>
 
-  <div class="navbar-wrapper">
-    <nav class=" navbar-inverse  bg-dark">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <!-- Responsive button -->
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navi"
-            aria-label="Toggle navigation">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <div class="collapse navbar-collapse" id="navi">
-          <!-- Navigation links -->
-          <ul class="nav navbar-nav navbar-right">
-            <li><a href="#" class="roundbtn">HOME</a></li>
-            <li><a href="#" class="roundbtn">OFFERS</a></li>
-            <li><a href="#" class="roundbtn">KIDS</a></li>
-            <li><a href="#" class="roundbtn">MENS</a></li>
-            <li><a href="#" class="roundbtn">WOMENS</a></li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-  </div>
 
 
   <!-- breadcrumb content here -->
@@ -339,7 +314,7 @@
                 </select>
               </div>
             </div> -->
-            <a href="#" class="btn btn-primary shadow-0"> <i class="me-1 fa fa-shopping-basket"></i> Add to cart </a>
+            <a href="/user/addtocart/<%= product._id%>" class="btn btn-primary shadow-0"> <i class="me-1 fa fa-shopping-basket"></i> Add to cart </a>
             <a href="/user/addwishlist/<%= product._id%>" class="btn btn-light border border-secondary py-2 icon-hover px-3 ms-3"> <i
                 class="me-1 fa fa-heart fa-lg"></i> Wish </a>
           </div>

@@ -1,28 +1,28 @@
 const mongoose=require('mongoose');
 
-const schema = new mongoose.Schema( new mongoose.Schema ({
-  
-    user_id: {
+const schema = new mongoose.Schema({
+    user: {
         type: mongoose.Types.ObjectId,
-        require: true,
+        required: true,
     },
     product: [{
         productId: {
             type: mongoose.Types.ObjectId,
-            ref: "Product",
+            ref: "product",
             required: true,
         },
-        size: {
-            type: String,
-            default: "Small"
-        },
+        name: String, 
+        price: Number,
         quantity: {
             type: Number,
-            default: 1,
-        },
-
+            default: 1
+        }
     }],
-}));
+    subtotal: {
+        type: Number,
+        default: 0
+    }
+});
 
 const CartDb = mongoose.model("cart",schema);
 module.exports = CartDb;

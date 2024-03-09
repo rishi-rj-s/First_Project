@@ -4,7 +4,7 @@ const category = require('./categorymodel')
 let schema = new mongoose.Schema({
    category:{
       type: mongoose.Schema.Types.String,
-      ref: category,
+      ref: 'category',
       required: true
    },
   p_name: {

@@ -319,6 +319,14 @@
                         confirmButtonText: 'OK'
                     });
                     window.history.replaceState({}, document.title, window.location.pathname);
+                }  else if (message.includes('cartemp')) {
+                    Swal.fire({
+                        title: "Failure",
+                        text: "Cart Empty!",
+                        icon: "error",
+                        confirmButtonText: 'OK'
+                    });
+                    window.history.replaceState({}, document.title, window.location.pathname);
                 }
             }
         </script>

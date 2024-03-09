@@ -43,16 +43,20 @@ route.delete('/deleteaddress/:id',checkBlocked, cookieJwtAuth, usercontroller.de
 route.get('/editaddress/:id',checkBlocked, cookieJwtAuth, usercontroller.showEditAddress)
 route.post('/saveaddress/:id',checkBlocked, cookieJwtAuth, usercontroller.saveAddress)
 
-route.get('/cart',checkBlocked, cookieJwtAuth, cartcontroller.showCart);
-route.get('/orders',checkBlocked, cookieJwtAuth, ordercontroller.showOrders);
-
 route.get('/changepass',checkBlocked, cookieJwtAuth, usercontroller.showChangePass);
 route.post('/checkpass', checkBlocked, cookieJwtAuth, usercontroller.checkPass);
 route.post('/changepass',checkBlocked, cookieJwtAuth, usercontroller.changePass);
 
+route.get('/cart',checkBlocked, cookieJwtAuth, cartcontroller.showCart);
+route.get('/addtocart/:id',checkBlocked, cookieJwtAuth, cartcontroller.addToCart);
+route.get('/removecart/:id',checkBlocked, cookieJwtAuth, cartcontroller.removeCart)
+
 route.get('/wishlist',checkBlocked, cookieJwtAuth, wishcontroller.showWishlist);
 route.get('/addwishlist/:id', checkBlocked, cookieJwtAuth, wishcontroller.addToWishlist);  
 route.get('/removewish/:id', checkBlocked, cookieJwtAuth, wishcontroller.removeWish);  
+
+route.get('/order',checkBlocked, CookieJwtAuth, ordercontroller.renderOrderPage)
+route.get('/showOrders',checkBlocked, cookieJwtAuth, ordercontroller.showOrders);
 
 
 route.get("**",(req,res)=>{

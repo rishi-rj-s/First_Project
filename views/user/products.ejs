@@ -138,7 +138,7 @@
                   </button>
               </form> -->
       <div class="icons">
-        <a><i class="fa fa-shopping-cart"></i></a>
+        <a href="/user/cart"><i class="fa fa-shopping-cart"></i></a>
         <a href="/user/wishlist"><i class="fa fa-heart"></i></a>
         <a href="/user/profile"><i class="fa fa-user"></i></a>
         <a href="/user/logout"><i class="fa fa-power-off text-primary"></i></a>
@@ -182,6 +182,7 @@
       <div class="col-md-4">
         <label for="sortSelect">Sort By:</label>
         <select id="sortSelect" class="form-control">
+          <option value="newest">Newest Arrivals</option>
           <option value="nameAsc">Name (A-Z)</option>
           <option value="nameDesc">Name (Z-A)</option>
           <option value="priceAsc">Price (Low to High)</option>
@@ -225,7 +226,7 @@
                     <img src="/<%= pdt.images[0] %>" alt=""
                       style="height: 100%; width: 100%; background-repeat: no-repeat; background-size: cover; background-position: center;">
                     <ul>
-                      <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
+                      <li><a href="/user/addtocart/<%= pdt._id%>"><i class="fa fa-shopping-cart"></i></a></li>
                       <li><a href="/user/addwishlist/<%= pdt._id%>"><i class="fa fa-heart"></i></a></li>
                       <li><a href="/user/productview/<%= pdt._id %>"><i class="fa fa-expand"></i></a></li>
                     </ul>
