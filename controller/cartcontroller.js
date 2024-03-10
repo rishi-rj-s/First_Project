@@ -80,8 +80,6 @@ exports.addToCart = async (req, res) => {
       if (product.stock > 0) {
         cart.product.push({
           productId: product._id,
-          name: product.name,
-          price: product.total_price,
           quantity: quantity,
         });
       } else {

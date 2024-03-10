@@ -55,7 +55,7 @@ route.get('/wishlist',checkBlocked, cookieJwtAuth, wishcontroller.showWishlist);
 route.get('/addwishlist/:id', checkBlocked, cookieJwtAuth, wishcontroller.addToWishlist);  
 route.get('/removewish/:id', checkBlocked, cookieJwtAuth, wishcontroller.removeWish);  
 
-route.get('/order',checkBlocked, CookieJwtAuth, ordercontroller.renderOrderPage)
+route.get('/orders',checkBlocked, cookieJwtAuth, ordercontroller.renderOrderPage)
 route.get('/showOrders',checkBlocked, cookieJwtAuth, ordercontroller.showOrders);
 
 

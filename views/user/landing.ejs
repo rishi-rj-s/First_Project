@@ -327,6 +327,14 @@
                         confirmButtonText: 'OK'
                     });
                     window.history.replaceState({}, document.title, window.location.pathname);
+                }  else if (message.includes('error')) {
+                    Swal.fire({
+                        title: "Failure",
+                        text: "An Error Occured!",
+                        icon: "error",
+                        confirmButtonText: 'OK'
+                    });
+                    window.history.replaceState({}, document.title, window.location.pathname);
                 }
             }
         </script>
