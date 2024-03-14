@@ -177,7 +177,7 @@ exports.registerfirst = async (req, res) => {
   const userExists = await Userdb.find({ email: email });
   const userExists2 = await AdminDb.find({ username: email });
   if (userExists.length > 0 || userExists2.length > 0) {
-    return res.redirect("/user/register?error=email");
+    return res.redirect("/user/login?msg=email");
   }
 
   s = req.body;
@@ -190,11 +190,11 @@ exports.registerfirst = async (req, res) => {
   // Send OTP via email
   try {
     await sendOtpEmail(email, otp);
-    q = { code: otp, expiryTime: Date.now() + 60000 };
+    q = { code: otp, expiryTime: Date.now() + 30000 };
     res.render("user/otpverify", { msg: "send" });
   } catch (error) {
     console.error(error);
-    res.redirect("/user/register?error=unable");
+    res.redirect("/user/login?msg=unable");
   }
 };
 
@@ -203,7 +203,7 @@ exports.registerfirsterror = (req, res) => {
 };
 
 exports.register = async (req, res) => {
-  const { name, email, password } = s;
+  const { name, email, newpassword } = s;
   const otp = req.body.otp;
   const storedOtp = q;
 
@@ -218,7 +218,7 @@ exports.register = async (req, res) => {
   }
 
   try {
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(newpassword, 10);
     const users = new Userdb({
       name: name,
       email: email,
@@ -233,7 +233,7 @@ exports.register = async (req, res) => {
     res.redirect("/?error=success");
   } catch (error) {
     console.error(error);
-    res.redirect("/user/register?error=error");
+    res.redirect("/user/login?msg=error");
   }
 };
 
@@ -247,7 +247,7 @@ exports.resendOtp = async (req, res) => {
   // Send OTP via email
   try {
     await sendOtpEmail(email, otp);
-    q = { code: otp, expiryTime: Date.now() + 60000 };
+    q = { code: otp, expiryTime: Date.now() + 30000 };
     res.render("user/otpverify");
   } catch (error) {
     console.error(error);
@@ -266,11 +266,15 @@ exports.forgotpass = async (req, res) => {
   s = req.body;
 
   // checks if a user exists with this email
-  const userExists = await Userdb.find({ email: email });
+  const userExists = await Userdb.findOne({ email: email });
   if (userExists.length === 0) {
     return res.redirect("/user/forgot?error=noexist");
   }
-  id = userExists[0]._id;
+  console.log(userExists.password)
+  if(!userExists.password){
+    return res.redirect('/user/forgot?error=gaccnt')
+  }
+  id = userExists._id;
 
   // Generate random OTP
   const otp = Math.floor(1000 + Math.random() * 9999);
@@ -279,7 +283,7 @@ exports.forgotpass = async (req, res) => {
   // Send OTP via email
   try {
     await sendOtpEmail(email, otp);
-    q = { code: otp, expiryTime: Date.now() + 60000 };
+    q = { code: otp, expiryTime: Date.now() + 30000 };
     res.render("user/forgototpverify");
   } catch (error) {
     console.error(error);
@@ -485,5 +489,30 @@ exports.saveAddress = async (req,res) => {
   }catch (error) {
     console.error("Error fetching products:", error);
     res.redirect("/user/address?msg=erredit");
+  }
+}
+
+exports.showEditUsername = (req,res) => {
+  const name = req.session.user.name;
+  res.render('user/editusername',{name});
+}
+
+exports.editUsername = async(req,res) => {
+  try{
+    const id = req.session.user._id;
+    const  username = await Userdb.findById(id);
+    // console.log(username);
+    let editName = req.body.newname;
+    // console.log(editName);
+    if(username.name === editName){
+      return res.redirect('/user/profile?msg=nochange');
+    }
+    username.name = editName;
+    await username.save();
+    req.session.user.name = editName;
+    res.redirect('/user/profile?msg=namesuc')
+  }catch(e){
+    console.log(e);
+    res.redirect('/user/profile?msg=nameerr');
   }
 }

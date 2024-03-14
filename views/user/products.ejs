@@ -187,6 +187,7 @@
           <option value="nameDesc">Name (Z-A)</option>
           <option value="priceAsc">Price (Low to High)</option>
           <option value="priceDesc">Price (High to Low)</option>
+          <option value="available">Available</option>
         </select>
       </div>
     </div>
@@ -226,7 +227,9 @@
                     <img src="/<%= pdt.images[0] %>" alt=""
                       style="height: 100%; width: 100%; background-repeat: no-repeat; background-size: cover; background-position: center;">
                     <ul>
-                      <li><a href="/user/addtocart/<%= pdt._id%>"><i class="fa fa-shopping-cart"></i></a></li>
+                      <% if(pdt.stock>0){%>
+                        <li><a href="/user/addtocart/<%= pdt._id%>"><i class="fa fa-shopping-cart"></i></a></li>
+                      <%}%>
                       <li><a href="/user/addwishlist/<%= pdt._id%>"><i class="fa fa-heart"></i></a></li>
                       <li><a href="/user/productview/<%= pdt._id %>"><i class="fa fa-expand"></i></a></li>
                     </ul>

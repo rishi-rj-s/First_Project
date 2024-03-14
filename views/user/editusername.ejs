@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+     <meta charset="UTF-8" />
+     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+     <title>RISHI STUDIO</title>
+     <link rel="icon" href="/img/landing/favicon.png">
+     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.all.min.js"></script>
+     <style>
+          body {
+               font-family: "Times New Roman", Times, serif sans-serif;
+               background-color: gray;
+               color: #333;
+          }
+
+          .profile {
+               text-align: center;
+               margin-bottom: 20px;
+          }
+
+          .profile img {
+               width: 100px;
+               height: 100px;
+               border-radius: 50%;
+               margin-bottom: 10px;
+          }
+
+          .profile h5 {
+               font-weight: bold;
+               margin: 0;
+               font-size: 1.2rem;
+          }
+
+          .sidebar {
+               background-color: black;
+               padding: 20px;
+               border-right: 2px solid blue;
+               min-height: 100vh;
+               color: #fff;
+          }
+
+          @media (max-width: 767px) {
+               .sidebar {
+                    min-height: 40vh;
+               }
+          }
+
+          .sidebar ul {
+               list-style-type: none;
+               padding: 0;
+               margin: 0;
+          }
+
+          .sidebar ul li {
+               margin-bottom: 10px;
+          }
+
+          .sidebar ul li a {
+               text-decoration: none;
+               color: #fff;
+               font-size: 1.1rem;
+          }
+
+          .sidebar ul li a:hover {
+               color: #cce0ff;
+          }
+
+          .content {
+               padding: 20px;
+          }
+
+          /* .input-group input:nth-child(0){
+        width: 250px ; /* Adjust the width as needed */
+
+          .change-password-form {
+               background-color: white;
+               padding: 30px;
+               border-radius: 5%;
+               box-shadow: 0 4px 8px rgba(0, 0, 0, 0.7);
+               /* Add shadow effect */
+               align-items: center;
+               margin-top: 2rem;
+          }
+     </style>
+</head>
+
+<body>
+     <div class="container-fluid">
+          <div class="row">
+               <aside class="col-md-3 col-lg-2 d-md-block sidebar">
+                    <div class="profile">
+                         <img src="/img/landing/User Icon.webp" alt="Profile Picture" />
+                         <h5>Hi, <%= name %></h5>
+                    </div>
+                    <ul class="nav flex-column">
+                         <li class="nav-item">
+                              <a class="nav-link" href="#"><i class="fas fa-user"></i> Profile</a>
+                         </li>
+                         <li class="nav-item">
+                              <a class="nav-link" href="#"><i class="fas fa-shopping-bag"></i> Orders</a>
+                         </li>
+                         <li class="nav-item bg-dark">
+                              <a class="nav-link" href="#"><i class="fas fa-map-marker-alt"></i> Addresses</a>
+                         </li>
+                         <li class="nav-item">
+                              <a class="nav-link" href="#"><i class="fas fa-credit-card"></i> Payment Methods</a>
+                         </li>
+                    </ul>
+               </aside>
+               <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+                    <div class="content d-flex justify-content-center align-items-center">
+                         <div class="change-password-form">
+                              <h1>Change Password</h1>
+                              <form action="/user/savename" method="post" onsubmit="return validate()">
+                                   <div class="form-group">
+                                        <label for="name">Name:</label>
+                                        <div class="input-group">
+                                             <input type="text" name="name" value="<%=name%>" class="form-control"
+                                                  disabled required>
+                                        </div>
+                                   </div>
+                                   <div class="form-group">
+                                        <label for="newname">New Username:</label>
+                                        <div class="input-group">
+                                             <input type="text" id="newname" name="newname"
+                                                  class="form-control" required>
+                                        </div>
+                                   </div>
+                                   <button type="submit" class="btn btn-primary">Save</button>
+                              </form>
+                         </div>
+                    </div>
+               </main>
+          </div>
+     </div>
+     <script>
+          const newname = document.querySelector('[name="newname"]'); 
+          function validate() {
+               if(!newname.value.trim()){
+                    Swal.fire({
+                         icon: "error",
+                         title: 'Error',
+                         text: 'No Name Entered!',
+                         confirmButtonText: 'Retry!'
+                    })
+                    return false;
+               }else{
+                    return true;
+               }
+          }
+     </script>
+
+     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

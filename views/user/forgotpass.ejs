@@ -1,79 +1,90 @@
-<%- include('../partials/loginheader') -%>
+<!DOCTYPE html>
+<html lang="en">
 
-     <body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://kit.fontawesome.com/64d58efce2.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="/css/user/style3.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.all.min.js"></script>
+  <title>OTP Verification</title>
+  <link rel="icon" href="/img/landing/favicon.png">
+</head>
 
-          <nav class="py-3 bg-black  text-left w-full fixed top-0">
-               <h1 class="text-white pl-2 text-4xl font-black">RISHI STUDIO</h1>
-          </nav>
-
-          <div class="flex mt-11 text-white fixed justify-end items-center w-full">
-               <a href="/" class="text-sm bg-black px-2 border-2 border-white">
-                    BACK
-               </a>
+<body>
+  <div class="container">
+    <div class="forms-container">
+      <div class="signin-signup">
+        <form action="/user/forgotpass" method="post" class="otp-form">
+          <h2 class="title">Account Recovery</h2>
+          <div class="input-field">
+            <i class="fas fa-key"></i>
+            <input type="text" name="email" placeholder="Enter email" />
           </div>
+          <input type="submit" value="Verify" class="btn solid" />       
+        </form>
+      </div>
+    </div>
 
-          <div class="flex justify-center items-center mt-5 pt-16">
-               <div class="inline-block bg-slate-300 px-3 p-1">
-                    <h1 class="text-4xl font-bold font-mono">Account Recovery</h1>
-               </div>
-          </div>
+    <div class="panels-container">
+      <div class="panel left-panel">
+        <div class="content">
+          <h3>Account Recovery</h3>
+          <p>
+            Please enter the email registered with us.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+     const urlParams = new URLSearchParams(window.location.search);
+     const error = urlParams.get('error');
+     if (typeof error !== 'undefined') {
+          if (error.includes('noexist')) {
+               Swal.fire({
+                    title: 'Error!',
+                    text: 'No account existing for this email',
+                    icon: 'error',
+                    confirmButtonText: 'Cool'
+               })
+               window.history.replaceState({}, document.title, window.location.pathname);
+          } else if (error.includes('otpwrong')) {
+               Swal.fire({
+                    title: 'Error!',
+                    text: 'Wrong OTP!',
+                    icon: 'error',
+                    confirmButtonText: 'Cool'
+               })
+               window.history.replaceState({}, document.title, window.location.pathname);
+          } else if (error.includes('expired')) {
+               Swal.fire({
+                    title: 'Error!',
+                    text: 'OTP expired',
+                    icon: 'error',
+                    confirmButtonText: 'Cool'
+               })
+               window.history.replaceState({}, document.title, window.location.pathname);
+          } else if (error.includes('error')) {
+               Swal.fire({
+                    title: 'Error!',
+                    text: 'Error updating password!',
+                    icon: 'error',
+                    confirmButtonText: 'Cool'
+               })
+               window.history.replaceState({}, document.title, window.location.pathname);
+          } else if (error.includes('gaccnt')) {
+               Swal.fire({
+                    title: 'Error!',
+                    text: 'Cannot change the password of Google account!',
+                    icon: 'error',
+                    confirmButtonText: 'Cool'
+               })
+               window.history.replaceState({}, document.title, window.location.pathname);
+          }
+     }
+</script>
+</body>
 
-
-          <div class="flex justify-center mt-4">
-               <form action="/user/forgotpass" method="post">
-                    <div class="flex flex-col gap-y-2 rounded-2xl bg-slate-300 px-3 py-2">
-                         <label for="email" class="-mb-1">Email</label>
-                         <input type="text" name="email" class="h-8 w-64 border border-gray-700" required>
-                    </div>
-                    <div class="flex justify-center items-center mt-4">
-                         <input type="submit"
-                              class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded"
-                              name="submit" id="submit" value="Send OTP">
-                    </div>
-               </form>
-          </div>
-
-          <script>
-               const urlParams = new URLSearchParams(window.location.search);
-               const error = urlParams.get('error');
-               if (typeof error !== 'undefined') {
-                    if (error.includes('noexist')) {
-                         Swal.fire({
-                              title: 'Error!',
-                              text: 'No account existing for this email',
-                              icon: 'error',
-                              confirmButtonText: 'Cool'
-                         })
-                         window.history.replaceState({}, document.title, window.location.pathname);
-                    } else if (error.includes('otpwrong')) {
-                         Swal.fire({
-                              title: 'Error!',
-                              text: 'Wrong OTP!',
-                              icon: 'error',
-                              confirmButtonText: 'Cool'
-                         })
-                         window.history.replaceState({}, document.title, window.location.pathname);
-                    } else if (error.includes('expired')) {
-                         Swal.fire({
-                              title: 'Error!',
-                              text: 'OTP expired',
-                              icon: 'error',
-                              confirmButtonText: 'Cool'
-                         })
-                         window.history.replaceState({}, document.title, window.location.pathname);
-                    } else if (error.includes('error')) {
-                         Swal.fire({
-                              title: 'Error!',
-                              text: 'Error updating password!',
-                              icon: 'error',
-                              confirmButtonText: 'Cool'
-                         })
-                         window.history.replaceState({}, document.title, window.location.pathname);
-                    }
-               }
-          </script>
-          <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.all.min.js"></script>
-
-     </body>
-
-     </html>
+</html>

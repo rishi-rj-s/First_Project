@@ -40,7 +40,6 @@ exports.addToCart = async (req, res) => {
     
     // Fetch the product
     const product = await ProductDb.findById(id);
-    // console.log(product)
 
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
@@ -50,12 +49,7 @@ exports.addToCart = async (req, res) => {
       return res.redirect("/user/cart?msg=nostock");
     }
 
-    // Get the quantity from the request body or use the default quantity from the model
-    const quantity = parseInt(req.body.quantity) || product.quantity;
-    // console.log(quantity)
-
     let cart = await CartDb.findOne({ user: userId });
-    // console.log(cart)
 
     if (!cart) {
       cart = new CartDb({ user: userId, product: [], subtotal: 0 });
@@ -64,47 +58,26 @@ exports.addToCart = async (req, res) => {
     const existingProductIndex = cart.product.findIndex((item) =>
       item.productId.equals(id)
     );
-    // console.log(existingProductIndex)
 
     if (existingProductIndex !== -1) {
-      const totalQuantity = cart.product[existingProductIndex].quantity + quantity;
-
-      if (totalQuantity > product.maxQuantityPerPerson) {
-        return res.status(400).json({
-          message: `Maximum ${product.maxQuantityPerPerson} quantity allowed per person`,
-        });
-      }
-
-      cart.product[existingProductIndex].quantity += quantity;
-    } else {
-      if (product.stock > 0) {
-        cart.product.push({
-          productId: product._id,
-          quantity: quantity,
-        });
-      } else {
-        return res.status(400).json({ message: "Product out of stock" });
-      }
+      return res.redirect('/user/cart?msg=exists')
     }
 
-    // Recalculate the subtotal
-    let subtotal = 0;
-    cart.product.forEach((item) => {
-      subtotal += item.price * item.quantity;
-    });
-
-    // Update the subtotal field of the cart model
-    cart.subtotal = subtotal;
-
-    await cart.save();
-
+    if (product.stock > 0) {
+      cart.product.push({
+        productId: product._id,
+        quantity: 1, // Always set quantity to 1
+      });
+      await cart.save();
+    } else {
+      return res.status(400).json({ message: "Product out of stock" });
+    }
     res.redirect("/user/cart?msg=addcart");
   } catch (error) {
     console.error(error);
     res.redirect("/user/cart?msg=error");
   }
 };
-
 
 exports.removeCart = async (req, res) => {
   try {

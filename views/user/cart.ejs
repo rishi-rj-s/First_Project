@@ -351,6 +351,18 @@
             document.title,
             window.location.pathname
           );
+        } else if (message.includes("exists")) {
+          Swal.fire({
+            title: "Exists",
+            text: "Items exists in cart!",
+            icon: "error",
+            confirmButtonText: "OK",
+          });
+          window.history.replaceState(
+            {},
+            document.title,
+            window.location.pathname
+          );
         }
       }
     </script>

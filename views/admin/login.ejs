@@ -1,66 +1,84 @@
-<%- include('../partials/loginheader') -%>
+<!DOCTYPE html>
+<html lang="en">
 
-     <body>
+<head>
+     <meta charset="UTF-8" />
+     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+     <script src="https://kit.fontawesome.com/64d58efce2.js" crossorigin="anonymous"></script>
+     <link rel="stylesheet" href="/css/user/style3.css" />
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.min.css">
+     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.all.min.js"></script>
+     <title>RISHI STUDIO</title>
+     <link rel="icon" href="/img/landing/favicon.png">
+</head>
 
-          <nav class="py-3 bg-black  text-left w-full fixed top-0">
-               <h1 class="text-white pl-2 text-4xl font-black">RISHI STUDIO</h1>
-          </nav>
-
-          <div class="flex mt-11 text-white fixed justify-end items-center w-full">
-               <a href="/" class="text-sm bg-black px-2 border-2 border-white">
-                    <i class="fa-solid fa-circle-user mr-2"></i>
-                    USER
-               </a>
+<body>
+     <div class="container">
+          <div class="forms-container">
+               <div class="signin-signup">
+                    <form action="/admin/login" method="post" class="sign-in-form" onsubmit="return validateForm()">
+                         <h1 class="title1">RISHI STUDIO</h1>
+                         <h2 class="title">Sign in</h2>
+                         <div class="input-field">
+                              <i class="fas fa-user"></i>
+                              <input name="username" type="text" placeholder="Username" />
+                         </div>
+                         <div class="input-field">
+                              <i class="fas fa-lock"></i>
+                              <input name="password" type="password" placeholder="Password" />
+                         </div>
+                         <input type="submit" value="Login" class="btn solid" />
+                         <!-- Admin Login button -->
+                         <a href="/" class="admin-login-btn">User Login</a>
+                    </form>
+               </div>
           </div>
+          <script>
+               function validateForm() {
+                    const email = document.querySelector('[name="username"]');
+                    const password = document.querySelector('[name="password"]');
 
-          <div class="flex justify-center items-center mt-5 pt-16">
-               <div class="inline-block bg-slate-300 px-3 p-1">
-                    <h1 class="text-4xl font-bold font-mono">LOGIN</h1>
+                    // Check if any field is empty or contains only whitespace
+                    if (!username.value.trim() || !password.value.trim()) {
+                         Swal.fire({
+                              title: 'Error!',
+                              text: 'All fields are necessary',
+                              icon: 'error',
+                              confirmButton: 'Retry'
+                         })
+                         return false; // Prevent form submission
+                    }
+
+                    return true; // Allow form submission
+               }
+          </script>
+          <script>
+               function validateForm() {
+                    const username = document.querySelector('[name="username"]');
+                    if (!username.value.trim()) {
+                         Swal.fire({
+                              title: "Error",
+                              text: "Username is empty!",
+                              icon: "error",
+                              confirmButtonText: 'Retry!'
+                         })
+                         return false;
+                    }
+                    return true;
+               }
+          </script>
+
+          <div class="panels-container">
+               <div class="panel left-panel">
+                    <div class="content">
+                         <h3>ADMIN LOGIN</h3>
+                         <p>
+                              One and only stop for the almighty Admin!
+                         </p>
+                    </div>
                </div>
           </div>
 
+</body>
 
-          <div class="flex justify-center mt-4">
-               <form action="/admin/login" method="post">
-                    <div class="flex flex-col gap-y-2 rounded-2xl bg-slate-300 px-3 py-4">
-                         <label for="username" class="-mb-1 -mt-2">Username</label>
-                         <input type="text" name="username" class="h-8 w-64 border border-gray-700" required>
-                         <label for="password" class="mt-3 -mb-1">Password</label>
-                         <input type="password" name="password" class="h-8 w-64 border border-gray-700" required>
-                    </div>
-                    <div class="flex justify-center items-center mt-4 py-2">
-                         <input type="submit"
-                              class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded"
-                              name="submit" id="submit" value="Login">
-                    </div>
-               </form>
-          </div>
-
-          <script>
-               const urlParams = new URLSearchParams(window.location.search);
-               const error = urlParams.get('error');
-               if (typeof error !== 'undefined') {
-                    if (error.includes('email')) {
-                         Swal.fire({
-                              title: 'Error!',
-                              text: 'No account existing for this email',
-                              icon: 'error',
-                              confirmButtonText: 'Cool'
-                         })
-                         window.history.replaceState({}, document.title, window.location.pathname);
-                    } else if (error.includes('password')) {
-                         Swal.fire({
-                              title: 'Error!',
-                              text: 'Invalid Password',
-                              icon: 'error',
-                              confirmButtonText: 'Cool'
-                         })
-                         window.history.replaceState({}, document.title, window.location.pathname);
-                    }
-               }
-          </script>
-          <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.all.min.js"></script>
-
-     </body>
-
-     </html>
+</html>

@@ -180,11 +180,17 @@
                                                                  <h7 class="text-success">
                                                                       <%= item.product.discount %>% Discount
                                                                  </h7>
-                                                                 <div class="d-flex mt-1">
-                                                                      <a href="/user/addtocart/<%= item.product._id%>" class="btn btn-primary me-2">
-                                                                           <i class="fas fa-shopping-cart"></i> Add to
-                                                                           Cart
-                                                                      </a>
+                                                                 <div class="d-flex mt-1" style="gap: 10px;">
+                                                                      <% if(item.product.stock > 0) { %>
+                                                                           <a href="/user/addtocart/<%= item.product._id%>" class="btn btn-primary me-2">
+                                                                                <i class="fas fa-shopping-cart"></i> Add to
+                                                                                Cart
+                                                                           </a>
+                                                                      <% } else { %>
+                                                                           <p class="card-text text-danger mt-1">
+                                                                                Item out of Stock 
+                                                                           </p>
+                                                                      <% } %>
                                                                       <a
                                                                            href="/user/removeWish/<%= item.product._id %>"><button
                                                                                 type="button" class="btn btn-danger">

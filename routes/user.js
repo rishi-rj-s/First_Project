@@ -30,10 +30,6 @@ route.get('/productview/:id',checkBlocked , cookieJwtAuth, usercontroller.produc
 
 route.post("/login",usercontroller.login)
 
-route.get('/register',(req,res)=>{
-     res.render('user/register')
-})
-
 route.get('/profile',checkBlocked, cookieJwtAuth, usercontroller.profile);
 
 route.get('/address',checkBlocked, cookieJwtAuth, usercontroller.showAddress);
@@ -46,6 +42,9 @@ route.post('/saveaddress/:id',checkBlocked, cookieJwtAuth, usercontroller.saveAd
 route.get('/changepass',checkBlocked, cookieJwtAuth, usercontroller.showChangePass);
 route.post('/checkpass', checkBlocked, cookieJwtAuth, usercontroller.checkPass);
 route.post('/changepass',checkBlocked, cookieJwtAuth, usercontroller.changePass);
+
+route.get('/changename', checkBlocked, cookieJwtAuth, usercontroller.showEditUsername);
+route.post('/savename', checkBlocked, cookieJwtAuth, usercontroller.editUsername)
 
 route.get('/cart',checkBlocked, cookieJwtAuth, cartcontroller.showCart);
 route.get('/addtocart/:id',checkBlocked, cookieJwtAuth, cartcontroller.addToCart);
