@@ -49,13 +49,14 @@ route.post('/savename', checkBlocked, cookieJwtAuth, usercontroller.editUsername
 route.get('/cart',checkBlocked, cookieJwtAuth, cartcontroller.showCart);
 route.get('/addtocart/:id',checkBlocked, cookieJwtAuth, cartcontroller.addToCart);
 route.get('/removecart/:id',checkBlocked, cookieJwtAuth, cartcontroller.removeCart)
+route.get('/updatequantity/:pid', checkBlocked, cookieJwtAuth, cartcontroller.updateQuantity);
 
 route.get('/wishlist',checkBlocked, cookieJwtAuth, wishcontroller.showWishlist);
 route.get('/addwishlist/:id', checkBlocked, cookieJwtAuth, wishcontroller.addToWishlist);  
 route.get('/removewish/:id', checkBlocked, cookieJwtAuth, wishcontroller.removeWish);  
 
 route.get('/orders',checkBlocked, cookieJwtAuth, ordercontroller.renderOrderPage)
-route.get('/showOrders',checkBlocked, cookieJwtAuth, ordercontroller.showOrders);
+route.get('/placeorder',checkBlocked, cookieJwtAuth, ordercontroller.placeOrder);
 
 
 route.get("**",(req,res)=>{

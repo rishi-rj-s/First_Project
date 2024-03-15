@@ -13,7 +13,8 @@ const schema = new mongoose.Schema({
         },
         quantity: {
             type: Number,
-            default: 1
+            default: 1,
+            max: 5,   // Maximum quantity allowed
         }
     }],
     subtotal: {

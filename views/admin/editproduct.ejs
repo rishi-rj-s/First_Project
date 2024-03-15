@@ -397,6 +397,14 @@
                                                                  confirmButton: 'Retry'
                                                             });
                                                             return false; // Prevent form submission
+                                                       } else if (stock.value < 1) {
+                                                            Swal.fire({
+                                                                 title: 'Error!',
+                                                                 text: 'There needs to be atleast 1 stock',
+                                                                 icon: 'error',
+                                                                 confirmButton: 'Retry'
+                                                            });
+                                                            return false; // Prevent form submission
                                                        }
 
                                                        return true; // Allow form submission

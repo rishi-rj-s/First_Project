@@ -2,42 +2,57 @@ const CartDb = require("../model/cartmodel");
 const ProductDb = require("../model/productmodel");
 const Userdb = require("../model/usermodel");
 
-
 exports.showCart = async (req, res) => {
   try {
     const userId = req.session.user._id;
-    
-    // Retrieve user's cart and populate product details
-    const usercart = await CartDb.find({ user: userId }).populate('product.productId');
 
-    // Calculate subtotal from the cart database
+    // Retrieve user's cart and populate product details
+    const usercart = await CartDb.findOne({ user: userId }).populate(
+      "product.productId"
+    );
+
+    // Initialize total subtotal for the cart
     let subtotalFromCart = 0;
 
-    // Iterate through each cart item and product
-    for (const cartItem of usercart) {
-      for (const product of cartItem.product) {
+    // Check if usercart exists and has products
+    if (usercart && usercart.product.length > 0) {
+      // Iterate through each product in the cart
+      for (const product of usercart.product) {
+        // Check if the product quantity exceeds stock
+        if (product.quantity >= product.productId.stock) {
+          product.quantity = product.productId.stock;
+        }
+
         // Check if the product is in stock
-        if (product.productId.stock > product.quantity) {
+        if (product.productId.stock >= product.quantity) {
           // Retrieve the latest price from the product document
-          const updatedProduct = await ProductDb.findById(product.productId._id);
+          const updatedProduct = await ProductDb.findById(
+            product.productId._id
+          );
           subtotalFromCart += updatedProduct.total_price * product.quantity;
         }
       }
+
+      // Update subtotal for the cart
+      usercart.subtotal = subtotalFromCart;
+
+      // Save the updated cart item
+      await usercart.save();
     }
 
-    res.render('user/cart', { usercart, subtotal: subtotalFromCart });
+    res.render("user/cart", { usercart, subtotal: subtotalFromCart });
   } catch (error) {
     console.error(error);
-    res.redirect('/user/profile?msg=carterr');
+    res.redirect("/user/profile?msg=carterr");
   }
 };
-
 
 exports.addToCart = async (req, res) => {
   try {
     const id = req.params.id;
     const userId = req.session.user._id;
-    
+    const quantity = req.query.quantity;
+
     // Fetch the product
     const product = await ProductDb.findById(id);
 
@@ -60,13 +75,13 @@ exports.addToCart = async (req, res) => {
     );
 
     if (existingProductIndex !== -1) {
-      return res.redirect('/user/cart?msg=exists')
+      return res.redirect("/user/cart?msg=exists");
     }
 
     if (product.stock > 0) {
       cart.product.push({
         productId: product._id,
-        quantity: 1, // Always set quantity to 1
+        quantity: quantity,
       });
       await cart.save();
     } else {
@@ -99,8 +114,13 @@ exports.removeCart = async (req, res) => {
       if (cart.product.length > 0) {
         for (const product of cart.product) {
           const updatedProduct = await ProductDb.findById(product.productId);
-          if (updatedProduct && updatedProduct.sellingPrice && !isNaN(updatedProduct.sellingPrice) && !isNaN(product.quantity)) {
-            subtotal += updatedProduct.sellingPrice * product.quantity;
+          if (
+            updatedProduct &&
+            updatedProduct.total_price &&
+            !isNaN(updatedProduct.total_price) &&
+            !isNaN(product.quantity)
+          ) {
+            subtotal += updatedProduct.total_price * product.quantity;
           }
         }
       }
@@ -113,10 +133,65 @@ exports.removeCart = async (req, res) => {
 
       res.status(204).end();
     } else {
-      res.status(404).json({ message: 'Cart not found' });
+      res.status(404).json({ message: "Cart not found" });
     }
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+exports.updateQuantity = async (req, res) => {
+  try {
+    const productId = req.params.pid;
+    const newQuantity = parseInt(req.query.quantity);
+    // console.log(productId, newQuantity)
+
+    // Find the cart item by product ID
+    const updatedCartItem = await CartDb.findOne({
+      "product.productId": productId,
+    }).populate("product.productId");
+    // console.log(updatedCartItem)
+
+    if (!updatedCartItem) {
+      return res
+        .status(404)
+        .json({ message: `Cart item with product ID ${productId} not found.` });
+    }
+
+    // Update the quantity of the matched product
+    updatedCartItem.product.forEach((product) => {
+      if (product.productId.equals(productId)) {
+        // Set the limit of quantity to 5
+        product.quantity = Math.min(newQuantity, 5);
+        // Check if the new quantity exceeds the stock, replace with stock if necessary
+        if (product.quantity >= product.productId.stock) {
+          product.quantity = product.productId.stock;
+        }
+      }
+    });
+
+    // Recalculate the subtotal
+    let subtotal = 0;
+    updatedCartItem.product.forEach((item) => {
+      subtotal += item.productId.total_price * item.quantity;
+    });
+    // console.log("Subtotal:", subtotal);
+
+    // Update the subtotal field of the cart model
+    updatedCartItem.subtotal = parseInt(subtotal);
+
+    // console.log(subtotal);
+
+    // Save the updated cart item to the database
+    await updatedCartItem.save();
+
+    // Respond with success message
+    res
+      .status(200)
+      .json({ message: "Cart quantity updated successfully.", subtotal });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error." });
   }
 };
