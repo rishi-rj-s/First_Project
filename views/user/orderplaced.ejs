@@ -203,14 +203,15 @@
 
   <!--  FOOTER MARKUP ENDS  -->
   <script>
-     if(<%=order%> == "Success"){
-          Swal.fire({
-               icon: "success",
-               title: "Order Placed Successfully!",
-               showConfirmButton: false,
-               timer: 1000
-          })
-     }
+    var orderStatus = "<%= order %>";
+    if (orderStatus === "Success") {
+        Swal.fire({
+            icon: "success",
+            title: "Order Placed Successfully!",
+            showConfirmButton: false,
+            timer: 1000
+        });
+    }
   </script>
 </body>
 

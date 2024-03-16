@@ -96,24 +96,26 @@
                          <h5>Hi, <%= name %></h5>
                     </div>
                     <ul class="nav flex-column">
+                         <li class="nav-item"><a class="nav-link" href="/"><i class="fas fa-home"></i>
+                              Home</a></li>
                          <li class="nav-item">
-                              <a class="nav-link" href="#"><i class="fas fa-user"></i> Profile</a>
+                              <a class="nav-link" href="/user/profile"><i class="fas fa-user"></i> Profile</a>
                          </li>
                          <li class="nav-item">
-                              <a class="nav-link" href="#"><i class="fas fa-shopping-bag"></i> Orders</a>
-                         </li>
-                         <li class="nav-item bg-dark">
-                              <a class="nav-link" href="#"><i class="fas fa-map-marker-alt"></i> Addresses</a>
+                              <a class="nav-link" href="/user/vieworders"><i class="fas fa-shopping-bag"></i> Orders</a>
                          </li>
                          <li class="nav-item">
-                              <a class="nav-link" href="#"><i class="fas fa-credit-card"></i> Payment Methods</a>
+                              <a class="nav-link" href="/user/address"><i class="fas fa-map-marker-alt"></i> Addresses</a>
+                         </li>
+                         <li class="nav-item">
+                              <a class="nav-link" href="/user/logout"><i class="fas fa-power-off"></i> Logout</a>
                          </li>
                     </ul>
                </aside>
                <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
                     <div class="content d-flex justify-content-center align-items-center">
                          <div class="change-password-form">
-                              <h1>Change Password</h1>
+                              <h1>Change Username</h1>
                               <form action="/user/savename" method="post" onsubmit="return validate()">
                                    <div class="form-group">
                                         <label for="name">Name:</label>

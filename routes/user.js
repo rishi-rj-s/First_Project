@@ -57,6 +57,8 @@ route.get('/removewish/:id', checkBlocked, cookieJwtAuth, wishcontroller.removeW
 
 route.get('/orders',checkBlocked, cookieJwtAuth, ordercontroller.renderOrderPage)
 route.post('/placeorder',checkBlocked, cookieJwtAuth, ordercontroller.placeOrder);
+route.get('/vieworders',checkBlocked, cookieJwtAuth, ordercontroller.viewOrders);
+route.get('/cancelorder/:pid',checkBlocked, cookieJwtAuth, ordercontroller.cancelOrder)
 
 route.get("**",(req,res)=>{
      res.render('pagenotfound');
