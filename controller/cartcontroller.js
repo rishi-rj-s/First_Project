@@ -1,6 +1,7 @@
 const CartDb = require("../model/cartmodel");
 const ProductDb = require("../model/productmodel");
 const Userdb = require("../model/usermodel");
+const WishDb = require("../model/wishlistmodel")
 
 exports.showCart = async (req, res) => {
   try {
@@ -16,6 +17,10 @@ exports.showCart = async (req, res) => {
 
     // Check if usercart exists and has products
     if (usercart && usercart.product.length > 0) {
+      // Filter out products with stock <= 0 or listing status "unlisted"
+      usercart.product = usercart.product.filter((product) => {
+        return product.productId.stock > 0 && product.productId.listing !== "Unlisted";
+      });
       // Iterate through each product in the cart
       for (const product of usercart.product) {
         // Check if the product quantity exceeds stock
@@ -63,7 +68,16 @@ exports.addToCart = async (req, res) => {
     if (product.stock <= 0) {
       return res.redirect("/user/cart?msg=nostock");
     }
+    const isInWishlist = await  WishDb.find({user: userId, product: id});
+    // console.log(isInWishlist);
 
+    if (isInWishlist) {
+      // Remove the product from the wishlist document
+      const removedProduct = await WishDb.findOneAndDelete(
+        { user: userId, product: id }
+      );
+    }
+    
     let cart = await CartDb.findOne({ user: userId });
 
     if (!cart) {

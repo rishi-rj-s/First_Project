@@ -15,7 +15,6 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.all.min.js"></script>
     <style>
-
         /* search box */
         /* @media (min-width: 768px) {
             .form-outline-inline {
@@ -82,18 +81,27 @@
             }
         }
 
-        .banner .fa-heart {
+        .banner i {
+            color: white !important;
+        }
+
+        .banner .fa-shopping-cart:hover {
+            color: yellowgreen !important;
+        }
+
+        .banner .fa-heart:hover {
             color: red !important;
         }
 
-        .banner .fa-shopping-cart {
-            color: orange !important;
+        .banner .fa-user:hover {
+            color: blue !important;
         }
 
-        .banner .fa-user {
-            color: Teal !important;
+        .banner .fa-power-off:hover {
+            color: gray !important;
         }
-        .social-icons i{
+
+        .social-icons i {
             padding-right: 10px;
         }
     </style>
@@ -141,8 +149,10 @@
                         <li><a href="/user/landing" class="roundbtn">Home</a></li>
                         <li><a href="/user/products/All" class="roundbtn">All</a></li>
                         <%cate.forEach((cat)=>{%>
-                            <li><a href="/user/products/<%=cat.category%>" class="roundbtn"><%=cat.category%></a></li>
-                        <%})%>
+                            <li><a href="/user/products/<%=cat.category%>" class="roundbtn">
+                                    <%=cat.category%>
+                                </a></li>
+                            <%})%>
                     </ul>
                 </div>
             </div>

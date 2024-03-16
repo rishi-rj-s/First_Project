@@ -7,12 +7,12 @@ const Product = require("../model/productmodel");
 exports.renderOrderPage = async (req, res) => {
   try {
     const id = req.session.user._id;
-    const cart = await Cart.findOne({ user: id }).populate("product.productId");
-    if (!cart) {
+    const usercart = await Cart.findOne({ user: id }).populate("product.productId");
+    if (!usercart) {
       return res.redirect("/cart?msg=cartemp");
     }
     const address = await Address.find({user_id: id});
-    res.render("user/checkout", { cart, address });
+    res.render("user/checkout", { usercart, address });
   } catch (e) {
     console.log(e);
     res.redirect("/?msg=error");
@@ -23,9 +23,10 @@ exports.placeOrder = async (req, res) => {
   try {
       const userId = req.session.user._id;
       const usercart = await Cart.findOne({user : userId});
-      const addsId = req.query.addrs;
-      const addressId = await Address.findById({_id : addsId});
-      const paymentMethod = "COD"
+      const addsId = req.body.address;
+      console.log(addsId);
+      const addressId = await Address.findById(addsId);
+      const paymentMethod = "Cash On Delivery"
       
 
       if (!usercart) {
@@ -36,7 +37,7 @@ exports.placeOrder = async (req, res) => {
     }
       // Create the order
       const order = new Order({
-          userId: userId,
+          user_id: userId,
           orderedItems: usercart.product,
           totalAmount: usercart.subtotal,
           shippingAddress: addressId,
@@ -72,7 +73,7 @@ exports.placeOrder = async (req, res) => {
       }
 
       // Redirect to order success page
-      return res.redirect('/orderpage');
+      return res.render('user/orderplaced',{order:"Success"});
   } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Internal Server Error' });

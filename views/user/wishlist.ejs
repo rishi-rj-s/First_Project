@@ -50,17 +50,25 @@
                }
           }
 
-          .banner .fa-heart {
-               color: red !important;
-          }
+          .banner i {
+      color: white !important;
+    }
 
-          .banner .fa-shopping-cart {
-               color: orange !important;
-          }
+    .banner .fa-shopping-cart:hover {
+      color: yellowgreen !important;
+    }
 
-          .banner .fa-user {
-               color: Teal !important;
-          }
+    .banner .fa-heart:hover {
+      color: red !important;
+    }
+
+    .banner .fa-user:hover {
+      color: blue !important;
+    }
+
+    .banner .fa-power-off:hover {
+      color: gray !important;
+    }
 
           .social-icons i {
                padding-right: 10px;
@@ -150,10 +158,10 @@
      <!--  NAVIGATION ENDS  -->
      <div class="container-fluid mt-5 mb-3">
           <div class="row">
-               <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4 mb-4">
+               <main role="main" class="col-md-9 ml-sm-auto col-lg-12 px-md-4 mb-4">
                     <div class="container mt-4 mb-4">
                          <div class="row">
-                              <div class="col-md-8 offset-md-2">
+                              <div class="col-md-8 offset-md-2 col-lg-8 offset-lg-2">
                                    <h1 class="text-center mb-4">My Wish List</h1>
                                    <div class="wishlist-items">
                                         <% items.forEach((item)=> { %>

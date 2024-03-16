@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RISHI STUDIO</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.all.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
+
+  <style>
+    body {
+      background-color: #f8f9fa;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      margin-top: 50px;
+      flex: 1;
+    }
+
+    .order-details,
+    .address-selection,
+    .payment-method,
+    .total-amount {
+      background-color: #fff;
+      padding: 20px;
+      margin-top: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-place-order {
+      margin-top: 20px;
+    }
+
+    .object-fit-cover {
+      object-fit: cover;
+      height: 200px;
+      width: 150px;
+    }
+
+    .banner-wrapper {
+      background-color: black;
+      padding: 10px;
+    }
+
+    .banner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .banner h1 {
+      font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+      padding-left: 10px;
+      margin-top: 0;
+      color: white;
+    }
+
+    .icons {
+      align-items: center;
+    }
+
+    .icons a {
+      margin-right: 10px;
+    }
+
+    @media (min-width: 768px) {
+      .banner h1 {
+        margin-bottom: 0;
+      }
+
+      .form-outline-inline input[type="search"] {
+        width: auto;
+        margin-right: 0;
+      }
+    }
+
+    .banner i {
+      color: white !important;
+    }
+
+    .banner .fa-shopping-cart:hover {
+      color: yellowgreen !important;
+    }
+
+    .banner .fa-heart:hover {
+      color: red !important;
+    }
+
+    .banner .fa-user:hover {
+      color: blue !important;
+    }
+
+    .banner .fa-power-off:hover {
+      color: gray !important;
+    }
+
+    .icons i {
+      font-size: 30px;
+    }
+
+    .order-placed {
+  background-color: #007bff;
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.8); /* Added box-shadow for a 3D effect */
+  margin: 0 auto;
+  text-align: center;
+  max-width: 600px;
+  margin-top: 100px;
+}
+
+.order-placed h1 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+.order-placed p {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+}
+
+.continue-shopping-btn {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8); /* Added box-shadow for a 3D effect */
+  font-size: 1.2rem;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.continue-shopping-btn:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.8); /* Added box-shadow for a 3D effect */
+}
+    .footer {
+      background-color: #343a40;
+      color: white;
+      padding: 20px 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="banner-wrapper fixed-top">
+    <div class="banner">
+      <a href="/">
+        <h1 class="title">RISHI STUDIO</h1>
+      </a>
+      <div class="icons" style="z-index: 99">
+        <a href="/user/cart"><i class="fa fa-shopping-cart"></i></a>
+        <a href="/user/wishlist"><i class="fa fa-heart"></i></a>
+        <a href="/user/profile"><i class="fa fa-user"></i></a>
+        <a href="/user/logout"><i class="fa fa-power-off"></i></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="order-placed">
+      <h1>Order Placed</h1>
+      <p>Your order has been successfully placed. Thank you for shopping with us!</p>
+      <a href="/user/products/All" class="btn continue-shopping-btn">Continue Shopping</a>
+    </div>
+  </div>
+
+  <!--  FOOTER MARKUP STARTS  -->
+
+  <footer class="bg-dark text-light py-1">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6 mb-4 mb-md-0">
+          <h5>Connect with Us</h5>
+          <p>Follow us on social media for updates:</p>
+          <div class="social-icons">
+            <a href="#" class="me-2"><i class="fa fa-facebook text-primary"></i></a>
+            <a href="#" class="me-2"><i class="fa fa-twitter text-info"></i></a>
+            <a href="#" class="me-2"><i class="fa fa-instagram text-danger"></i></a>
+            <a href="#" class="me-2"><i class="fa fa-linkedin text-info"></i></a>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <h5>Contact Us</h5>
+          <p>Email: info@example.com</p>
+          <p>Phone: +1 234 567 890</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!--  FOOTER MARKUP ENDS  -->
+  <script>
+     if(<%=order%> == "Success"){
+          Swal.fire({
+               icon: "success",
+               title: "Order Placed Successfully!",
+               showConfirmButton: false,
+               timer: 1000
+          })
+     }
+  </script>
+</body>
+
+</html>

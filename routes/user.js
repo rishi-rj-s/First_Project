@@ -56,8 +56,7 @@ route.get('/addwishlist/:id', checkBlocked, cookieJwtAuth, wishcontroller.addToW
 route.get('/removewish/:id', checkBlocked, cookieJwtAuth, wishcontroller.removeWish);  
 
 route.get('/orders',checkBlocked, cookieJwtAuth, ordercontroller.renderOrderPage)
-route.get('/placeorder',checkBlocked, cookieJwtAuth, ordercontroller.placeOrder);
-
+route.post('/placeorder',checkBlocked, cookieJwtAuth, ordercontroller.placeOrder);
 
 route.get("**",(req,res)=>{
      res.render('pagenotfound');

@@ -87,16 +87,24 @@
       }
     }
 
-    a .fa-heart {
+    .banner i {
+      color: white !important;
+    }
+
+    .banner .fa-shopping-cart:hover {
+      color: yellowgreen !important;
+    }
+
+    .banner .fa-heart:hover {
       color: red !important;
     }
 
-    a .fa-shopping-cart {
-      color: orange !important;
+    .banner .fa-user:hover {
+      color: blue !important;
     }
 
-    a .fa-user {
-      color: Teal !important;
+    .banner .fa-power-off:hover {
+      color: gray !important;
     }
 
     .social-icons i {
@@ -135,7 +143,7 @@
   <!--  NAVIGATION ENDS  -->
   <div class="container mt-4">
     <h1 class="text-center mb-4">Order Checkout</h1>
-    <form id="checkoutForm" action="/place-order" method="POST">
+    <form id="checkoutForm" action="/user/placeorder" method="POST" onsubmit="return validateForm()">
       <div class="row">
         <div class="col-md-8 mx-auto">
           <!-- Order Details -->
@@ -143,31 +151,29 @@
             <h3>Your Order</h3>
             <hr />
             <div class="cart-items">
+              <% usercart.product.forEach(cartItem=> { %>
               <div class="card">
                 <div class="card-body">
                   <div class="row align-items-center">
                     <div class="col-md-4">
-                      <img src="Subru.jpg" alt="Product Image" class="img-fluid object-fit-cover" />
+                      <img src="/<%= cartItem.productId.images[0] %>" alt="Product Image" class="img-fluid object-fit-cover" />
                     </div>
                     <div class="col-md-8">
-                      <h4 class="card-title">Men Printed Casual Jacket</h4>
+                      <h4 class="card-title"><%= cartItem.productId.p_name[0] %></h4>
                       <p class="card-text">
-                        A stylish and contemporary addition to your wardrobe. Crafted with a keen eye for fashion, this
-                        jacket combines comfort and trendsetting design.
+                        <%= cartItem.productId.description %>
                       </p>
-                      <h5>$109.04</h5>
+                      <h5>Price : $<%= cartItem.productId.total_price %></h5>
                       <div class="d-flex align-items-center">
                         <div class="input-group me-2">
-                          <p>10 No.s</p>
+                          <p>Qty: <%= cartItem.quantity %> || Total Price: <%= (cartItem.productId.total_price * cartItem.quantity) %></p>
                         </div>
-                        <button type="button" class="btn btn-danger ms-2">
-                          <i class="fas fa-trash"></i> Remove
-                        </button>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
+              <%})%>
             </div>
           </div>
 
@@ -177,13 +183,13 @@
             <hr>
             <div class="form-scroll">
               <div class="form-check">
-                <input class="form-check-input" type="radio" name="address" id="address1" value="address1" checked>
+                <% address.forEach(addr=>{%>
+                <input class="form-check-input" value="<%= addr._id%>" type="radio" name="address" value="address1">
                 <label class="form-check-label" for="address1">
-                  Address 1: 123 Main Street, City, Country
-                </label> <br>
-                <label class="form-check-label" for="address1">
-                  Address 2: 123 Main Street, City, Country
-                </label>
+                  <h3><%= addr.name %></h3>
+                  Address 1: <%= addr.address %>,<%= addr.state %>, <%= addr.pincode %>
+                </label> <br><br>
+                <%})%>
               </div>
             </div>
           </div>
@@ -192,7 +198,7 @@
           <div class="total-amount">
             <h3>Grand Total</h3>
             <hr />
-            <p><strong>Total Amount: $30</strong></p>
+            <p><strong>Total Amount: $<%= usercart.subtotal %></strong></p>
           </div>
 
           <!-- Payment Method -->
@@ -208,38 +214,53 @@
           </div>
 
           <!-- Place Order Button -->
-          <button type="submit" class="btn btn-primary btn-block btn-place-order" id="placeOrderBtn" disabled>
+          <button type="submit" class="btn btn-primary btn-block btn-place-order" id="placeOrderBtn">
             Place Order
           </button>
         </div>
       </div>
     </form>
   </div>
-
-
   <script>
-    // Disable place order button until all required fields are filled
-    document.addEventListener("DOMContentLoaded", function () {
-      const placeOrderBtn = document.getElementById("placeOrderBtn");
-      const requiredFields = document.querySelectorAll(
-        "input[required], select[required]"
-      );
-
-      function checkFields() {
-        let allFilled = true;
-        requiredFields.forEach(function (field) {
-          if (!field.value.trim()) {
-            allFilled = false;
-          }
-        });
-        placeOrderBtn.disabled = !allFilled;
+    function validateForm() {
+      const checkoutForm = document.getElementById('checkoutForm');
+  
+      // Check if all required fields are filled
+      if (!checkoutForm.checkValidity()) {
+        // If not, show validation messages and prevent form submission
+        checkoutForm.reportValidity();
+        return false;
       }
-
-      requiredFields.forEach(function (field) {
-        field.addEventListener("change", checkFields);
-      });
-    });
+  
+      // Check if a payment method is selected
+      const paymentMethod = checkoutForm.querySelector('input[name="paymentMethod"]:checked');
+      if (!paymentMethod) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: "Please select a payment method!",
+          confirmButtonText: 'Ok'
+        });
+        return false;
+      }
+  
+      // Check if an address is selected
+      const selectedAddress = checkoutForm.querySelector('input[name="address"]:checked');
+      if (!selectedAddress) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: "Please select a address!",
+          confirmButtonText: 'Ok'
+        });
+        return false;
+      }
+  
+      // All validations passed, allow form submission
+      return true;
+    }
   </script>
+  
 </body>
 
 </html>
