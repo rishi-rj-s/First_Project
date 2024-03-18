@@ -12,6 +12,10 @@ const schema = new mongoose.Schema({
             ref: 'product',
             required: true
         },
+        price: {
+            type: Number,
+            required: true
+        },
         quantity: {
             type: Number,
             required: true
@@ -20,6 +24,10 @@ const schema = new mongoose.Schema({
             type: String,
             default: "Pending",
             enum: ['Pending', 'Shipped', 'Processing', 'Delivered', 'Cancelled', 'Returned']
+        },
+        returned: {
+            type: Boolean,
+            default: false
         }
     }],
     deliveryDate: {
@@ -29,11 +37,11 @@ const schema = new mongoose.Schema({
     payment: {
         type: mongoose.Types.ObjectId
     },
-    paymentStatus: {
-        type: String,
-        enum: ['Pending', 'Processing', 'Completed', 'Failed', 'Refunded'],
-        default: 'Pending',
-    },
+    // paymentStatus: {
+    //     type: String,
+    //     enum: ['Pending', 'Processing', 'Completed', 'Failed', 'Refunded'],
+    //     default: 'Pending',
+    // },
     paymentMethod: {
         type: String,
         required: true,

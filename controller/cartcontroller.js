@@ -11,6 +11,7 @@ exports.showCart = async (req, res) => {
     const usercart = await CartDb.findOne({ user: userId }).populate(
       "product.productId"
     );
+    // console.log(usercart)
 
     // Initialize total subtotal for the cart
     let subtotalFromCart = 0;
@@ -57,6 +58,7 @@ exports.addToCart = async (req, res) => {
     const id = req.params.id;
     const userId = req.session.user._id;
     const quantity = req.query.quantity;
+    console.log(quantity);
 
     // Fetch the product
     const product = await ProductDb.findById(id);

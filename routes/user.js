@@ -26,6 +26,7 @@ route.get('/landing',checkBlocked, cookieJwtAuth, usercontroller.showLanding)
 route.get('/logout',cookieJwtAuth, usercontroller.logout)
 
 route.get('/products/:cat',checkBlocked ,cookieJwtAuth, usercontroller.products)
+route.get('/sortby',checkBlocked, cookieJwtAuth, usercontroller.sortBy)
 route.get('/productview/:id',checkBlocked , cookieJwtAuth, usercontroller.productview)
 
 route.post("/login",usercontroller.login)
@@ -58,7 +59,8 @@ route.get('/removewish/:id', checkBlocked, cookieJwtAuth, wishcontroller.removeW
 route.get('/orders',checkBlocked, cookieJwtAuth, ordercontroller.renderOrderPage)
 route.post('/placeorder',checkBlocked, cookieJwtAuth, ordercontroller.placeOrder);
 route.get('/vieworders',checkBlocked, cookieJwtAuth, ordercontroller.viewOrders);
-route.get('/cancelorder/:pid',checkBlocked, cookieJwtAuth, ordercontroller.cancelOrder)
+route.get('/cancelorder/:pid',checkBlocked, cookieJwtAuth, ordercontroller.cancelOrder);
+route.get('/returnorder/:pid',checkBlocked, cookieJwtAuth, ordercontroller.returnOrder);
 
 route.get("**",(req,res)=>{
      res.render('pagenotfound');

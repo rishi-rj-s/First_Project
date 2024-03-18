@@ -129,6 +129,49 @@ exports.products = async (req, res) => {
   }
 };
 
+exports.sortBy = async (req, res) => {
+  try {
+    const sortBy = req.query.sortBy;
+    let sortedProducts;
+
+    switch (sortBy) {
+      case 'nameAsc':
+        sortedProducts = await ProductDb.find().sort({ p_name: 1 });
+        break;
+      case 'nameDesc':
+        sortedProducts = await ProductDb.find().sort({ p_name: -1 });
+        break;
+      case 'priceAsc':
+        sortedProducts = await ProductDb.find().sort({ total_price: 1 });
+        break;
+      case 'priceDesc':
+        sortedProducts = await ProductDb.find().sort({ total_price: -1 });
+        break;
+      case 'available':
+        sortedProducts = await ProductDb.find({ stock: { $gt: 0 } });
+        break;
+      default:
+        // Default case can be handled as per your requirement, such as sorting by default field or showing all products
+        sortedProducts = await ProductDb.find();
+        break;
+    }
+
+    const categ = await CatDb.find({ listing: true });
+    if (sortedProducts.length === 0) {
+      return res.redirect("/user/landing?msg=nodata");
+    }
+
+    res.render("user/products", {
+      pdt: sortedProducts,
+      all: "All",
+      categ
+    });
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    res.redirect("/user/landing?msg=errdata");
+  }
+};
+
 exports.productview = async (req, res) => {
   const p_id = req.params.id;
   const product = await ProductDb.findById(p_id);
@@ -143,6 +186,28 @@ exports.productview = async (req, res) => {
     similar: relatedProduct,
   });
 };
+
+// exports.search = (req, res) => {
+//   const search = req.body.search;
+//   Userdb.find({ name: {$regex: new RegExp(username,'i')} })
+//     .then((data) => {
+//       if (!data) {
+//         res
+//           .status(404)
+//           .send({
+//             message: `Cannot find with name ${username}. Maybe name is wrong!`,
+//           });
+//       } else {
+//         return res.send(data);
+//       }
+//     })
+//     .catch((err) => {
+//       res
+//         .status(500)
+//         .send({ message: `Could not find user with name ${username}` });
+//     });
+// };
+
 
 // Function to send OTP email
 const sendOtpEmail = async (email, otp) => {

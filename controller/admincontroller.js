@@ -2,6 +2,8 @@ const Userdb = require("../model/usermodel");
 const ProductDb = require("../model/productmodel");
 const CatDb = require("../model/categorymodel");
 const AdminDb = require("../model/adminmodel");
+const AddressDb = require("../model/addressmodel");
+const OrderDb = require("../model/ordermodel");
 const jwt = require("jsonwebtoken");
 const multer = require("multer");
 const path = require("path");
@@ -117,16 +119,31 @@ exports.addproduct = async (req, res) => {
         .send({ message: "Exactly four images are required" });
     }
 
+    // Trim and check for empty values
+    const category = req.body.category.trim();
+    const p_name = req.body.p_name.trim();
+    const price = req.body.price.trim();
+    const description = req.body.description.trim();
+    const discount = req.body.discount.trim();
+    const stock = req.body.stock.trim();
+
+    // Check if any of the required fields are empty
+    if (!category || !p_name || !price || !description || !discount || !stock) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+
+    // Create a new instance of ProductDb with trimmed values
     const data = new ProductDb({
-      category: req.body.category,
-      p_name: req.body.p_name,
-      price: req.body.price,
-      description: req.body.description,
-      discount: req.body.discount,
-      stock: req.body.stock,
+      category,
+      p_name,
+      price,
+      description,
+      discount,
+      stock,
       images: imagesArray, // Save file paths in MongoDB
     });
 
+    // Save the data to the collection
     await data.save();
     res.redirect("/admin/viewproducts?msg=success");
   } catch (e) {
@@ -257,11 +274,9 @@ exports.deleteproduct = (req, res) => {
   ProductDb.findByIdAndDelete({ _id: id })
     .then((data) => {
       if (!data) {
-        res
-          .status(404)
-          .send({
-            message: `Cannot delete product with id ${id}. Maybe id is wrong!`,
-          });
+        res.status(404).send({
+          message: `Cannot delete product with id ${id}. Maybe id is wrong!`,
+        });
       } else {
         res.redirect("/admin/viewproducts?msg=deleted");
       }
@@ -292,5 +307,145 @@ exports.userstatus = async (req, res) => {
   } catch (e) {
     console.log(e);
     res.send("Internal Error");
+  }
+};
+
+exports.viewOrders = async (req, res) => {
+  try {
+    // Fetch orders, categories, and user from the database
+    const orders = await OrderDb.find()
+      .populate("orderedItems.productId")
+      .sort({ orderDate: -1 });
+    // console.log(orders)
+    // Render the order list page and pass the orders, categories, user, and cancelledProducts data to the view
+    res.render("admin/vieworders", { orders });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
+exports.rejectReturn = async (req, res) => {
+  try {
+    const productId = req.params.pid;
+    const orderId = req.query.oid;
+
+    // Use async/await with findByIdAndUpdate to ensure proper error handling
+    const updatedOrder = await OrderDb.findByIdAndUpdate(
+      orderId,
+      {
+        $set: {
+          "orderedItems.$[elem].status": "Delivered",
+          "orderedItems.$[elem].returned": true,
+        },
+      },
+      {
+        arrayFilters: [{ "elem.productId": productId }],
+        new: true, // Return the updated document
+      }
+    );
+
+    // Check if updatedOrder is null (order not found) or if it's updated successfully
+    if (!updatedOrder) {
+      return res.status(404).json({ msg: "Order not found" });
+    }
+
+    // Handle the case where the order is updated successfully
+    // console.log('Updated Order:', updatedOrder);
+    return res.status(200).json({ success: true, message: "Return rejected!" });
+  } catch (error) {
+    console.error("Error:", error);
+    return res.status(500).json({ msg: "Internal server error" });
+  }
+};
+
+exports.acceptReturn = async (req, res) => {
+  try {
+    const productId = req.params.pid;
+    const orderId = req.query.oid;
+    // console.log(productId, orderId);
+
+    // Use async/await with findByIdAndUpdate to ensure proper error handling
+    const updatedOrder = await OrderDb.findByIdAndUpdate(
+      orderId,
+      { $set: { "orderedItems.$[elem].status": "Returned" } },
+      {
+        arrayFilters: [{ "elem.productId": productId }],
+        new: true, // Return the updated document
+      }
+    );
+
+    // Check if updatedOrder is null (order not found) or if it's updated successfully
+    if (!updatedOrder) {
+      return res.status(404).json({ msg: "Order not found" });
+    }
+
+    // Handle the case where the order is updated successfully
+    // console.log('Updated Order:', updatedOrder);
+    return res.status(200).json({ success: true, message: "Return accepted." });
+  } catch (error) {
+    console.error("Error:", error);
+    return res.status(500).json({ msg: "Internal server error" });
+  }
+};
+
+exports.statusShipped = async (req, res) => {
+  try {
+    const productId = req.params.pid;
+    const orderId = req.query.oid;
+    // console.log(productId, orderId);
+
+    // Use async/await with findByIdAndUpdate to ensure proper error handling
+    const updatedOrder = await OrderDb.findByIdAndUpdate(
+      orderId,
+      { $set: { "orderedItems.$[elem].status": "Shipped" } },
+      {
+        arrayFilters: [{ "elem.productId": productId }],
+        new: true, // Return the updated document
+      }
+    );
+
+    // Check if updatedOrder is null (order not found) or if it's updated successfully
+    if (!updatedOrder) {
+      return res.status(404).json({ msg: "Order not found" });
+    }
+
+    // Handle the case where the order is updated successfully
+    // console.log('Updated Order:', updatedOrder);
+    return res.status(200).json({ success: true, message: "Order Shipped." });
+  } catch (error) {
+    console.error("Error:", error);
+    return res.status(500).json({ msg: "Internal server error" });
+  }
+};
+
+exports.statusDelivered = async (req, res) => {
+  try {
+    const productId = req.params.pid;
+    const orderId = req.query.oid;
+    // console.log(productId, orderId);
+
+    // Use async/await with findByIdAndUpdate to ensure proper error handling
+    const updatedOrder = await OrderDb.findByIdAndUpdate(
+      orderId,
+      { $set: { "orderedItems.$[elem].status": "Delivered" } },
+      {
+        arrayFilters: [{ "elem.productId": productId }],
+        new: true, // Return the updated document
+      }
+    );
+    console.log(updatedOrder);
+
+    // Check if updatedOrder is null (order not found) or if it's updated successfully
+    if (!updatedOrder) {
+      return res.status(404).json({ msg: "Order not found" });
+    }
+
+    // Handle the case where the order is updated successfully
+    // console.log('Updated Order:', updatedOrder);
+    return res.status(200).json({ success: true, message: "Order Delivered." });
+  } catch (error) {
+    console.error("Error:", error);
+    return res.status(500).json({ msg: "Internal server error" });
   }
 };

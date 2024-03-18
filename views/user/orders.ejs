@@ -206,8 +206,7 @@
                                                                     <%= items.productId.p_name %>
                                                                 </td>
                                                                 <td class="text-center align-middle">
-                                                                    <%= (items.productId.total_price)*(items.quantity)
-                                                                        %>
+                                                                    <%= items.price %>
                                                                 </td>
                                                                 <td class="text-center align-middle">
                                                                     <%= items.quantity %>
@@ -232,8 +231,7 @@
                                                                             console.log("Cancel button clicked!"); // Debugging statement
 
                                                                             const productId = this.id;
-                                                                            const orderId = <%= order._id %>;
-
+                                                                            const Id = "<%= order._id %>";
                                                                             // Display SweetAlert confirmation dialog
                                                                             Swal.fire({
                                                                                 title: "Are you sure?",
@@ -246,7 +244,7 @@
                                                                             }).then((result) => {
                                                                                 if (result.isConfirmed) {
                                                                                     // User confirmed cancellation, send request to cancel order
-                                                                                    fetch(`/user/cancelorder/${productId}?oid=${orderId}`, {
+                                                                                    fetch(`/user/cancelorder/${productId}?oid=${Id}`, {
                                                                                         method: "GET",
                                                                                     })
                                                                                         .then((response) => {
@@ -324,8 +322,7 @@
                                                                     <%= items.productId.p_name %>
                                                                 </td>
                                                                 <td class="text-center align-middle">
-                                                                    <%= (items.productId.total_price)*(items.quantity)
-                                                                        %>
+                                                                    <%= items.price %>
                                                                 </td>
                                                                 <td class="text-center align-middle">
                                                                     <%= items.quantity %>
@@ -336,11 +333,17 @@
                                                                 <td class="text-center align-middle">
                                                                     <%= items.status %>
                                                                 </td>
-                                                                <td class="text-center align-middle"><button
-                                                                        id="<%= items.productId._id %>"
-                                                                        class="btn btn-warning text-white return">
-                                                                        Return
-                                                                    </button></td>
+                                                                <%if(!items.returned){%>
+                                                                    <td class="text-center align-middle"><button
+                                                                            id="<%= items.productId._id %>"
+                                                                            class="btn btn-warning text-white return">
+                                                                            Return
+                                                                        </button></td>
+                                                                <%} else {%>
+                                                                    <td class="text-center align-middle">
+                                                                        Return not possible
+                                                                    </td>
+                                                                <%}%>
                                                             </tr>
                                                             <script>
                                                                 document.addEventListener("DOMContentLoaded", function () {
@@ -350,6 +353,7 @@
                                                                             console.log("Return button clicked!"); // Debugging statement
 
                                                                             const productId = this.id;
+                                                                            console.log(productId)
                                                                             const orderId = "<%= order._id %>";
 
                                                                             // Display SweetAlert confirmation dialog
@@ -426,7 +430,7 @@
                                                     <th scope="col">Total Amount</th>
                                                     <th scope="col">Quantity</th>
                                                     <th scope="col">Order Date</th>
-                                                    <th scope="col">Order Status</th>
+                                                    <th scope="col">Return Status</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -441,7 +445,7 @@
                                                                     <%= items.productId.p_name %>
                                                                 </td>
                                                                 <td class="text-center align-middle">
-                                                                    <%= (items.productId.total_price)*(items.quantity)
+                                                                    <%= items.price
                                                                         %>
                                                                 </td>
                                                                 <td class="text-center align-middle">
@@ -453,79 +457,7 @@
                                                                 <td class="text-center align-middle">
                                                                     <%= items.status %>
                                                                 </td>
-                                                                <td class="text-center align-middle"><button
-                                                                        id="<%= items.productId._id %>"
-                                                                        class="btn btn-warning text-white return">
-                                                                        Return
-                                                                    </button></td>
                                                             </tr>
-                                                            <script>
-                                                                document.addEventListener("DOMContentLoaded", function () {
-                                                                    // Add event listener to Cancel buttons
-                                                                    document.querySelectorAll('.return').forEach(button => {
-                                                                        button.addEventListener('click', function () {
-                                                                            console.log("Return button clicked!"); // Debugging statement
-
-                                                                            const productId = this.id;
-                                                                            const orderId = "<%= order._id %>";
-
-                                                                            // Display SweetAlert confirmation dialog
-                                                                            Swal.fire({
-                                                                                title: "Are you sure?",
-                                                                                text: "Return this order?",
-                                                                                icon: "warning",
-                                                                                showCancelButton: true,
-                                                                                confirmButtonColor: "#3085d6",
-                                                                                cancelButtonColor: "#d33",
-                                                                                confirmButtonText: "Return!",
-                                                                            }).then((result) => {
-                                                                                if (result.isConfirmed) {
-                                                                                    // User confirmed cancellation, send request to cancel order
-                                                                                    fetch(`/user/returnorder/${productId}?oid=${orderId}`, {
-                                                                                        method: "GET",
-                                                                                    })
-                                                                                        .then((response) => {
-                                                                                            if (!response.ok) {
-                                                                                                throw new Error("Failed to return order");
-                                                                                            }
-                                                                                            return response.json(); // Parse JSON response
-                                                                                        })
-                                                                                        .then((data) => {
-                                                                                            // Check the success status from the server response
-                                                                                            if (data.success) {
-                                                                                                // Show success message using SweetAlert
-                                                                                                Swal.fire({
-                                                                                                    title: "Processing",
-                                                                                                    text: data.message,
-                                                                                                    icon: "success",
-                                                                                                }).then(() => {
-                                                                                                    // Reload the page or perform any other actions
-                                                                                                    window.location.reload();
-                                                                                                });
-                                                                                            } else {
-                                                                                                // Show error message using SweetAlert
-                                                                                                Swal.fire({
-                                                                                                    title: "Failed!",
-                                                                                                    text: data.message,
-                                                                                                    icon: "error",
-                                                                                                });
-                                                                                            }
-                                                                                        })
-                                                                                        .catch((error) => {
-                                                                                            console.error("Error:", error);
-                                                                                            // Show error message using SweetAlert
-                                                                                            Swal.fire({
-                                                                                                title: "Error!",
-                                                                                                text: "Something went wrong.",
-                                                                                                icon: "error",
-                                                                                            });
-                                                                                        });
-                                                                                }
-                                                                            });
-                                                                        });
-                                                                    });
-                                                                });
-                                                            </script>
                                                             <% } %>
                                                                 <% }) %>
                                                                     <% }) %>
@@ -558,7 +490,7 @@
                                                                     <%= items.productId.p_name %>
                                                                 </td>
                                                                 <td class="text-center align-middle">
-                                                                    <%= (items.productId.total_price)*(items.quantity)
+                                                                    <%= items.price
                                                                         %>
                                                                 </td>
                                                                 <td class="text-center align-middle">
@@ -603,7 +535,7 @@
                                                                     <%= items.productId.p_name %>
                                                                 </td>
                                                                 <td class="text-center align-middle">
-                                                                    <%= (items.productId.total_price)*(items.quantity)
+                                                                    <%= items.price
                                                                         %>
                                                                 </td>
                                                                 <td class="text-center align-middle">

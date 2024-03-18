@@ -24,9 +24,11 @@ exports.renderOrderPage = async (req, res) => {
 exports.placeOrder = async (req, res) => {
   try {
     const userId = req.session.user._id;
-    const usercart = await Cart.findOne({ user: userId });
+    const usercart = await Cart.findOne({ user: userId }).populate(
+      "product.productId"
+    );
     const addsId = req.body.address;
-    console.log(addsId);
+    // console.log(addsId);
     const addressId = await Address.findById(addsId);
     const paymentMethod = "Cash On Delivery";
 
@@ -36,10 +38,23 @@ exports.placeOrder = async (req, res) => {
     if (!addressId) {
       return res.status(404).json({ message: "Address not found" });
     }
-    // Create the order
+    
+    // Calculate individual prices for ordered items
+    const orderedItemsWithPrice = usercart.product.map((item) => {
+      const totalPrice = item.productId.total_price * item.quantity;
+      return {
+        productId: item.productId,
+        price: totalPrice || 0, // Set default value if calculation results in NaN
+        quantity: item.quantity,
+        status: "Pending",
+        returned: false,
+      };
+    });
+
+    // Create the order with calculated prices
     const order = new Order({
       user_id: userId,
-      orderedItems: usercart.product,
+      orderedItems: orderedItemsWithPrice,
       totalAmount: usercart.subtotal,
       shippingAddress: addressId,
       paymentMethod: paymentMethod,
@@ -96,36 +111,74 @@ exports.cancelOrder = async (req, res) => {
     const id = req.session.user._id;
     const productId = req.params.pid;
     const orderId = req.query.oid;
-  
-    // Find the specific order that needs to be cancelled
-    const userorder1 = await Order.findById(orderId);
-    const cancelledOrder = userorder1.orderedItems.find(item => item.productId == productId);
-    const cancelledQuantity = cancelledOrder.quantity;
-  
+
     // Update the order by pulling the cancelled item
     let userorder = await Order.findOneAndUpdate(
-      { _id: orderId, 'orderedItems.productId': productId },
-      { $set: { 'orderedItems.$.status': 'Cancelled' } },
+      { _id: orderId, "orderedItems.productId": productId },
+      { $set: { "orderedItems.$.status": "Cancelled" } },
       { new: true }
     );
     if (!userorder) {
       throw new Error("No such order found");
     }
-  
+
+    // Find the cancelled item within orderedItems array
+    const cancelledItem = userorder.orderedItems.find(
+      (item) => item.productId.toString() === productId
+    );
+    if (!cancelledItem) {
+      throw new Error("Cancelled item not found");
+    }
+
+    // Get the quantity of the cancelled product
+    const cancelledQuantity = cancelledItem.quantity;
+
     // Retrieve the current stock of the product
     const product = await Product.findById(productId);
     const currentStock = product.stock;
-  
-    // Calculate the new stock after cancelling the order
-    const newStock = currentStock + cancelledQuantity;
-  
-    // Update the product with the new stock value
-    await Product.findByIdAndUpdate(productId, { stock: newStock });
-  
-    return res.status(200).json({ success: true, message: "Order has been cancelled." });
 
+    // Update the product with the new stock value
+    const newStock = currentStock + cancelledQuantity;
+    await Product.findByIdAndUpdate(productId, { stock: newStock });
+
+    return res
+      .status(200)
+      .json({ success: true, message: "Order has been cancelled." });
   } catch (e) {
     console.error(e);
     return res.redirect("/user/orders?msg=cancelerr");
+  }
+};
+
+exports.returnOrder = async (req, res) => {
+  try {
+    const productId = req.params.pid;
+    const orderId = req.query.oid;
+    console.log(productId, orderId)
+
+    // Use async/await with findByIdAndUpdate to ensure proper error handling
+    const updatedOrder = await Order.findByIdAndUpdate(
+      orderId,
+      { $set: { 'orderedItems.$[elem].status': 'Processing' } },
+      {
+        arrayFilters: [{ 'elem.productId': productId }],
+        new: true, // Return the updated document
+      }
+    )
+    console.log(updatedOrder)
+
+    // Check if updatedOrder is null (order not found) or if it's updated successfully
+    if (!updatedOrder) {
+      return res.status(404).json({ msg: 'Order not found' });
+    }
+
+    // Handle the case where the order is updated successfully
+    // console.log('Updated Order:', updatedOrder);
+    return res
+      .status(200)
+      .json({ success: true, message: "Return is being processed." });
+  } catch (error) {
+    console.error('Error:', error);
+    return res.status(500).json({ msg: 'Internal server error' });
   }
 };

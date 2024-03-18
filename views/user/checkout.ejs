@@ -152,28 +152,34 @@
             <hr />
             <div class="cart-items">
               <% usercart.product.forEach(cartItem=> { %>
-              <div class="card">
-                <div class="card-body">
-                  <div class="row align-items-center">
-                    <div class="col-md-4">
-                      <img src="/<%= cartItem.productId.images[0] %>" alt="Product Image" class="img-fluid object-fit-cover" />
-                    </div>
-                    <div class="col-md-8">
-                      <h4 class="card-title"><%= cartItem.productId.p_name[0] %></h4>
-                      <p class="card-text">
-                        <%= cartItem.productId.description %>
-                      </p>
-                      <h5>Price : $<%= cartItem.productId.total_price %></h5>
-                      <div class="d-flex align-items-center">
-                        <div class="input-group me-2">
-                          <p>Qty: <%= cartItem.quantity %> || Total Price: <%= (cartItem.productId.total_price * cartItem.quantity) %></p>
+                <div class="card">
+                  <div class="card-body">
+                    <div class="row align-items-center">
+                      <div class="col-md-4">
+                        <img src="/<%= cartItem.productId.images[0] %>" alt="Product Image"
+                          class="img-fluid object-fit-cover" />
+                      </div>
+                      <div class="col-md-8">
+                        <h4 class="card-title">
+                          <%= cartItem.productId.p_name[0] %>
+                        </h4>
+                        <p class="card-text">
+                          <%= cartItem.productId.description %>
+                        </p>
+                        <h5>Price : $<%= cartItem.productId.total_price %>
+                        </h5>
+                        <div class="d-flex align-items-center">
+                          <div class="input-group me-2">
+                            <p>Qty: <%= cartItem.quantity %> || Total Price: <%= (cartItem.productId.total_price *
+                                  cartItem.quantity) %>
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              <%})%>
+                <%})%>
             </div>
           </div>
 
@@ -184,14 +190,18 @@
             <div class="form-scroll">
               <div class="form-check">
                 <% address.forEach(addr=>{%>
-                <input class="form-check-input" value="<%= addr._id%>" type="radio" name="address" value="address1">
-                <label class="form-check-label" for="address1">
-                  <h3><%= addr.name %></h3>
-                  Address 1: <%= addr.address %>,<%= addr.state %>, <%= addr.pincode %>
-                </label> <br><br>
-                <%})%>
+                  <input class="form-check-input" value="<%= addr._id%>" type="radio" name="address" value="address1">
+                  <label class="form-check-label" for="address1">
+                    <h3>
+                      <%= addr.name %>
+                    </h3>
+                    Address 1: <%= addr.address %>,<%= addr.state %>, <%= addr.pincode %>
+                  </label> <br><br>
+                  <%})%>
               </div>
             </div>
+            <a href="/user/addaddress"><button class="btn btn-warning" onclick="goToAddAddress()">Add
+                Address</button></a>
           </div>
 
           <!-- Total Amount -->
@@ -222,16 +232,21 @@
     </form>
   </div>
   <script>
+    // Function to navigate to the Add Address page
+    function goToAddAddress() {
+      // Navigate to the specified URL
+      window.location.href = "/user/addaddress";
+    }
     function validateForm() {
       const checkoutForm = document.getElementById('checkoutForm');
-  
+
       // Check if all required fields are filled
       if (!checkoutForm.checkValidity()) {
         // If not, show validation messages and prevent form submission
         checkoutForm.reportValidity();
         return false;
       }
-  
+
       // Check if a payment method is selected
       const paymentMethod = checkoutForm.querySelector('input[name="paymentMethod"]:checked');
       if (!paymentMethod) {
@@ -243,7 +258,7 @@
         });
         return false;
       }
-  
+
       // Check if an address is selected
       const selectedAddress = checkoutForm.querySelector('input[name="address"]:checked');
       if (!selectedAddress) {
@@ -255,12 +270,12 @@
         });
         return false;
       }
-  
+
       // All validations passed, allow form submission
       return true;
     }
   </script>
-  
+
 </body>
 
 </html>

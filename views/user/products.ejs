@@ -139,12 +139,12 @@
   <div class="banner-wrapper fixed-top">
     <div class="banner">
       <h1>RISHI STUDIO</h1>
-      <!-- <form class="form-outline-inline" method="get" required>
-                  <input type="search" id="form1" class="form-control" placeholder="Search" />
-                  <button type="submit" class="btn btn-primary shadow-0">
-                      <i class="fa fa-search"></i>
-                  </button>
-              </form> -->
+      <form class="form-outline-inline" method="get" required>
+        <input type="search" id="form1" class="form-control" placeholder="Search" />
+        <button type="submit" class="btn btn-primary shadow-0">
+          <i class="fa fa-search"></i>
+        </button>
+      </form>
       <div class="icons">
         <a href="/user/cart"><i class="fa fa-shopping-cart"></i></a>
         <a href="/user/wishlist"><i class="fa fa-heart"></i></a>
@@ -185,22 +185,48 @@
       <div class="col-12 col-md-4"></div>
     </div>
   </div>
-  <div class="container mt-3">
-    <div class="row justify-content-end">
-      <div class="col-md-4">
-        <label for="sortSelect">Sort By:</label>
-        <select id="sortSelect" class="form-control">
-          <option value="newest">Newest Arrivals</option>
-          <option value="nameAsc">Name (A-Z)</option>
-          <option value="nameDesc">Name (Z-A)</option>
-          <option value="priceAsc">Price (Low to High)</option>
-          <option value="priceDesc">Price (High to Low)</option>
-          <option value="available">Available</option>
-        </select>
+  <%if(all){%>
+    <div class="container mt-3">
+      <div class="row justify-content-end">
+        <div class="col-md-4">
+          <label for="sortSelect">Sort By:</label>
+          <select id="sortSelect" class="form-control">
+            <option value="">No Filter</option>
+            <option value="/user/sortby?sortBy=nameAsc">Name (A-Z)</option>
+            <option value="/user/sortby?sortBy=nameDesc">Name (Z-A)</option>
+            <option value="/user/sortby?sortBy=priceAsc">Price (Low to High)</option>
+            <option value="/user/sortby?sortBy=priceDesc">Price (High to Low)</option>
+            <option value="/user/sortby?sortBy=available">Available</option>
+          </select>
+        </div>
       </div>
     </div>
-  </div>
-
+    
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const sortSelect = document.getElementById('sortSelect');
+        // Retrieve the selected option from local storage
+        const selectedOption = localStorage.getItem('selectedSortOption');
+        if (selectedOption) {
+          sortSelect.value = selectedOption;
+        }
+    
+        // Add change event listener to store selected option in local storage
+        sortSelect.addEventListener('change', function () {
+          const selectedUrl = this.value;
+          console.log(selectedUrl);
+          // Store the selected option in local storage, or remove it for "No Filter"
+          if (selectedUrl) {
+            localStorage.setItem('selectedSortOption', selectedUrl);
+          } else {
+            localStorage.removeItem('selectedSortOption');
+          }
+          // Redirect to the selected URL
+          window.location.href = selectedUrl.toString();
+        });
+      });
+    </script>
+    <%}%>
 
 
   <!-- partial:index.partial.html -->
@@ -209,67 +235,73 @@
       <div class="row justify-content-center text-center">
         <div class="col-md-8 col-lg-6">
           <h2 class="mb-5">
-            <% let filteredProducts = [] %>
-            <% if(all) {  filteredProducts = pdt.filter(pdt => pdt.listing !== "Unlisted" && categ.map(cat => cat.category).includes(pdt.category));  %>
-              All
-            <% } else { filteredProducts = pdt.filter(pdt => pdt.listing !== "Unlisted") %>
-              <%= category %>
-            <% } %> Collection
+            <% let filteredProducts=[] %>
+              <% if(all) { filteredProducts=pdt.filter(pdt=> pdt.listing !== "Unlisted" && categ.map(cat =>
+                cat.category).includes(pdt.category)); %>
+                All
+                <% } else { filteredProducts=pdt.filter(pdt=> pdt.listing !== "Unlisted") %>
+                  <%= category %>
+                    <% } %> Collection
           </h2>
         </div>
       </div>
-  
-      <% const productsPerPage = 6; %>
-      <% const pageCount = Math.ceil(filteredProducts.length / productsPerPage); %>
-  
-      <% for (let i = 0; i < pageCount; i++) { %>
-        <div class="page-container" id="page<%= i + 1 %>">
-          <div class="row">
-            <% const startIndex = i * productsPerPage; %>
-            <% const endIndex = Math.min((i + 1) * productsPerPage, filteredProducts.length); %>
-            <% const currentProducts = filteredProducts.slice(startIndex, endIndex); %>
-            <% currentProducts.forEach((pdt) => { %>
-              <div class="col-md-4">
-                <div id="product-<%= pdt._id %>" class="single-product">
-                  <div class="part-1">
-                    <img src="/<%= pdt.images[0] %>" alt=""
-                      style="height: 100%; width: 100%; background-repeat: no-repeat; background-size: cover; background-position: center;">
-                    <ul>
-                      <% if(pdt.stock>0){%>
-                        <li><a href="/user/addtocart/<%= pdt._id%>"><i class="fa fa-shopping-cart"></i></a></li>
-                      <%}%>
-                      <li><a href="/user/addwishlist/<%= pdt._id%>"><i class="fa fa-heart"></i></a></li>
-                      <li><a href="/user/productview/<%= pdt._id %>"><i class="fa fa-expand"></i></a></li>
-                    </ul>
-                  </div>
-                  <div class="part-2">
-                    <h3 class="product-title">
-                      <%= pdt.p_name %>
-                    </h3>
-                    <% if(pdt.stock<=0){%>
-                      <p class="text-danger">Out of Stock</p>
-                    <%}else{%>
-                      <h4 class="product-old-price">$<%= pdt.price %></h4>
-                      <h4 class="product-price text-lg">$<%= pdt.total_price %></h4>
-                    <%}%>
-                  </div>
-                </div>
+
+      <% const productsPerPage=6; %>
+        <% const pageCount=Math.ceil(filteredProducts.length / productsPerPage); %>
+
+          <% for (let i=0; i < pageCount; i++) { %>
+            <div class="page-container" id="page<%= i + 1 %>">
+              <div class="row">
+                <% const startIndex=i * productsPerPage; %>
+                  <% const endIndex=Math.min((i + 1) * productsPerPage, filteredProducts.length); %>
+                    <% const currentProducts=filteredProducts.slice(startIndex, endIndex); %>
+                      <% currentProducts.forEach((pdt)=> { %>
+                        <div class="col-md-4">
+                          <div id="product-<%= pdt._id %>" class="single-product">
+                            <div class="part-1">
+                              <img src="/<%= pdt.images[0] %>" alt=""
+                                style="height: 100%; width: 100%; background-repeat: no-repeat; background-size: cover; background-position: center;">
+                              <ul>
+                                <% if(pdt.stock>0){%>
+                                  <li><a href="/user/addtocart/<%= pdt._id%>"><i class="fa fa-shopping-cart"></i></a>
+                                  </li>
+                                  <%}%>
+                                    <li><a href="/user/addwishlist/<%= pdt._id%>"><i class="fa fa-heart"></i></a></li>
+                                    <li><a href="/user/productview/<%= pdt._id %>"><i class="fa fa-expand"></i></a></li>
+                              </ul>
+                            </div>
+                            <div class="part-2">
+                              <h3 class="product-title">
+                                <%= pdt.p_name %>
+                              </h3>
+                              <% if(pdt.stock<=0){%>
+                                <p class="text-danger">Out of Stock</p>
+                                <%}else{%>
+                                  <h4 class="product-old-price">$<%= pdt.price %>
+                                  </h4>
+                                  <h4 class="product-price text-lg">$<%= pdt.total_price %>
+                                  </h4>
+                                  <p class="product-price text-warning text-sm">Stock Left: <%= pdt.stock %>
+                                  </p>
+                                  <%}%>
+                            </div>
+                          </div>
+                        </div>
+                        <% }); %>
               </div>
-            <% }); %>
-          </div>
-        </div>
-      <% } %>
-  
-      <div class="pagination justify-content-center">
-        <% for (let i = 1; i <= pageCount; i++) { %>
-          <button class="page-link <%= i === 1 ? 'active' : '' %>" onclick="showPage(<%= i %>)">
-            <%= i %>
-          </button>
-        <% } %>
-      </div>
+            </div>
+            <% } %>
+
+              <div class="pagination justify-content-center">
+                <% for (let i=1; i <=pageCount; i++) { %>
+                  <button class="page-link <%= i === 1 ? 'active' : '' %>" onclick="showPage(<%= i %>)">
+                    <%= i %>
+                  </button>
+                  <% } %>
+              </div>
     </div>
   </section>
-    <script>
+  <script>
     function showPage(pageNumber) {
       const pages = document.querySelectorAll('.page-container');
       pages.forEach((page) => {
@@ -307,7 +339,8 @@
   </footer>
 
   <!--  FOOTER MARKUP ENDS  -->
-
+  <!-- Include jQuery library -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </body>
 
 </html>

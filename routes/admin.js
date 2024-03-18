@@ -3,9 +3,12 @@ const path = require("path");
 const multer = require("multer");
 const nodemailer = require("nodemailer");
 const admincontroller = require("../controller/admincontroller");
+const ordercontroller = require('../controller/ordercontroller')
 const { cookieJwtAuth } = require("../controller/admincontroller");
 const CatDb = require("../model/categorymodel");
 const ProductDb = require("../model/productmodel");
+const AddressDb = require('../model/addressmodel');
+const OrderDb = require('../model/ordermodel');
 const upload = require("../multer/multer");
 
 const axios = require("axios");
@@ -55,11 +58,12 @@ route.get("/deletecategory/:id", cookieJwtAuth, admincontroller.deletecategory);
 route.get("/viewusers", cookieJwtAuth, admincontroller.viewusers);
 route.put("/userstatus/:id", cookieJwtAuth, admincontroller.userstatus);
 
+route.get('/vieworders', cookieJwtAuth, admincontroller.viewOrders);
+route.get('/acceptreturn/:pid', cookieJwtAuth, admincontroller.acceptReturn);
+route.get('/rejectreturn/:pid', cookieJwtAuth, admincontroller.rejectReturn);
+route.get('/statusshipped/:pid', cookieJwtAuth, admincontroller.statusShipped);
+route.get('/statusdelivered/:pid', cookieJwtAuth, admincontroller.statusDelivered);
 
-
-
-// route.get('/admin/fetchproducts',admincontroller.findproducts)
-// route.get('/admin/users',admincontroller.findusers)
 
 route.get("**", (req, res) => {
   res.render("pagenotfound");

@@ -33,6 +33,7 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
   <!-- CSS Files -->
   <link id="pagestyle" href="/css/admin/material-dashboard.css?v=3.1.0" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.all.min.js"></script>
   <style>
     .text-end {
@@ -40,6 +41,28 @@
       right: 0;
       top: 50%;
       transform: translateY(-35%);
+    }
+
+    .object-fit-cover {
+      object-fit: cover;
+      height: 100px;
+      width: 100px;
+    }
+
+    .status-dropdown {
+      width: 150px;
+      /* Adjust the width as needed */
+      padding: 6px 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background-color: #fff;
+      color: #333;
+      font-size: 14px;
+    }
+
+    .status-dropdown option {
+      background-color: #fff;
+      color: #333;
     }
   </style>
 </head>
@@ -60,7 +83,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white active bg-gradient-primary" href="/admin/viewproducts">
+          <a class="nav-link text-white" href="/admin/viewproducts">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">table_view</i>
             </div>
@@ -85,7 +108,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white " href="/admin/vieworders">
+          <a class="nav-link text-white active bg-gradient-primary" href="/admin/vieworders">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">receipt</i>
             </div>
@@ -133,89 +156,469 @@
             <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
               <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
                 <h6 class="text-white text-capitalize ps-3">Orders</h6>
-            </div>
-            <div class="card-body px-0 pb-2">
-              <div class="table-responsive p-0">
-                <table id="productsTable" class="table align-items-center mb-0">
-                  <thead>
-                    <tr>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Product Name</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Description
-                      </th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Category</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Total
-                        Price</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Stock
-                      </th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                        Listing</th>
-                      <th class="text-secondary opacity-7"></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <% products.forEach((pdt)=> { %>
-                      <tr>
-                        <td>
-                          <div class="d-flex px-2 py-1">
-                            <div>
-                              <img src="/<%= pdt.images[0] %>" class="avatar avatar-sm me-3 border-radius-lg"
-                                alt="user1">
-                            </div>
-                            <div class="d-flex flex-column justify-content-center">
-                              <h6 class="mb-0 text-sm">
-                                <%= pdt.p_name %>
-                              </h6>
-                            </div>
-                          </div>
-                        </td>
-                        <td class="align-middle">
-                          <p class="text-xs text-secondary mb-0"
-                            style="word-wrap: break-word; width: 250px; white-space: normal;">
-                            <%= pdt.description %>
-                          </p>
-                        </td>
-                        <td class="align-middle text-lg">
-                          <p class="text-xs fw-bold mb-1">
-                            <%= pdt.category %>
-                          </p>
-                        </td>
-                        <td class="align-middle text-center text-lg">
-                          <p class="text-xs fw-bold mb-1">$<%= pdt.total_price %>
-                          </p>
-                        </td>
-                        <td class="align-middle text-center">
-                          <span class="text-secondary text-xs font-weight-bold">
-                            <%= pdt.stock %>
-                          </span>
-                        </td>
-                        <td class="align-middle text-center">
-                          <span class="text-secondary text-xs font-weight-bold">
-                            <%= pdt.listing %>
-                          </span>
-                        </td>
-                        <td class="align-middle">
-                          <a class="text-white font-weight-bold" href="/admin/editproduct/<%= pdt._id %>">
-                            <button type="button" class="btn btn-warning text-xs mb-1"><i
-                                class="fas fa-pencil-alt"></i></button>
-                          </a>
-                          <a class="text-white font-weight-bold delete" href="/admin/deleteproduct/<%= pdt._id %>" onclick="return deleteP(event)">
-                            <button type="button" class="btn btn-danger text-xs mb-1"><i
-                                class="fas fa-trash-alt"></i></button>
-                          </a>
-                        </td>
-                      </tr>
-                      <% }) %>
-                  </tbody>
-                </table>
               </div>
-            </div>
-            <div class="pagination mt-3 d-flex justify-content-center" id="pagination">
-              <!-- Pagination buttons will be added here dynamically -->
+              <div class="card-body px-0 pb-2">
+                <div class="bg-light p-4">
+                  <div class="nav nav-tabs mb-4" role="tablist">
+                    <a class="nav-item nav-link active" data-bs-toggle="tab" href="#nav-pending">Pending</a>
+                    <a class="nav-item nav-link" data-bs-toggle="tab" href="#nav-delivered">Delivered</a>
+                    <a class="nav-item nav-link" data-bs-toggle="tab" href="#nav-processing">Processing</a>
+                    <a class="nav-item nav-link" data-bs-toggle="tab" href="#nav-cancelled">Cancelled</a>
+                    <a class="nav-item nav-link" data-bs-toggle="tab" href="#nav-returned">Returned</a>
+                  </div>
+                  <div class="tab-content">
+                    <div class="tab-pane fade show active" id="nav-pending">
+                      <div class="table-responsive">
+                        <table class="table">
+                          <thead>
+                            <tr>
+                              <th scope="col">Product Image</th>
+                              <th scope="col">Product Name</th>
+                              <th scope="col">Total Amount</th>
+                              <th scope="col">Quantity</th>
+                              <th scope="col">Order Date</th>
+                              <th scope="col">Order Status</th>
+                              <th scope="col">Action</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <% orders.forEach(order=> {%>
+                              <% order.orderedItems.forEach(items=> { %>
+                                <% if (items.status==="Pending" || items.status==="Shipped" ) { %>
+                                  <tr>
+                                    <td><img class="object-fit-cover" src="/<%= items.productId.images[0] %>"
+                                        alt="Product Image"></td>
+                                    <td class="text-center align-middle">
+                                      <%= items.productId.p_name %>
+                                    </td>
+                                    <td class="text-center align-middle">
+                                      <%= (items.productId.total_price)*(items.quantity) %>
+                                    </td>
+                                    <td class="text-center align-middle">
+                                      <%= items.quantity %>
+                                    </td>
+                                    <td class="text-center align-middle">
+                                      <%= order.orderDate.toLocaleDateString() %>
+                                    </td>
+                                    <td class="text-center align-middle">
+                                      <%= items.status %>
+                                    </td>
+                                    <td class="text-center align-middle">
+                                      <select id="<%= items.productId._id %>" class="form-select status-dropdown">
+                                        <% if (items.status==='Pending' ) { %>
+                                          <option value="Pending" <%=items.status==='Pending' ? 'selected' : '' %>
+                                            >Pending</option>
+                                          <option value="Shipped" <%=items.status==='Shipped' ? 'selected' : '' %>
+                                            >Shipped</option>
+                                          <option value="Delivered" <%=items.status==='Delivered' ? 'selected' : '' %>
+                                            >Delivered</option>
+                                          <% } else if (items.status==='Shipped' ) { %>
+                                            <option value="Shipped" <%=items.status==='Shipped' ? 'selected' : '' %>
+                                              >Shipped</option>
+                                            <option value="Delivered" <%=items.status==='Delivered' ? 'selected' : '' %>
+                                              >Delivered</option>
+                                            <% } %>
+                                      </select>
+                                    </td>
+                                  </tr>
+                                  <script>
+                                    document.addEventListener('DOMContentLoaded', function () {
+                                      const dropdowns = document.querySelectorAll('.status-dropdown');
+                                      const orderId = "<%= order._id %>";
+
+                                      dropdowns.forEach(dropdown => {
+                                        dropdown.addEventListener('change', function () {
+                                          const selectedOption = this.value;
+                                          const productId = this.id;
+                                          let url;
+
+                                          if (selectedOption === 'Shipped') {
+                                            url = `/admin/statusshipped/${productId}?oid=${orderId}`;
+                                          } else if (selectedOption === 'Delivered') {
+                                            url = `/admin/statusdelivered/${productId}?oid=${orderId}`;
+                                          }
+
+                                          if (url) {
+                                            // Display SweetAlert confirmation dialog
+                                            Swal.fire({
+                                              title: 'Are you sure?',
+                                              text: 'Do you want to change the status?',
+                                              icon: 'warning',
+                                              showCancelButton: true,
+                                              confirmButtonColor: '#3085d6',
+                                              cancelButtonColor: '#d33',
+                                              confirmButtonText: 'Yes',
+                                              cancelButtonText: 'No',
+                                            }).then((result) => {
+                                              if (result.isConfirmed) {
+                                                fetch(url, {
+                                                  method: 'get', // Use GET method for triggering the routes
+                                                })
+                                                  .then((response) => {
+                                                    if (!response.ok) {
+                                                      throw new Error('Failed to update status');
+                                                    }
+                                                    return response.json();
+                                                  })
+                                                  .then((data) => {
+                                                    // Handle success or error response from the server
+                                                    console.log(data);
+                                                    if (data.success) {
+                                                      Swal.fire({
+                                                        title: "Processing",
+                                                        text: data.message,
+                                                        icon: "success",
+                                                      }).then(() => {
+                                                        // Reload the page or perform any other actions
+                                                        window.location.reload();
+                                                      });
+                                                    } else {
+                                                      Swal.fire({
+                                                        title: "Failed!",
+                                                        text: data.message,
+                                                        icon: "error",
+                                                      });
+                                                    }
+                                                  })
+                                                  .catch((error) => {
+                                                    console.error("Error:", error);
+                                                    Swal.fire({
+                                                      title: "Error!",
+                                                      text: "Something went wrong.",
+                                                      icon: "error",
+                                                    });
+                                                  });
+                                              }
+                                            });
+                                          }
+                                        });
+                                      });
+                                    });
+                                  </script>
+                                  <% } %>
+                                    <% }) %>
+                                      <% }) %>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <div class="tab-pane fade" id="nav-delivered">
+                      <div class="table-responsive">
+                        <table class="table">
+                          <thead>
+                            <tr>
+                              <th scope="col">Product Image</th>
+                              <th scope="col">Product Name</th>
+                              <th scope="col">Total Amount</th>
+                              <th scope="col">Quantity</th>
+                              <th scope="col">Order Date</th>
+                              <th scope="col">Order Status</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <% orders.forEach(order=> {%>
+                              <% order.orderedItems.forEach(items=> { %>
+                                <% if (items.status==="Delivered" ) { %>
+                                  <tr>
+                                    <td><img class="object-fit-cover" src="/<%= items.productId.images[0] %>"
+                                        alt="Product Image"></td>
+                                    <td class="text-center align-middle">
+                                      <%= items.productId.p_name %>
+                                    </td>
+                                    <td class="text-center align-middle">
+                                      <%= (items.productId.total_price)*(items.quantity) %>
+                                    </td>
+                                    <td class="text-center align-middle">
+                                      <%= items.quantity %>
+                                    </td>
+                                    <td class="text-center align-middle">
+                                      <%= order.orderDate.toLocaleDateString() %>
+                                    </td>
+                                    <td class="text-center align-middle">
+                                      <%= items.status %>
+                                    </td>
+                                  </tr>
+                                  <% } %>
+                                    <% }) %>
+                                      <% }) %>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <div class="tab-pane fade" id="nav-processing">
+                      <div class="table-responsive">
+                        <table class="table">
+                          <thead>
+                            <tr>
+                              <th scope="col">Product Image</th>
+                              <th scope="col">Product Name</th>
+                              <th scope="col">Total Amount</th>
+                              <th scope="col">Quantity</th>
+                              <th scope="col">Order Date</th>
+                              <th scope="col">Order Status</th>
+                              <th scope="col">Action</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <% orders.forEach(order=> {%>
+                              <% order.orderedItems.forEach(items=> { %>
+                                <% if (items.status==="Processing" ) { %>
+                                  <tr>
+                                    <td><img class="object-fit-cover" src="/<%= items.productId.images[0] %>"
+                                        alt="Product Image"></td>
+                                    <td class="text-center align-middle">
+                                      <%= items.productId.p_name %>
+                                    </td>
+                                    <td class="text-center align-middle">
+                                      <%= (items.productId.total_price)*(items.quantity) %>
+                                    </td>
+                                    <td class="text-center align-middle">
+                                      <%= items.quantity %>
+                                    </td>
+                                    <td class="text-center align-middle">
+                                      <%= order.orderDate.toLocaleDateString() %>
+                                    </td>
+                                    <td class="text-center align-middle">
+                                      <%= items.status %>
+                                    </td>
+                                    <td class="text-center align-middle">
+                                      <button id="accept<%= items.productId._id %>" class="btn btn-success accept"
+                                        data-productid="<%= items.productId._id %>">
+                                        Accept
+                                      </button>
+                                      <button id="reject<%= items.productId._id %>" class="btn btn-danger reject"
+                                        data-productid="<%= items.productId._id %>">
+                                        Reject
+                                      </button>
+                                    </td>
+                                  </tr>
+                                  <script>
+                                    document.addEventListener("DOMContentLoaded", function () {
+                                      // Add event listener to Accept buttons
+                                      document.querySelectorAll('.accept').forEach(button => {
+                                        button.addEventListener('click', function () {
+                                          const productId = this.getAttribute('data-productid');
+                                          const orderId = "<%= order._id %>"; // Replace with actual order ID
+
+                                          // Display SweetAlert confirmation dialog
+                                          Swal.fire({
+                                            title: "Are you sure?",
+                                            text: "Accept this return?",
+                                            icon: "info",
+                                            showCancelButton: true,
+                                            confirmButtonColor: "#3085d6",
+                                            cancelButtonColor: "#d33",
+                                            confirmButtonText: "Accept!",
+                                          }).then((result) => {
+                                            if (result.isConfirmed) {
+                                              // Send AJAX request to accept route
+                                              fetch(`/admin/acceptreturn/${productId}?oid=${orderId}`, {
+                                                method: "GET",
+                                              })
+                                                .then((response) => {
+                                                  if (!response.ok) {
+                                                    throw new Error("Failed to accept return");
+                                                  }
+                                                  return response.json(); // Parse JSON response
+                                                })
+                                                .then((data) => {
+                                                  // Handle success or error response from the server
+                                                  console.log(data);
+                                                  if (data.success) {
+                                                    Swal.fire({
+                                                      title: "Processing",
+                                                      text: data.message,
+                                                      icon: "success",
+                                                    }).then(() => {
+                                                      // Reload the page or perform any other actions
+                                                      window.location.reload();
+                                                    });
+                                                  } else {
+                                                    Swal.fire({
+                                                      title: "Failed!",
+                                                      text: data.message,
+                                                      icon: "error",
+                                                    });
+                                                  }
+                                                })
+                                                .catch((error) => {
+                                                  console.error("Error:", error);
+                                                  Swal.fire({
+                                                    title: "Error!",
+                                                    text: "Something went wrong.",
+                                                    icon: "error",
+                                                  });
+                                                });
+                                            }
+                                          });
+                                        });
+                                      });
+
+                                      // Add event listener to Reject buttons
+                                      document.querySelectorAll('.reject').forEach(button => {
+                                        button.addEventListener('click', function () {
+                                          const productId = this.getAttribute('data-productid');
+                                          const orderId = "<%= order._id %>"; // Replace with actual order ID
+
+                                          // Display SweetAlert confirmation dialog
+                                          Swal.fire({
+                                            title: "Are you sure?",
+                                            text: "Reject this return?",
+                                            icon: "warning",
+                                            showCancelButton: true,
+                                            confirmButtonColor: "#d33",
+                                            cancelButtonColor: "#3085d6",
+                                            confirmButtonText: "Reject!",
+                                          }).then((result) => {
+                                            if (result.isConfirmed) {
+                                              // Send AJAX request to reject route
+                                              fetch(`/admin/rejectreturn/${productId}?oid=${orderId}`, {
+                                                method: "GET",
+                                              })
+                                                .then((response) => {
+                                                  if (!response.ok) {
+                                                    throw new Error("Failed to reject return");
+                                                  }
+                                                  return response.json(); // Parse JSON response
+                                                })
+                                                .then((data) => {
+                                                  // Handle success or error response from the server
+                                                  console.log(data);
+                                                  if (data.success) {
+                                                    Swal.fire({
+                                                      title: "Processing",
+                                                      text: data.message,
+                                                      icon: "success",
+                                                    }).then(() => {
+                                                      // Reload the page or perform any other actions
+                                                      window.location.reload();
+                                                    });
+                                                  } else {
+                                                    Swal.fire({
+                                                      title: "Failed!",
+                                                      text: data.message,
+                                                      icon: "error",
+                                                    });
+                                                  }
+                                                })
+                                                .catch((error) => {
+                                                  console.error("Error:", error);
+                                                  Swal.fire({
+                                                    title: "Error!",
+                                                    text: "Something went wrong.",
+                                                    icon: "error",
+                                                  });
+                                                });
+                                            }
+                                          });
+                                        });
+                                      });
+                                    });
+
+                                  </script>
+                                  <% } %>
+                                    <% }) %>
+                                      <% }) %>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <div class="tab-pane fade" id="nav-cancelled">
+                      <div class="table-responsive">
+                        <table class="table">
+                          <thead>
+                            <tr>
+                              <th scope="col">Product Image</th>
+                              <th scope="col">Product Name</th>
+                              <th scope="col">Total Amount</th>
+                              <th scope="col">Quantity</th>
+                              <th scope="col">Order Date</th>
+                              <th scope="col">Order Status</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <% orders.forEach(order=> {%>
+                              <% order.orderedItems.forEach(items=> { %>
+                                <% if (items.status==="Cancelled" ) { %>
+                                  <tr>
+                                    <td><img class="object-fit-cover" src="/<%= items.productId.images[0] %>"
+                                        alt="Product Image"></td>
+                                    <td class="text-center align-middle">
+                                      <%= items.productId.p_name %>
+                                    </td>
+                                    <td class="text-center align-middle">
+                                      <%= (items.productId.total_price)*(items.quantity) %>
+                                    </td>
+                                    <td class="text-center align-middle">
+                                      <%= items.quantity %>
+                                    </td>
+                                    <td class="text-center align-middle">
+                                      <%= order.orderDate.toLocaleDateString() %>
+                                    </td>
+                                    <td class="text-center align-middle">
+                                      <%= items.status %>
+                                    </td>
+                                  </tr>
+                                  <% } %>
+                                    <% }) %>
+                                      <% }) %>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <div class="tab-pane fade" id="nav-returned">
+                      <div class="table-responsive">
+                        <table class="table">
+                          <thead>
+                            <tr>
+                              <th scope="col">Product Image</th>
+                              <th scope="col">Product Name</th>
+                              <th scope="col">Total Amount</th>
+                              <th scope="col">Quantity</th>
+                              <th scope="col">Order Date</th>
+                              <th scope="col">Order Status</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <% orders.forEach(order=> {%>
+                              <% order.orderedItems.forEach(items=> { %>
+                                <% if (items.status==="Returned" ) { %>
+                                  <tr>
+                                    <td><img class="object-fit-cover" src="/<%= items.productId.images[0] %>"
+                                        alt="Product Image"></td>
+                                    <td class="text-center align-middle">
+                                      <%= items.productId.p_name %>
+                                    </td>
+                                    <td class="text-center align-middle">
+                                      <%= (items.productId.total_price)*(items.quantity) %>
+                                    </td>
+                                    <td class="text-center align-middle">
+                                      <%= items.quantity %>
+                                    </td>
+                                    <td class="text-center align-middle">
+                                      <%= order.orderDate.toLocaleDateString() %>
+                                    </td>
+                                    <td class="text-center align-middle">
+                                      <%= items.status %>
+                                    </td>
+                                  </tr>
+                                  <% } %>
+                                    <% }) %>
+                                      <% }) %>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="pagination mt-3 d-flex justify-content-center" id="pagination">
+                <!-- Pagination buttons will be added here dynamically -->
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
   </main>
 
   <script>
@@ -275,7 +678,8 @@
     displayProducts();
   </script>
 
-  onclick="return deleteC(event)"<script>
+  onclick="return deleteC(event)"
+  <script>
     function deleteP(event) {
       event.preventDefault(); // Prevent the default behavior of the anchor tag
       const deleteUrl = event.currentTarget.getAttribute('href'); // Retrieve the href attribute
