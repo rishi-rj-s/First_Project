@@ -335,6 +335,14 @@
                         confirmButtonText: 'OK'
                     });
                     window.history.replaceState({}, document.title, window.location.pathname);
+                }  else if (message.includes('nocart')) {
+                    Swal.fire({
+                        title: "No Items",
+                        text: "Add a products to the cart!",
+                        icon: "warning",
+                        confirmButtonText: 'OK'
+                    });
+                    window.history.replaceState({}, document.title, window.location.pathname);
                 }
             }
         </script>

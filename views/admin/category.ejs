@@ -92,6 +92,22 @@
             <span class="nav-link-text ms-1">Orders</span>
           </a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link text-white "  href="/admin/viewcoupons">
+            <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+              <i class="material-icons opacity-10">local_offer</i>
+            </div>
+            <span class="nav-link-text ms-1">Coupons</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white " href="">
+            <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+              <i class="material-icons opacity-10">card_giftcard</i>
+            </div>
+            <span class="nav-link-text ms-1">Offers</span>
+          </a>
+        </li>
         <!-- <li class="nav-item">
           <a class="nav-link text-white " href="/profile">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
@@ -140,50 +156,48 @@
               </div>
             </div>
             <div class="card-body px-0 pb-2">
-              <div class="table-responsive p-0">
-                <table class="table mb-0">
-                  <thead>
+              <table class="table mb-0">
+                <thead>
+                  <tr>
+                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-8">Name</th>
+                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-8">Listing</th>
+                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-8">Edit</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="categoryTableBody">
+                  <% category.forEach(category=> { %>
                     <tr>
-                      <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-8">Name</th>
-                      <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-8">Listing</th>
-                      <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-8">Edit</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody id="categoryTableBody">
-                    <% category.forEach(category=> { %>
-                      <tr>
-                        <td>
-                          <div class="d-flex px-2 py-1">
-                            <div class="d-flex flex-column justify-content-center">
-                              <h6 class="mb-0 text-sm">
-                                <%= category.category %>
-                              </h6>
-                            </div>
+                      <td>
+                        <div class="d-flex px-2 py-1">
+                          <div class="d-flex flex-column justify-content-center">
+                            <h6 class="mb-0 text-sm">
+                              <%= category.category %>
+                            </h6>
                           </div>
-                        </td>
-                        <td>
-                          <button class="btn btn-info category-status" data-category-id="<%= category._id %>">
-                            <span>
-                              <%= category.listing %>
-                            </span>
-                          </button>
-                        </td>
-                        <td>
-                          <a href="/admin/editcategory/<%= category._id %>">
-                            <button class="btn btn-warning">Edit</button>
-                          </a>
-                        </td>
-                        <td>
-                          <a href="/admin/deletecategory/<%= category._id %>" onclick="return deleteC(event)">
-                            <button class="btn btn-danger delete-btn">Delete</button>
-                          </a>
-                        </td>
-                      </tr>
-                      <% }); %>
-                  </tbody>
-                </table>
-              </div>
+                        </div>
+                      </td>
+                      <td>
+                        <button class="btn btn-info category-status" data-category-id="<%= category._id %>">
+                          <span>
+                            <%= category.listing %>
+                          </span>
+                        </button>
+                      </td>
+                      <td>
+                        <a href="/admin/editcategory/<%= category._id %>">
+                          <button class="btn btn-warning">Edit</button>
+                        </a>
+                      </td>
+                      <td>
+                        <a href="/admin/deletecategory/<%= category._id %>" onclick="return deleteC(event)">
+                          <button class="btn btn-danger delete-btn">Delete</button>
+                        </a>
+                      </td>
+                    </tr>
+                    <% }); %>
+                </tbody>
+              </table>
               <div class="pagination mt-3 d-flex justify-content-center gap-1" id="pagination">
                 <!-- Pagination buttons will be added here dynamically -->
               </div>

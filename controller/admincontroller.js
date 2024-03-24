@@ -168,6 +168,17 @@ exports.editproduct = async (req, res) => {
     if (!product) {
       return res.status(400).send("Product Not Found!");
     }
+    const category = editvalues.category.value.trim();
+    const p_name = editvalues.p_name.value.trim();
+    const price = editvalues.price.value.trim();
+    const description = editvalues.description.value.trim();
+    const discount = editvalues.discount.value.trim();
+    const stock = editvalues.stock.value.trim();
+
+    // Check if any of the trimmed required fields are empty
+    if (!category || !p_name || !price || !description || !discount || !stock) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
 
     product.p_name = editvalues.p_name;
     product.price = editvalues.price;

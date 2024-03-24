@@ -179,12 +179,28 @@
                     </li>
                     <li class="nav-item">
                          <a class="nav-link text-white " href="/admin/vieworders">
-                           <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                             <i class="material-icons opacity-10">receipt</i>
-                           </div>
-                           <span class="nav-link-text ms-1">Orders</span>
+                              <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                                   <i class="material-icons opacity-10">receipt</i>
+                              </div>
+                              <span class="nav-link-text ms-1">Orders</span>
                          </a>
-                       </li>
+                    </li>
+                    <li class="nav-item">
+                         <a class="nav-link text-white " href="/admin/viewcoupons">
+                              <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                                   <i class="material-icons opacity-10">local_offer</i>
+                              </div>
+                              <span class="nav-link-text ms-1">Coupons</span>
+                         </a>
+                    </li>
+                    <li class="nav-item">
+                         <a class="nav-link text-white " href="">
+                              <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                                   <i class="material-icons opacity-10">card_giftcard</i>
+                              </div>
+                              <span class="nav-link-text ms-1">Offers</span>
+                         </a>
+                    </li>
                     <!-- <li class="nav-item">
           <a class="nav-link text-white " href="/profile">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
@@ -231,7 +247,8 @@
                               <div class="container-fluid">
                                    <div class="row">
                                         <div class="col-md-8">
-                                             <form action="/admin/addcategory" method="post" onsubmit="return validateForm()">
+                                             <form action="/admin/addcategory" method="post"
+                                                  onsubmit="return validateForm()">
                                                   <div class="form-group">
                                                        <label for="category">New Category</label>
                                                        <input type="text" class="form-control" name="category"
@@ -242,7 +259,7 @@
                                              <script>
                                                   function validateForm() {
                                                        const name = document.querySelector('[name="category"]');
-                              
+
                                                        // Check if any field is empty or contains only whitespace
                                                        if (!name.value.trim()) {
                                                             Swal.fire({
@@ -253,7 +270,7 @@
                                                             })
                                                             return false; // Prevent form submission
                                                        }
-                              
+
                                                        return true; // Allow form submission
                                                   }
                                              </script>

@@ -138,7 +138,23 @@
       </div>
     </div>
   </div>
-
+  <script>
+    // Check if the cart is empty on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      const cartItems = document.querySelectorAll('.cart-items .card');
+      if (cartItems.length === 0) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: "Your cart is empty. Redirecting you to the landing page.",
+          confirmButtonText: 'Ok'
+        }).then(() => {
+          // Redirect to landing page
+          window.location.href = "/user/landing";
+        });
+      }
+    });
+  </script>
 
   <!--  NAVIGATION ENDS  -->
   <div class="container mt-4">
@@ -216,9 +232,14 @@
             <h3>Payment Method</h3>
             <hr />
             <div class="form-check">
-              <input class="form-check-input" type="radio" name="paymentMethod" id="paymentMethod3" value="option3" />
-              <label class="form-check-label" for="paymentMethod3">
+              <input class="form-check-input" type="radio" name="paymentMethod" value="COD" />
+              <label class="form-check-label" for="COD">
                 Cash On Delivery
+              </label>
+              <br>
+              <input class="form-check-input" type="radio" name="paymentMethod" value="RazorPay" />
+              <label class="form-check-label" for="razorPay">
+                RazorPay
               </label>
             </div>
           </div>

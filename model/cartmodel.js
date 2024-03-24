@@ -22,6 +22,9 @@ const schema = new mongoose.Schema({
         type: Number,
         default: 0
     }
+},
+{
+    timestamps: true
 });
 
 const CartDb = mongoose.model("cart",schema);

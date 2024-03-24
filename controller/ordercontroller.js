@@ -3,6 +3,16 @@ const Order = require("../model/ordermodel");
 const Category = require("../model/categorymodel");
 const Cart = require("../model/cartmodel");
 const Product = require("../model/productmodel");
+const { KEY_ID, KEY_SECRET } = process.env;
+const Razorpay = require("razorpay");
+
+const razorpaykeyId = KEY_ID;
+
+// Initialize Razorpay with your API key and secret
+const razorpay = new Razorpay({
+  key_id: KEY_ID,
+  key_secret: KEY_SECRET,
+});
 
 exports.renderOrderPage = async (req, res) => {
   try {
@@ -30,7 +40,7 @@ exports.placeOrder = async (req, res) => {
     const addsId = req.body.address;
     // console.log(addsId);
     const addressId = await Address.findById(addsId);
-    const paymentMethod = "Cash On Delivery";
+    const paymentMethod = req.body.paymentMethod;
 
     if (!usercart) {
       return res.status(404).json({ message: "Cart not found" });
@@ -38,7 +48,7 @@ exports.placeOrder = async (req, res) => {
     if (!addressId) {
       return res.status(404).json({ message: "Address not found" });
     }
-    
+
     // Calculate individual prices for ordered items
     const orderedItemsWithPrice = usercart.product.map((item) => {
       const totalPrice = item.productId.total_price * item.quantity;
@@ -59,6 +69,21 @@ exports.placeOrder = async (req, res) => {
       shippingAddress: addressId,
       paymentMethod: paymentMethod,
     });
+
+    // Update payment status based on payment method
+    if (paymentMethod === "COD") {
+      order.paymentStatus = "Pending";
+    } else if (paymentMethod === "RazorPay") {
+      const razorpayOrder = await razorpay.orders.create({
+        amount: totalAmount * 100,
+        currency: "INR",
+        payment_capture: 1,
+      });
+      order.paymentStatus = "Failed";
+      order.razorpayOrderId = razorpayOrder.id;
+      await order.save();
+      return res.redirect(`/razorpaypage/${order._id}`); // Redirect to Razorpay page
+    }
 
     await order.save();
 
@@ -154,22 +179,22 @@ exports.returnOrder = async (req, res) => {
   try {
     const productId = req.params.pid;
     const orderId = req.query.oid;
-    console.log(productId, orderId)
+    // console.log(productId, orderId)
 
     // Use async/await with findByIdAndUpdate to ensure proper error handling
     const updatedOrder = await Order.findByIdAndUpdate(
       orderId,
-      { $set: { 'orderedItems.$[elem].status': 'Processing' } },
+      { $set: { "orderedItems.$[elem].status": "Processing" } },
       {
-        arrayFilters: [{ 'elem.productId': productId }],
+        arrayFilters: [{ "elem.productId": productId }],
         new: true, // Return the updated document
       }
-    )
-    console.log(updatedOrder)
+    );
+    // console.log(updatedOrder)
 
     // Check if updatedOrder is null (order not found) or if it's updated successfully
     if (!updatedOrder) {
-      return res.status(404).json({ msg: 'Order not found' });
+      return res.status(404).json({ msg: "Order not found" });
     }
 
     // Handle the case where the order is updated successfully
@@ -178,7 +203,7 @@ exports.returnOrder = async (req, res) => {
       .status(200)
       .json({ success: true, message: "Return is being processed." });
   } catch (error) {
-    console.error('Error:', error);
-    return res.status(500).json({ msg: 'Internal server error' });
+    console.error("Error:", error);
+    return res.status(500).json({ msg: "Internal server error" });
   }
 };

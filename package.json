@@ -27,7 +27,8 @@
     "otp-generator": "^4.0.1",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
-    "sweetalert2": "^11.10.5",
+    "razorpay": "^2.9.2",
+    "sweetalert2": "^11.6.13",
     "uuid": "^9.0.1"
   }
 }

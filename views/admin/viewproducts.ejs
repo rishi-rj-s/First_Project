@@ -41,6 +41,12 @@
       top: 50%;
       transform: translateY(-35%);
     }
+
+    .object-fit-cover {
+      object-fit: cover;
+      height: 100px;
+      width: 100px;
+    }
   </style>
 </head>
 
@@ -90,6 +96,22 @@
               <i class="material-icons opacity-10">receipt</i>
             </div>
             <span class="nav-link-text ms-1">Orders</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white " href="/admin/viewcoupons">
+            <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+              <i class="material-icons opacity-10">local_offer</i>
+            </div>
+            <span class="nav-link-text ms-1">Coupons</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white " href="">
+            <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+              <i class="material-icons opacity-10">card_giftcard</i>
+            </div>
+            <span class="nav-link-text ms-1">Offers</span>
           </a>
         </li>
         <!-- <li class="nav-item">
@@ -145,11 +167,8 @@
                   <thead>
                     <tr>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Product Name</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Description
-                      </th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Category</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Total
-                        Price</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ">
+                        Category</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Stock
                       </th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
@@ -158,58 +177,56 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <% products.forEach((pdt)=> { %>
-                      <tr>
-                        <td>
-                          <div class="d-flex px-2 py-1">
-                            <div>
-                              <img src="/<%= pdt.images[0] %>" class="avatar avatar-sm me-3 border-radius-lg"
-                                alt="user1">
+                    <% if (products){ %>
+                      <% products.forEach((pdt)=> { %>
+                        <tr>
+                          <td>
+                            <div class="d-flex px-2 py-1">
+                              <div>
+                                <img src="/<%= pdt.images[0] %>" class="object-fit-cover  me-3 border-radius-lg"
+                                  alt="user1">
+                              </div>
+                              <div class="d-flex flex-column justify-content-center">
+                                <h6 class="mb-0 text-sm">
+                                  <%= pdt.p_name %>
+                                </h6>
+                              </div>
                             </div>
-                            <div class="d-flex flex-column justify-content-center">
-                              <h6 class="mb-0 text-sm">
-                                <%= pdt.p_name %>
-                              </h6>
-                            </div>
-                          </div>
-                        </td>
-                        <td class="align-middle">
-                          <p class="text-xs text-secondary mb-0"
-                            style="word-wrap: break-word; width: 250px; white-space: normal;">
-                            <%= pdt.description %>
-                          </p>
-                        </td>
-                        <td class="align-middle text-lg">
-                          <p class="text-xs fw-bold mb-1">
-                            <%= pdt.category %>
-                          </p>
-                        </td>
-                        <td class="align-middle text-center text-lg">
-                          <p class="text-xs fw-bold mb-1">$<%= pdt.total_price %>
-                          </p>
-                        </td>
-                        <td class="align-middle text-center">
-                          <span class="text-secondary text-xs font-weight-bold">
-                            <%= pdt.stock %>
-                          </span>
-                        </td>
-                        <td class="align-middle text-center">
-                          <span class="text-secondary text-xs font-weight-bold">
-                            <%= pdt.listing %>
-                          </span>
-                        </td>
-                        <td class="align-middle">
-                          <a class="text-white font-weight-bold" href="/admin/editproduct/<%= pdt._id %>">
-                            <button type="button" class="btn btn-warning text-xs mb-1"><i
-                                class="fas fa-pencil-alt"></i></button>
-                          </a>
-                          <a class="text-white font-weight-bold delete" href="/admin/deleteproduct/<%= pdt._id %>" onclick="return deleteP(event)">
-                            <button type="button" class="btn btn-danger text-xs mb-1"><i
-                                class="fas fa-trash-alt"></i></button>
-                          </a>
-                        </td>
-                      </tr>
-                      <% }) %>
+                          </td>
+                          <td class="align-middle text-center text-lg">
+                            <p class="text-xs fw-bold mb-1">
+                              <%= pdt.category %>
+                            </p>
+                          </td>
+                          <td class="align-middle text-center">
+                            <span class="text-secondary text-xs font-weight-bold">
+                              <%= pdt.stock %>
+                            </span>
+                          </td>
+                          <td class="align-middle text-center">
+                            <span class="text-secondary text-xs font-weight-bold">
+                              <%= pdt.listing %>
+                            </span>
+                          </td>
+                          <td class="align-middle">
+                            <a class="text-white font-weight-bold" href="/admin/editproduct/<%= pdt._id %>">
+                              <button type="button" class="btn btn-warning text-xs mb-1"><i
+                                  class="fas fa-pencil-alt"></i></button>
+                            </a>
+                            <a class="text-white font-weight-bold delete" href="/admin/deleteproduct/<%= pdt._id %>"
+                              onclick="return deleteP(event)">
+                              <button type="button" class="btn btn-danger text-xs mb-1"><i
+                                  class="fas fa-trash-alt"></i></button>
+                            </a>
+                          </td>
+                        </tr>
+                        <% }) %>
+                          <% } else { %>
+                            <tr>
+                              <th class="text-center text-uppercase text-warning text-xxs font-weight-bolder">No
+                                Products to View</th>
+                            </tr>
+                            <% } %>
                   </tbody>
                 </table>
               </div>
@@ -224,7 +241,7 @@
   </main>
 
   <script>
-    const productsPerPage = 6; // Number of products to display per page
+    const productsPerPage = 4; // Number of products to display per page
     let currentPage = 1;
 
     // Function to display products based on current page
@@ -280,7 +297,7 @@
     displayProducts();
   </script>
 
-  onclick="return deleteC(event)"<script>
+  <script>
     function deleteP(event) {
       event.preventDefault(); // Prevent the default behavior of the anchor tag
       const deleteUrl = event.currentTarget.getAttribute('href'); // Retrieve the href attribute

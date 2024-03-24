@@ -93,11 +93,12 @@
                <aside class="col-md-3 col-lg-2 d-md-block sidebar">
                     <div class="profile">
                          <img src="/img/landing/User Icon.webp" alt="Profile Picture" />
-                         <h5>Hi, <%= name %></h5>
+                         <h5>Hi, <%= name %>
+                         </h5>
                     </div>
                     <ul class="nav flex-column">
                          <li class="nav-item"><a class="nav-link" href="/"><i class="fas fa-home"></i>
-                              Home</a></li>
+                                   Home</a></li>
                          <li class="nav-item">
                               <a class="nav-link" href="/user/profile"><i class="fas fa-user"></i> Profile</a>
                          </li>
@@ -105,7 +106,8 @@
                               <a class="nav-link" href="/user/vieworders"><i class="fas fa-shopping-bag"></i> Orders</a>
                          </li>
                          <li class="nav-item">
-                              <a class="nav-link" href="/user/address"><i class="fas fa-map-marker-alt"></i> Addresses</a>
+                              <a class="nav-link" href="/user/address"><i class="fas fa-map-marker-alt"></i>
+                                   Addresses</a>
                          </li>
                          <li class="nav-item">
                               <a class="nav-link" href="/user/logout"><i class="fas fa-power-off"></i> Logout</a>
@@ -120,28 +122,39 @@
                                    <div class="form-group">
                                         <label for="name">Name:</label>
                                         <div class="input-group">
-                                             <input type="text" name="name" value="<%=name%>" class="form-control"
-                                                  disabled required>
+                                             <input type="text" name="name" id="nameInput" value="<%=name%>" class="form-control"
+                                                  required>
                                         </div>
                                    </div>
                                    <div class="form-group">
-                                        <label for="newname">New Username:</label>
+                                        <label for="email">Email</label>
                                         <div class="input-group">
-                                             <input type="text" id="newname" name="newname"
-                                                  class="form-control" required>
+                                             <input type="text" name="email" value="<%= email%>" class="form-control" disabled>
                                         </div>
                                    </div>
-                                   <button type="submit" class="btn btn-primary">Save</button>
+                                   <button id="saveButton" class="btn btn-primary" type="submit" disabled>Save</button>
                               </form>
+                              <script>
+                                   const nameInput = document.getElementById('nameInput');
+                                   const saveButton = document.getElementById('saveButton');
+
+                                   nameInput.addEventListener('input', () => {
+                                        if (nameInput.value.trim() !== '') {
+                                             saveButton.disabled = false;
+                                        } else {
+                                             saveButton.disabled = true;
+                                        }
+                                   });
+                              </script>
                          </div>
                     </div>
                </main>
           </div>
      </div>
      <script>
-          const newname = document.querySelector('[name="newname"]'); 
+          const newname = document.querySelector('[name="newname"]');
           function validate() {
-               if(!newname.value.trim()){
+               if (!newname.value.trim()) {
                     Swal.fire({
                          icon: "error",
                          title: 'Error',
@@ -149,7 +162,7 @@
                          confirmButtonText: 'Retry!'
                     })
                     return false;
-               }else{
+               } else {
                     return true;
                }
           }

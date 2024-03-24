@@ -3,8 +3,9 @@ const path = require("path");
 const multer = require("multer");
 const nodemailer = require("nodemailer");
 const admincontroller = require("../controller/admincontroller");
-const ordercontroller = require('../controller/ordercontroller')
+const ordercontroller = require('../controller/ordercontroller');
 const { cookieJwtAuth } = require("../controller/admincontroller");
+const couponcontroller = require('../controller/couponcontroller');
 const CatDb = require("../model/categorymodel");
 const ProductDb = require("../model/productmodel");
 const AddressDb = require('../model/addressmodel');
@@ -63,6 +64,8 @@ route.get('/acceptreturn/:pid', cookieJwtAuth, admincontroller.acceptReturn);
 route.get('/rejectreturn/:pid', cookieJwtAuth, admincontroller.rejectReturn);
 route.get('/statusshipped/:pid', cookieJwtAuth, admincontroller.statusShipped);
 route.get('/statusdelivered/:pid', cookieJwtAuth, admincontroller.statusDelivered);
+
+route.get('/viewcoupons', cookieJwtAuth, couponcontroller.showCoupons)
 
 
 route.get("**", (req, res) => {

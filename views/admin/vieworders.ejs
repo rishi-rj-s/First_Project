@@ -115,6 +115,22 @@
             <span class="nav-link-text ms-1">Orders</span>
           </a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link text-white " href="/admin/viewcoupons">
+            <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+              <i class="material-icons opacity-10">local_offer</i>
+            </div>
+            <span class="nav-link-text ms-1">Coupons</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white " href="">
+            <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+              <i class="material-icons opacity-10">card_giftcard</i>
+            </div>
+            <span class="nav-link-text ms-1">Offers</span>
+          </a>
+        </li>
         <!-- <li class="nav-item">
           <a class="nav-link text-white " href="/profile">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
@@ -182,7 +198,7 @@
                             </tr>
                           </thead>
                           <tbody>
-                            <% orders.forEach(order=> {%>
+                            <% orders.forEach(order=> { %>
                               <% order.orderedItems.forEach(items=> { %>
                                 <% if (items.status==="Pending" || items.status==="Shipped" ) { %>
                                   <tr>
@@ -192,7 +208,7 @@
                                       <%= items.productId.p_name %>
                                     </td>
                                     <td class="text-center align-middle">
-                                      <%= (items.productId.total_price)*(items.quantity) %>
+                                      <%= (items.productId.total_price) * (items.quantity) %>
                                     </td>
                                     <td class="text-center align-middle">
                                       <%= items.quantity %>
@@ -204,7 +220,8 @@
                                       <%= items.status %>
                                     </td>
                                     <td class="text-center align-middle">
-                                      <select id="<%= items.productId._id %>" class="form-select status-dropdown">
+                                      <select id="<%= items.productId._id %>" class="form-select status-dropdown"
+                                        data-product-id="<%= items.productId._id %>" data-order-id="<%= order._id %>">
                                         <% if (items.status==='Pending' ) { %>
                                           <option value="Pending" <%=items.status==='Pending' ? 'selected' : '' %>
                                             >Pending</option>
@@ -224,12 +241,13 @@
                                   <script>
                                     document.addEventListener('DOMContentLoaded', function () {
                                       const dropdowns = document.querySelectorAll('.status-dropdown');
-                                      const orderId = "<%= order._id %>";
 
                                       dropdowns.forEach(dropdown => {
                                         dropdown.addEventListener('change', function () {
                                           const selectedOption = this.value;
                                           const productId = this.id;
+                                          const orderId = this.getAttribute('data-order-id'); // Assuming you have a data attribute for order ID
+
                                           let url;
 
                                           if (selectedOption === 'Shipped') {
@@ -383,11 +401,11 @@
                                     </td>
                                     <td class="text-center align-middle">
                                       <button id="accept<%= items.productId._id %>" class="btn btn-success accept"
-                                        data-productid="<%= items.productId._id %>">
+                                        data-productid="<%= items.productId._id %>" data-orderid="<%= order._id %>">
                                         Accept
                                       </button>
                                       <button id="reject<%= items.productId._id %>" class="btn btn-danger reject"
-                                        data-productid="<%= items.productId._id %>">
+                                        data-productid="<%= items.productId._id %>" data-orderid="<%= order._id %>">
                                         Reject
                                       </button>
                                     </td>
@@ -398,7 +416,7 @@
                                       document.querySelectorAll('.accept').forEach(button => {
                                         button.addEventListener('click', function () {
                                           const productId = this.getAttribute('data-productid');
-                                          const orderId = "<%= order._id %>"; // Replace with actual order ID
+                                          const orderId = this.getAttribute('data-orderid'); // Replace with actual order ID
 
                                           // Display SweetAlert confirmation dialog
                                           Swal.fire({
@@ -458,7 +476,7 @@
                                       document.querySelectorAll('.reject').forEach(button => {
                                         button.addEventListener('click', function () {
                                           const productId = this.getAttribute('data-productid');
-                                          const orderId = "<%= order._id %>"; // Replace with actual order ID
+                                          const orderId = this.getAttribute('data-orderid'); // Replace with actual order ID
 
                                           // Display SweetAlert confirmation dialog
                                           Swal.fire({
@@ -514,7 +532,6 @@
                                         });
                                       });
                                     });
-
                                   </script>
                                   <% } %>
                                     <% }) %>

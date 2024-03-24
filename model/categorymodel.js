@@ -10,7 +10,11 @@ let schema = new mongoose.Schema({
     type: Boolean,
     required: true,
     default: true,
-  }
+  },
+  offerActive: {
+    type: Boolean,
+    default: false,
+   }
 });
 
 const CatDb = mongoose.model("categorie", schema);

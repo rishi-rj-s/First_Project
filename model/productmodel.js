@@ -40,7 +40,14 @@ let schema = new mongoose.Schema({
    type: String,
    default: "Listed",
    enum: ["Listed", "Unlisted"],
+  },
+  offerActive: {
+   type: Boolean,
+   default: false,
   }
+},
+{
+   timestamps: true
 });
 
 schema.pre('save', function (next) {

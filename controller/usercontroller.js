@@ -118,7 +118,7 @@ exports.products = async (req, res) => {
       }
       const products = await ProductDb.find({ category: cate });
       if (products.length === 0) {
-        return res.status(404).send("Products not found");
+        return res.render("user/products", { category: cate, pdt: products, all: false, categ });
       }
       const categ = await CatDb.find({listing:false})
       res.render("user/products", { category: cate, pdt: products, all: false, categ });
@@ -246,7 +246,7 @@ exports.registerfirst = async (req, res) => {
   }
 
   s = req.body;
-  console.log(s);
+  // console.log(s);
 
   // Generate random OTP
   const otp = Math.floor(1000 + Math.random() * 9999);
@@ -335,7 +335,7 @@ exports.forgotpass = async (req, res) => {
   if (userExists.length === 0) {
     return res.redirect("/user/forgot?error=noexist");
   }
-  console.log(userExists.password)
+  // console.log(userExists.password)
   if(!userExists.password){
     return res.redirect('/user/forgot?error=gaccnt')
   }
@@ -513,7 +513,7 @@ exports.changePass = async (req, res) => {
   try {
     const id = req.session.user._id;
     const newPassword = req.body.newpassword;
-    console.log(newPassword);
+    // console.log(newPassword);
 
     const user = await Userdb.findById(id);
 
@@ -558,8 +558,8 @@ exports.saveAddress = async (req,res) => {
 }
 
 exports.showEditUsername = (req,res) => {
-  const name = req.session.user.name;
-  res.render('user/editusername',{name});
+  const {name, email} = req.session.user;
+  res.render('user/editusername',{name, email});
 }
 
 exports.editUsername = async(req,res) => {
@@ -567,7 +567,7 @@ exports.editUsername = async(req,res) => {
     const id = req.session.user._id;
     const  username = await Userdb.findById(id);
     // console.log(username);
-    let editName = req.body.newname;
+    let editName = req.body.name;
     // console.log(editName);
     if(username.name === editName){
       return res.redirect('/user/profile?msg=nochange');
