@@ -48,6 +48,7 @@ exports.placeOrder = async (req, res) => {
     if (!addressId) {
       return res.status(404).json({ message: "Address not found" });
     }
+    
 
     // Calculate individual prices for ordered items
     const orderedItemsWithPrice = usercart.product.map((item) => {

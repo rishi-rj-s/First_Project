@@ -6,6 +6,7 @@ const usercontroller = require('../controller/usercontroller')
 const cartcontroller = require('../controller/cartcontroller')
 const ordercontroller = require('../controller/ordercontroller')
 const wishcontroller = require('../controller/wishcontroller')
+const couponcontroller = require('../controller/couponcontroller')
 const { cookieJwtAuth, checkBlocked } = require("../controller/usercontroller");
 
 
@@ -25,7 +26,7 @@ route.get('/landing',checkBlocked, cookieJwtAuth, usercontroller.showLanding)
 
 route.get('/logout',cookieJwtAuth, usercontroller.logout)
 
-route.get('/products/:cat',checkBlocked ,cookieJwtAuth, usercontroller.products)
+route.get('/products',checkBlocked ,cookieJwtAuth, usercontroller.products)
 route.get('/sortby',checkBlocked, cookieJwtAuth, usercontroller.sortBy)
 route.get('/productview/:id',checkBlocked , cookieJwtAuth, usercontroller.productview)
 
@@ -56,7 +57,8 @@ route.get('/wishlist',checkBlocked, cookieJwtAuth, wishcontroller.showWishlist);
 route.get('/addwishlist/:id', checkBlocked, cookieJwtAuth, wishcontroller.addToWishlist);  
 route.get('/removewish/:id', checkBlocked, cookieJwtAuth, wishcontroller.removeWish);  
 
-route.get('/orders',checkBlocked, cookieJwtAuth, ordercontroller.renderOrderPage)
+route.get('/orders',checkBlocked, cookieJwtAuth, ordercontroller.renderOrderPage);
+route.get('/checkcoupon',checkBlocked, cookieJwtAuth, couponcontroller.checkCoupon);
 route.post('/placeorder',checkBlocked, cookieJwtAuth, ordercontroller.placeOrder);
 route.get('/vieworders',checkBlocked, cookieJwtAuth, ordercontroller.viewOrders);
 route.get('/cancelorder/:pid',checkBlocked, cookieJwtAuth, ordercontroller.cancelOrder);

@@ -92,79 +92,68 @@ exports.logout = (req, res) => {
   res.redirect("/?error=logout");
 };
 
-exports.showLanding = async(req, res) => {
-  let category = await CatDb.find({listing: true});
-  res.render('user/landing',{cate: category});
-}
+exports.showLanding = async (req, res) => {
+  let category = await CatDb.find({ listing: true });
+  res.render("user/landing", { cate: category });
+};
 
 exports.products = async (req, res) => {
   try {
-    let cate = req.params.cat;
-
-    if (cate === "All") {
-      const products = await ProductDb.find();
-      const categ = await CatDb.find({listing:true})
-      if (products.length === 0) {
-        return res.redirect("/user/landing?msg=nodata");
-      }
-      res.render("user/products", {
-        pdt: products,
-        all: "All",
-        categ
-      });
-    } else {
-      if (cate.length === 0) {
-        return res.status(404).send("Category not found!");
-      }
-      const products = await ProductDb.find({ category: cate });
-      if (products.length === 0) {
-        return res.render("user/products", { category: cate, pdt: products, all: false, categ });
-      }
-      const categ = await CatDb.find({listing:false})
-      res.render("user/products", { category: cate, pdt: products, all: false, categ });
+    const categoriesToExclude = await CatDb.find({ listing: false }).select(
+      "category"
+    );
+    const categoryNames = categoriesToExclude.map((cat) => cat.category);
+    const products = await ProductDb.find({ category: { $nin: categoryNames } }).sort({ p_name: 1 });
+    if (!products) {
+      res.status(404).json({ message: "No product found." });
+      return;
     }
-  } catch (error) {
-    console.error("Error fetching products:", error);
-    res.redirect("/user/landing?msg=errdata");
+    res.render("user/products", {products});
+  } catch (e) {
+    console.log(e);
+    return res.status(500).send("Internal Server Error!");
   }
 };
 
 exports.sortBy = async (req, res) => {
   try {
+    const categoriesToExclude = await CatDb.find({ listing: false }).select(
+      "category"
+    );
+    const categoryNames = categoriesToExclude.map((cat) => cat.category);
     const sortBy = req.query.sortBy;
     let sortedProducts;
 
     switch (sortBy) {
-      case 'nameAsc':
-        sortedProducts = await ProductDb.find().sort({ p_name: 1 });
+      case "nameAsc":
+        sortedProducts = await ProductDb.find({ category: { $nin: categoryNames } }).sort({ p_name: 1 });
         break;
-      case 'nameDesc':
-        sortedProducts = await ProductDb.find().sort({ p_name: -1 });
+      case "nameDesc":
+        sortedProducts = await ProductDb.find({ category: { $nin: categoryNames } }).sort({ p_name: -1 });
         break;
-      case 'priceAsc':
-        sortedProducts = await ProductDb.find().sort({ total_price: 1 });
+      case "priceAsc":
+        sortedProducts = await ProductDb.find({ category: { $nin: categoryNames } }).sort({ total_price: 1 });
         break;
-      case 'priceDesc':
-        sortedProducts = await ProductDb.find().sort({ total_price: -1 });
+      case "priceDesc":
+        sortedProducts = await ProductDb.find({ category: { $nin: categoryNames } }).sort({ total_price: -1 });
         break;
-      case 'available':
-        sortedProducts = await ProductDb.find({ stock: { $gt: 0 } });
+      case "available":
+        sortedProducts = await ProductDb.find({ category: { $nin: categoryNames } , stock: { $gt: 0 } });
         break;
+      case "newest":
+        sortedProducts = await ProductDb.find({ category: { $nin: categoryNames } }).sort({_id: -1});
       default:
         // Default case can be handled as per your requirement, such as sorting by default field or showing all products
         sortedProducts = await ProductDb.find();
         break;
     }
 
-    const categ = await CatDb.find({ listing: true });
     if (sortedProducts.length === 0) {
       return res.redirect("/user/landing?msg=nodata");
     }
 
     res.render("user/products", {
-      pdt: sortedProducts,
-      all: "All",
-      categ
+      products: sortedProducts,
     });
   } catch (error) {
     console.error("Error fetching products:", error);
@@ -207,7 +196,6 @@ exports.productview = async (req, res) => {
 //         .send({ message: `Could not find user with name ${username}` });
 //     });
 // };
-
 
 // Function to send OTP email
 const sendOtpEmail = async (email, otp) => {
@@ -336,8 +324,8 @@ exports.forgotpass = async (req, res) => {
     return res.redirect("/user/forgot?error=noexist");
   }
   // console.log(userExists.password)
-  if(!userExists.password){
-    return res.redirect('/user/forgot?error=gaccnt')
+  if (!userExists.password) {
+    return res.redirect("/user/forgot?error=gaccnt");
   }
   id = userExists._id;
 
@@ -425,18 +413,44 @@ exports.showAddAddress = (req, res) => {
 exports.addAddress = async (req, res) => {
   const id = req.session.user._id;
   try {
-    const address = new AddressDb({
-      user_id: id,
-      name: req.body.name,
-      phone: req.body.phone,
-      pincode: req.body.pincode,
-      locality: req.body.locality,
-      address: req.body.address,
-      city: req.body.city,
-      state: req.body.state,
-      addressType: req.body.addressType,
+    const name = req.body.name;
+    const phone = req.body.phone;
+    const pincode = req.body.pincode;
+    const locality = req.body.locality;
+    const address = req.body.address;
+    const city = req.body.city;
+    const state = req.body.state;
+    const addressType = req.body.addressType ;
+    if (!name || !phone || !pincode || !locality || !address || !city || !state || !addressType) {
+      res.status(401).send("Please fill all fields");
+    }
+    const checkExists = await AddressDb.find({
+      name: name.trim(),
+      phone: phone.trim(),
+      pincode: pincode.trim(),
+      locality: locality.trim(),
+      address: address.trim(),
+      city: city.trim(),
+      state: state.trim(),
+      addressType: addressType.trim()
     });
-    await address.save();
+
+    // Check if the address already exists
+    if (checkExists.length > 0) {
+      return res.redirect('/user/address?msg=exists');
+    }
+    const newAddress = new AddressDb({
+      user_id: id,
+      name: name,
+      phone: phone,
+      pincode: pincode,
+      locality: locality,
+      address: address,
+      city: city,
+      state: state,
+      addressType: addressType
+    });
+    await newAddress.save();
     res.redirect("/user/address?msg=succ");
   } catch (e) {
     console.log(e);
@@ -453,12 +467,10 @@ exports.deleteAddress = async (req, res) => {
       .json({ success: true, message: "Address deleted successfully" });
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "An error occurred while deleting the address",
-      });
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while deleting the address",
+    });
   }
 };
 
@@ -534,50 +546,50 @@ exports.showEditAddress = async (req, res) => {
   const id = req.params.id;
   const name = req.session.user.name;
   const address = await AddressDb.findById(id);
-  res.render('user/editaddress',{addr: address, name})
+  res.render("user/editaddress", { addr: address, name });
 };
 
-exports.saveAddress = async (req,res) => {
+exports.saveAddress = async (req, res) => {
   const id = req.params.id;
-  try{
+  try {
     await AddressDb.findByIdAndUpdate(id, req.body)
-    .then((data) => {
-      if (!data) {
-        res.redirect("/user/address?msg=erredit");
-      } else {
-        res.redirect("/user/address?msg=editsucc");
-      }
-    })
-    .catch((err) => {
-      res.status(500).send({ message: "Error updating user information" });
-    });
-  }catch (error) {
+      .then((data) => {
+        if (!data) {
+          res.redirect("/user/address?msg=erredit");
+        } else {
+          res.redirect("/user/address?msg=editsucc");
+        }
+      })
+      .catch((err) => {
+        res.status(500).send({ message: "Error updating user information" });
+      });
+  } catch (error) {
     console.error("Error fetching products:", error);
     res.redirect("/user/address?msg=erredit");
   }
-}
+};
 
-exports.showEditUsername = (req,res) => {
-  const {name, email} = req.session.user;
-  res.render('user/editusername',{name, email});
-}
+exports.showEditUsername = (req, res) => {
+  const { name, email } = req.session.user;
+  res.render("user/editusername", { name, email });
+};
 
-exports.editUsername = async(req,res) => {
-  try{
+exports.editUsername = async (req, res) => {
+  try {
     const id = req.session.user._id;
-    const  username = await Userdb.findById(id);
+    const username = await Userdb.findById(id);
     // console.log(username);
     let editName = req.body.name;
     // console.log(editName);
-    if(username.name === editName){
-      return res.redirect('/user/profile?msg=nochange');
+    if (username.name === editName) {
+      return res.redirect("/user/profile?msg=nochange");
     }
     username.name = editName;
     await username.save();
     req.session.user.name = editName;
-    res.redirect('/user/profile?msg=namesuc')
-  }catch(e){
+    res.redirect("/user/profile?msg=namesuc");
+  } catch (e) {
     console.log(e);
-    res.redirect('/user/profile?msg=nameerr');
+    res.redirect("/user/profile?msg=nameerr");
   }
-}
+};

@@ -259,7 +259,8 @@ exports.editcategory = async (req, res) => {
 
 exports.updatecategory = async (req, res) => {
   const id = req.params.id;
-  await CatDb.findByIdAndUpdate(id, req.body)
+  const name = req.body.category;
+  await CatDb.findByIdAndUpdate(id, { category: name })
     .then(() => {
       res.redirect("/admin/category?msg=upsucc");
     })

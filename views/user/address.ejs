@@ -235,6 +235,14 @@
                     confirmButtonText: 'Ok'
                 })
                 window.history.replaceState({}, document.title, window.location.pathname);
+            } else if (msg.includes('exists')) {
+                Swal.fire({
+                    title: 'Failure!',
+                    text: 'Address exists',
+                    icon: 'warning',
+                    confirmButtonText: 'Ok'
+                })
+                window.history.replaceState({}, document.title, window.location.pathname);
             } 
         }
     </script>

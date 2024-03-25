@@ -33,114 +33,13 @@
      <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
      <!-- CSS Files -->
      <link id="pagestyle" href="/css/admin/material-dashboard.css?v=3.1.0" rel="stylesheet" />
-     <!-- Nepcha Analytics (nepcha.com) -->
-     <!-- Nepcha is a easy-to-use web analytics. No cookies and fully compliant with GDPR, CCPA and PECR. -->
-     <script defer data-site="YOUR_DOMAIN_HERE" src="https://api.nepcha.com/js/nepcha-analytics.js"></script>
+     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.all.min.js"></script>
      <style>
           .text-end {
                position: absolute;
                right: 0;
                top: 50%;
                transform: translateY(-35%);
-          }
-
-          .form-container {
-               max-width: 800px;
-               margin: 0 auto;
-               padding: 2rem;
-               background-color: #fff;
-               border-radius: 5px;
-               box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-          }
-
-          .form-group {
-               margin-bottom: 1.5rem;
-          }
-
-          .form-label {
-               font-weight: bold;
-               display: block;
-               margin-bottom: 0.5rem;
-          }
-
-          .form-control {
-               border-radius: 5px;
-               padding: 0.5rem;
-               font-size: 1rem;
-               width: 100%;
-          }
-
-          .form-control:focus {
-               box-shadow: 0 0 2px 1px rgba(0, 123, 255, 0.2);
-          }
-
-          .form-text {
-               font-size: 0.8rem;
-               color: #666;
-          }
-
-          .form-select {
-               border-radius: 5px;
-               padding: 0.5rem;
-               font-size: 1rem;
-               width: 100%;
-          }
-
-          .form-select:focus {
-               box-shadow: 0 0 2px 1px rgba(0, 123, 255, 0.2);
-          }
-
-          .preview-container {
-               max-width: 800px;
-               margin: 2rem auto;
-               display: flex;
-               flex-wrap: wrap;
-          }
-
-          .preview-item {
-               width: 100%;
-               margin-bottom: 1rem;
-          }
-
-          .preview-image {
-               width: 100%;
-               border-radius: 5px;
-               object-fit: cover;
-               height: 200px;
-          }
-
-          .delete-button {
-               border: none;
-               background-color: white;
-               color: black;
-               font-weight: bold;
-               font-size: 0.85rem;
-               padding: 0.25rem 0.5rem;
-               border-radius: 0 0.25rem 0.25rem 0;
-          }
-
-          .delete-button:hover {
-               background-color: black;
-               color: white;
-          }
-
-          .image-container {
-               display: flex;
-               width: 300px;
-               flex-wrap: nowrap;
-               overflow-x: auto;
-               overflow-y: hidden;
-               gap: 1rem;
-          }
-
-          .image-container>* {
-               flex-shrink: 0;
-          }
-
-          .form-field {
-               border: 1px solid #ced4da;
-               border-radius: 5px;
-               padding: 10px;
           }
      </style>
 </head>
@@ -161,7 +60,7 @@
                          </a>
                     </li>
                     <li class="nav-item">
-                         <a class="nav-link text-white" href="/admin/viewproducts">
+                         <a class="nav-link text-white " href="/admin/viewproducts">
                               <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
                                    <i class="material-icons opacity-10">table_view</i>
                               </div>
@@ -176,6 +75,7 @@
                               <span class="nav-link-text ms-1">Category</span>
                          </a>
                     </li>
+
                     <li class="nav-item">
                          <a class="nav-link text-white " href="/admin/viewusers">
                               <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
@@ -193,7 +93,7 @@
                          </a>
                     </li>
                     <li class="nav-item">
-                         <a class="nav-link text-white active bg-gradient-primary"  href="/admin/viewcoupons">
+                         <a class="nav-link text-white active bg-gradient-primary" href="/admin/viewcoupons">
                               <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
                                    <i class="material-icons opacity-10">local_offer</i>
                               </div>
@@ -208,14 +108,6 @@
                               <span class="nav-link-text ms-1">Offers</span>
                          </a>
                     </li>
-                    <!-- <li class="nav-item">
-          <a class="nav-link text-white " href="/profile">
-            <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-              <i class="material-icons opacity-10">person</i>
-            </div>
-            <span class="nav-link-text ms-1">Profile</span>
-          </a>
-        </li> -->
                     <li class="nav-item">
                          <a class="nav-link text-white " href="/admin/logout">
                               <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
@@ -234,12 +126,12 @@
                <div class="container-fluid py-1 px-3">
                     <nav aria-label="breadcrumb">
                          <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
-                              <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark"
-                                        href="/admin/viewproducts">Products</a></li>
-                              <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Add Products</li>
+                              <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark">Pages</a></li>
+                              <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Coupons</li>
                          </ol>
-                         <h6 class="font-weight-bolder mb-0">Products</h6>
+                         <h6 class="font-weight-bolder mb-0">Category</h6>
                     </nav>
+               </div>
           </nav>
           <!-- End Navbar -->
           <div class="container-fluid py-4">
@@ -248,185 +140,300 @@
                          <div class="card my-4">
                               <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
                                    <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
-                                        <h6 class="text-white text-capitalize ps-3">Add Products</h6>
-                                   </div>
-                              </div>
-                              <div class="container-fluid">
-                                   <div class="row">
-                                        <div class="col-md-8">
-                                             <form action="/admin/addproduct" method="post"
-                                                  enctype="multipart/form-data" onsubmit="return validateForm()">
-                                                  <div class="form-group form-field">
-                                                       <label for="category">Product Category</label>
-                                                       <select name="category" class="form-select">
-                                                            <% category.forEach(category=> { %>
-                                                                 <option value="<%= category.category %>">
-                                                                      <%= category.category %>
-                                                                 </option>
-                                                                 <% }); %>
-                                                       </select>
-                                                  </div>
-                                                  <div class="form-group form-field">
-                                                       <label for="p_name">Product Name</label>
-                                                       <input type="text" class="form-control form-field" id="p_name"
-                                                            name="p_name" placeholder="Enter product name" required>
-                                                  </div>
-                                                  <div class="form-group form-field">
-                                                       <label for="price">Price</label>
-                                                       <input type="number" class="form-control form-field" id="price"
-                                                            name="price" placeholder="Enter price" required>
-                                                  </div>
-                                                  <div class="form-group form-field">
-                                                       <label for="description">Description</label>
-                                                       <textarea class="form-control form-field" id="description"
-                                                            name="description" rows="3" required></textarea>
-                                                  </div>
-                                                  <div class="form-group form-field">
-                                                       <label for="discount">Discount</label>
-                                                       <small id="discountHelp" class="form-text text-muted">(Discount
-                                                            must be between 0 and
-                                                            30%)</small>
-                                                       <input type="number" class="form-control form-field"
-                                                            id="discount" name="discount" placeholder="Enter discount"
-                                                            required>
-                                                  </div>
-                                                  <div class="form-group form-field">
-                                                       <label for="stock">Stock</label>
-                                                       <input type="number" class="form-control form-field" id="stock"
-                                                            name="stock" placeholder="Enter stock" required>
-                                                  </div>
-                                                  <div class="form-group form-field">
-                                                       <label for="images">Images</label>
-                                                       <input type="file" class="form-control-file" id="images"
-                                                            accept="image/*" name="images" required multiple>
-                                                  </div>
-                                                  <div class="col-md-4">
-                                                       <div class="card">
-                                                            <div class="card-body">
-                                                                 <h5>Images Preview</h5>
-                                                                 <div class="image-container" style="width: 150px;">
-                                                                      <!-- Image previews will be inserted here -->
-                                                                 </div>
-                                                            </div>
-                                                       </div>
-                                                  </div>
-                                                  <input type="submit" class="btn btn-primary mt-2" value="Add">
-
-                                             </form>
+                                        <h6 class="text-white text-capitalize ps-3">Coupons</h6>
+                                        <div class="text-end">
+                                             <a href="/admin/addcoupon">
+                                                  <button type="button"
+                                                       class="btn btn-info btn-sm mb-3 me-3 fs-8">COUPON <i
+                                                            class="fas fa-plus ms-2 text-xxs"></i></button>
+                                             </a>
                                         </div>
                                    </div>
+                              </div>
+
+                              <div class="card-body px-0 pb-2">
+                                   <table class="table mb-0">
+                                        <thead>
+                                             <tr>
+                                                  <th
+                                                       class="text-uppercase text-secondary text-xs font-weight-bolder opacity-8">
+                                                       Name</th>
+                                                  <th
+                                                       class="text-uppercase text-secondary text-xs font-weight-bolder opacity-8">
+                                                       Discount</th>
+                                                  <th
+                                                       class="text-uppercase text-secondary text-xs font-weight-bolder opacity-8">
+                                                       Status</th>
+                                                  <th
+                                                       class="text-uppercase text-secondary text-xs font-weight-bolder opacity-8">
+                                                       Action</th>
+                                             </tr>
+                                        </thead>
+                                        <tbody id="categoryTableBody">
+                                             <% coupons.forEach(coupon=> { %>
+                                                  <tr>
+                                                       <td>
+                                                            <div class="d-flex px-2 py-1">
+                                                                 <div class="d-flex flex-column justify-content-center">
+                                                                      <h6 class="mb-0 text-sm">
+                                                                           <%= coupon.code %>
+                                                                      </h6>
+                                                                 </div>
+                                                            </div>
+                                                       </td>
+                                                       <td>
+                                                            <div class="d-flex px-2 py-1">
+                                                                 <div class="d-flex flex-column justify-content-center">
+                                                                      <h6 class="mb-0 text-sm">
+                                                                           <%= coupon.discountAmount %>
+                                                                      </h6>
+                                                                 </div>
+                                                            </div>
+                                                       </td>
+                                                       <td>
+                                                            <div class="d-flex px-2 py-1">
+                                                                 <div class="d-flex flex-column justify-content-center">
+                                                                      <button data-id="<%= coupon._id %>"
+                                                                           class="btn btn-warning status">
+                                                                           <%= coupon.isActive ? "Active" : "Inactive" ;
+                                                                                %>
+                                                                      </button>
+                                                                      <script>
+                                                                           document.addEventListener('DOMContentLoaded', () => {
+                                                                                const statusElements = document.querySelectorAll('.status');
+                                                                                statusElements.forEach(statusElement => {
+                                                                                     statusElement.addEventListener('click', async () => {
+                                                                                          const cid = statusElement.getAttribute('data-id');
+
+                                                                                          try {
+                                                                                               const response = await fetch(`/admin/couponactive/${cid}`, {
+                                                                                                    method: 'PUT',
+                                                                                                    headers: {
+                                                                                                         'Content-Type': 'application/json'
+                                                                                                    },
+                                                                                               });
+
+                                                                                               if (!response.ok) {
+                                                                                                    throw new Error('Error updating status');
+                                                                                               }
+
+                                                                                               await response.json().then(data => {
+                                                                                                    console.log('Response:', data); // Log the entire response data for debugging
+                                                                                                    // Update status text in the UI based on the response
+                                                                                                    if (data.isActive) {
+                                                                                                         statusElement.textContent = "Active";
+                                                                                                    } else {
+                                                                                                         statusElement.textContent = "Inactive";
+                                                                                                    }
+                                                                                               })
+
+                                                                                               // Alert for successful update
+                                                                                               Swal.fire({
+                                                                                                    title: "Success!",
+                                                                                                    text: "Status updated successfully",
+                                                                                                    icon: "success",
+                                                                                                    confirmButtonText: "Ok"
+                                                                                               });
+
+                                                                                          } catch (error) {
+                                                                                               console.error('Error:', error);
+
+                                                                                               // Alert for error
+                                                                                               Swal.fire({
+                                                                                                    title: "Error!",
+                                                                                                    text: "Error updating status",
+                                                                                                    icon: "error",
+                                                                                                    confirmButtonText: "Ok"
+                                                                                               });
+                                                                                          }
+                                                                                     });
+                                                                                });
+                                                                           });
+                                                                      </script>
+
+                                                                 </div>
+                                                            </div>
+                                                       </td>
+                                                       <td>
+                                                            <div class="d-flex px-2 py-1">
+                                                                 <div class="d-flex justify-content-between gap-2">
+                                                                      <button data-id="<%= coupon._id %>"
+                                                                           class="btn btn-dark edit-btn">
+                                                                           <i class="fas fa-pencil-alt"></i>
+                                                                      </button>
+                                                                      <script>
+                                                                           document.addEventListener('DOMContentLoaded', () => {
+                                                                                const editButtons = document.querySelectorAll('.edit-btn');
+                                                                                editButtons.forEach(editButton => {
+                                                                                     editButton.addEventListener('click', () => {
+                                                                                          const couponId = editButton.getAttribute('data-id');
+                                                                                          Swal.fire({
+                                                                                               title: "Are you sure?",
+                                                                                               text: "You are about to edit this coupon.",
+                                                                                               icon: "warning",
+                                                                                               showCancelButton: true,
+                                                                                               confirmButtonColor: "#3085d6",
+                                                                                               cancelButtonColor: "#d33",
+                                                                                               confirmButtonText: "Yes, edit it!"
+                                                                                          }).then((result) => {
+                                                                                               if (result.isConfirmed) {
+                                                                                                    // Redirect to the edit URL
+                                                                                                    window.location.href = `/admin/editcoupon/${couponId}`;
+                                                                                               }
+                                                                                          });
+                                                                                     });
+                                                                                });
+                                                                           });
+                                                                      </script>
+                                                                      <button data-id="<%= coupon._id %>"
+                                                                           class="btn btn-dark delete-btn">
+                                                                           <i class="fas fa-trash-alt"></i>
+                                                                      </button>
+                                                                      <script>
+                                                                           document.addEventListener('DOMContentLoaded', () => {
+                                                                                const deleteButtons = document.querySelectorAll('.delete-btn');
+                                                                                deleteButtons.forEach(deleteButton => {
+                                                                                     deleteButton.addEventListener('click', () => {
+                                                                                          const couponId = deleteButton.getAttribute('data-id');
+                                                                                          Swal.fire({
+                                                                                               title: "Are you sure?",
+                                                                                               text: "You won't be able to revert this!",
+                                                                                               icon: "warning",
+                                                                                               showCancelButton: true,
+                                                                                               confirmButtonColor: "#3085d6",
+                                                                                               cancelButtonColor: "#d33",
+                                                                                               confirmButtonText: "Yes, delete it!"
+                                                                                          }).then((result) => {
+                                                                                               if (result.isConfirmed) {
+                                                                                                    // Send AJAX request to delete coupon
+                                                                                                    fetch(`/admin/deletecoupon/${couponId}`, {
+                                                                                                         method: "DELETE"
+                                                                                                    })
+                                                                                                         .then((response) => {
+                                                                                                              if (response.ok) {
+                                                                                                                   // Show success message using SweetAlert
+                                                                                                                   Swal.fire({
+                                                                                                                        title: "Deleted!",
+                                                                                                                        text: "Coupon has been deleted.",
+                                                                                                                        icon: "success"
+                                                                                                                   }).then(() => {
+                                                                                                                        // Reload the page
+                                                                                                                        window.location.reload();
+                                                                                                                   });
+                                                                                                              } else {
+                                                                                                                   // Failed to delete coupon
+                                                                                                                   console.error("Failed to delete coupon");
+                                                                                                                   // Show error message using SweetAlert
+                                                                                                                   Swal.fire({
+                                                                                                                        title: "Failed!",
+                                                                                                                        text: "Coupon cannot be deleted.",
+                                                                                                                        icon: "error"
+                                                                                                                   });
+                                                                                                              }
+                                                                                                         })
+                                                                                                         .catch((error) => {
+                                                                                                              console.error("Error:", error);
+                                                                                                              // Show error message using SweetAlert
+                                                                                                              Swal.fire({
+                                                                                                                   title: "Error!",
+                                                                                                                   text: "An error occurred while deleting the coupon.",
+                                                                                                                   icon: "error"
+                                                                                                              });
+                                                                                                         });
+                                                                                               }
+                                                                                          });
+                                                                                     });
+                                                                                });
+                                                                           });
+                                                                      </script>
+                                                                 </div>
+                                                            </div>
+                                                       </td>
+
+                                                  </tr>
+                                                  <% }); %>
+                                        </tbody>
+                                   </table>
                               </div>
                          </div>
                     </div>
                </div>
           </div>
-
-          <script>
-               // Function to validate form
-               function validateForm() {
-                    const p_name = document.querySelector('[name="p_name"]');
-                    const price = document.querySelector('[name="price"]');
-                    const description = document.querySelector('[name="description"]');
-                    const discount = document.querySelector('[name="discount"]');
-                    const stock = document.querySelector('[name="stock"]');
-                    const listing = document.querySelector('[name="listing"]');
-                    const images = document.querySelector('[name="images"]');
-
-                    // Check if any field is empty or contains only whitespace
-                    if (!p_name.value.trim() || !price.value.trim() || !description.value.trim() || !discount.value.trim()
-                         || !stock.value.trim() || !listing.value.trim() || !images.value.trim()) {
-                         Swal.fire({
-                              title: 'Error!',
-                              text: 'Requires all fields',
-                              icon: 'error',
-                              confirmButton: 'Retry'
-                         });
-                         return false; // Prevent form submission
-                    } else if (price.value < 40) {
-                         Swal.fire({
-                              title: 'Error!',
-                              text: 'The product price needs atleast to be $40',
-                              icon: 'error',
-                              confirmButton: 'Retry'
-                         });
-                         return false; // Prevent form submission
-                    } else if (discount.value > 30 || discount.value <= 0) {
-                         Swal.fire({
-                              title: 'Error!',
-                              text: 'Discounts can only of 0-30%!',
-                              icon: 'error',
-                              confirmButton: 'Retry'
-                         });
-                         return false; // Prevent form submission
-                    } else if (stock.value < 1) {
-                         Swal.fire({
-                              title: 'Error!',
-                              text: 'There needs to be atleast 1 stock',
-                              icon: 'error',
-                              confirmButton: 'Retry'
-                         });
-                         return false; // Prevent form submission
-                    }
-
-                    return true; // Allow form submission
-               }
-          </script>
-          <script>
-               const imageContainer = document.querySelector('.image-container');
-               const imageInput = document.querySelector('#images');
-
-               imageInput.addEventListener('change', (event) => {
-                    const files = event.target.files;
-
-                    for (const file of files) {
-                         if (['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(file.type) || ['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(file.type.split('/')[0] + '/' + file.type.split('/')[1].split('.')[1])) {
-                              const image = new Image();
-                              image.src = URL.createObjectURL(file);
-
-                              image.onload = () => {
-                                   const imageElement = document.createElement('div');
-                                   imageElement.classList.add('image-element');
-                                   imageElement.style.height = '150px';
-                                   imageElement.style.width = '150px';
-                                   imageElement.style.position = 'relative';
-
-                                   const imageWrapper = document.createElement('img');
-                                   imageWrapper.classList.add('img-fluid', 'img-thumbnail');
-                                   imageWrapper.style.height = '100%';
-                                   imageWrapper.style.width = '100%';
-                                   imageWrapper.style.objectFit = 'contain';
-                                   imageWrapper.src = image.src;
-
-                                   imageElement.appendChild(imageWrapper);
-
-                                   const deleteButton = document.createElement('button');
-                                   deleteButton.classList.add('btn', 'btn-danger', 'btn-sm', 'delete-button');
-                                   deleteButton.innerHTML = '<i class="fa fa-trash-alt text-lg"></i>';
-                                   deleteButton.style.position = 'absolute';
-                                   deleteButton.style.top = '0';
-                                   deleteButton.style.right = '0';
-
-                                   imageElement.appendChild(deleteButton);
-
-                                   imageContainer.appendChild(imageElement);
-
-                                   deleteButton.addEventListener('click', () => {
-                                        imageElement.remove();
-                                   });
-                              };
-                         }
-                    }
-               });
-          </script>
+          </div>
      </main>
+
+     <script>
+          const urlParams = new URLSearchParams(window.location.search);
+          const message = urlParams.get('msg');
+          if (typeof message !== 'undefined') {
+               if (message.includes('success')) {
+                    Swal.fire({
+                         title: 'Success!',
+                         text: 'Coupon added',
+                         icon: 'success',
+                         confirmButtonText: 'Cool'
+                    })
+                    window.history.replaceState({}, document.title, window.location.pathname);
+               } else if (message.includes('error')) {
+                    Swal.fire({
+                         title: 'Error!',
+                         text: 'Unable to add coupon',
+                         icon: 'error',
+                         confirmButtonText: 'Cool'
+                    })
+                    window.history.replaceState({}, document.title, window.location.pathname);
+               } else if (message.includes('actinact')) {
+                    Swal.fire({
+                         title: 'Failure!',
+                         text: 'Failed to toggle  status of this Coupon',
+                         icon: 'error',
+                         confirmButtonText: 'Ok'
+                    })
+                    window.history.replaceState({}, document.title, window.location.pathname);
+               } else if (message.includes('editsucc')) {
+                    Swal.fire({
+                         title: 'Success!',
+                         text: 'Successfully updated the coupon',
+                         icon: 'success',
+                         confirmButtonText: 'Ok'
+                    })
+                    window.history.replaceState({}, document.title, window.location.pathname);
+               } else if (message.includes('editerr')) {
+                    Swal.fire({
+                         title: 'Failure!',
+                         text: 'Failed to update the coupon',
+                         icon: 'error',
+                         confirmButtonText: 'Ok'
+                    })
+                    window.history.replaceState({}, document.title, window.location.pathname);
+               } else if (message.includes('delerr')) {
+                    Swal.fire({
+                         title: 'Failure!',
+                         text: 'Failed to delete the coupon',
+                         icon: 'error',
+                         confirmButtonText: 'Ok'
+                    })
+                    window.history.replaceState({}, document.title, window.location.pathname);
+               } else if (message.includes('exists')) {
+                    Swal.fire({
+                         title: 'Warning!',
+                         text: 'Coupon already exists',
+                         icon: 'warning',
+                         confirmButtonText: 'Ok'
+                    })
+                    window.history.replaceState({}, document.title, window.location.pathname);
+               }
+          }
+     </script>
+
      <!--   Core JS Files   -->
      <script src="/js/admin/core/popper.min.js"></script>
      <script src="/js/admin/core/bootstrap.min.js"></script>
      <script src="/js/admin/plugins/perfect-scrollbar.min.js"></script>
      <script src="/js/admin/plugins/smooth-scrollbar.min.js"></script>
-     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.all.min.js"></script>
+     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
      <script>
-          let win = navigator.platform.indexOf('Win') > -1;
+          var win = navigator.platform.indexOf('Win') > -1;
           if (win && document.querySelector('#sidenav-scrollbar')) {
                var options = {
                     damping: '0.5'

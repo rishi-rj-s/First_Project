@@ -56,6 +56,12 @@ const schema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
+    couponApplied: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'coupon',
+        default: null,
+        required: true,
+    },
     totalAmount: {
         type: Number,
         required: true

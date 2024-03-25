@@ -108,14 +108,6 @@
             <span class="nav-link-text ms-1">Offers</span>
           </a>
         </li>
-        <!-- <li class="nav-item">
-          <a class="nav-link text-white " href="/profile">
-            <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-              <i class="material-icons opacity-10">person</i>
-            </div>
-            <span class="nav-link-text ms-1">Profile</span>
-          </a>
-        </li> -->
         <li class="nav-item">
           <a class="nav-link text-white " href="/admin/logout">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
@@ -161,7 +153,7 @@
                   <tr>
                     <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-8">Name</th>
                     <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-8">Listing</th>
-                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-8">Edit</th>
+                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-8">Actions</th>
                     <th></th>
                   </tr>
                 </thead>
@@ -178,7 +170,7 @@
                         </div>
                       </td>
                       <td>
-                        <button class="btn btn-info category-status" data-category-id="<%= category._id %>">
+                        <button class="btn btn-dark category-status" data-category-id="<%= category._id %>">
                           <span>
                             <%= category.listing %>
                           </span>
@@ -186,12 +178,10 @@
                       </td>
                       <td>
                         <a href="/admin/editcategory/<%= category._id %>">
-                          <button class="btn btn-warning">Edit</button>
+                          <button class="btn btn-warning"><i class="fas fa-pencil-alt"></i></button>
                         </a>
-                      </td>
-                      <td>
                         <a href="/admin/deletecategory/<%= category._id %>" onclick="return deleteC(event)">
-                          <button class="btn btn-danger delete-btn">Delete</button>
+                          <button class="btn btn-danger delete-btn"><i class="fas fa-trash-alt"></i></button>
                         </a>
                       </td>
                     </tr>

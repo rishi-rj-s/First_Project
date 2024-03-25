@@ -65,7 +65,13 @@ route.get('/rejectreturn/:pid', cookieJwtAuth, admincontroller.rejectReturn);
 route.get('/statusshipped/:pid', cookieJwtAuth, admincontroller.statusShipped);
 route.get('/statusdelivered/:pid', cookieJwtAuth, admincontroller.statusDelivered);
 
-route.get('/viewcoupons', cookieJwtAuth, couponcontroller.showCoupons)
+route.get('/viewcoupons', cookieJwtAuth, couponcontroller.showCoupons);
+route.get('/addcoupon', cookieJwtAuth, couponcontroller.showAddCoupon);
+route.post('/addcoupon', cookieJwtAuth, couponcontroller.addCoupon);
+route.put('/couponactive/:cid', cookieJwtAuth, couponcontroller.couponActive);
+route.delete('/deletecoupon/:cid', cookieJwtAuth, couponcontroller.deleteCoupon);
+route.get('/editcoupon/:cid', cookieJwtAuth, couponcontroller.renderEdit);
+route.post('/editcoupon/:cid', cookieJwtAuth, couponcontroller.editCoupon);
 
 
 route.get("**", (req, res) => {
