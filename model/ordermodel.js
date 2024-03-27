@@ -1,4 +1,4 @@
-const mongoose =require('mongoose');
+const mongoose = require('mongoose');
 
 const schema = new mongoose.Schema({
     user_id: {
@@ -10,6 +10,18 @@ const schema = new mongoose.Schema({
         productId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'product',
+            required: true
+        },
+        pname: {
+            type: String,
+            required: true
+        },
+        pimages: {
+            type: [String],
+            required: true
+        },
+        originalPrice: {
+            type: Number,
             required: true
         },
         price: {
@@ -28,24 +40,21 @@ const schema = new mongoose.Schema({
         returned: {
             type: Boolean,
             default: false
-        }
+        },
+        paymentStatus: {
+            type: String,
+            enum: ['Pending', 'Processing', 'Completed', 'Failed', 'Cancelled', 'Refunded'],
+            default: 'Pending',
+        },
     }],
-    deliveryDate: {
-        type: Date,
-        default: null
-    },
-    payment: {
-        type: mongoose.Types.ObjectId
-    },
-    // paymentStatus: {
-    //     type: String,
-    //     enum: ['Pending', 'Processing', 'Completed', 'Failed', 'Refunded'],
-    //     default: 'Pending',
+    // deliveryDate: {
+    //     type: Date,
+    //     default: null
     // },
     paymentMethod: {
         type: String,
         required: true,
-        enum: ['COD','Wallet','RazorPay']
+        enum: ['COD', 'Wallet', 'RazorPay']
     },
     shippingAddress: {
         type: mongoose.Schema.Types.ObjectId,
@@ -60,7 +69,6 @@ const schema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'coupon',
         default: null,
-        required: true,
     },
     totalAmount: {
         type: Number,

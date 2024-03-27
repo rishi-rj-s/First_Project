@@ -81,17 +81,25 @@
             <aside class="col-md-3 col-lg-2 d-md-block sidebar">
                 <div class="profile">
                     <img src="/img/landing/User Icon.webp" alt="Profile Picture">
-                    <h5> Hi, <%= name %></h5>
+                    <h5> Hi, <%= name %>
+                    </h5>
                 </div>
                 <ul class="nav flex-column">
                     <li class="nav-item"><a class="nav-link" href="/"><i class="fas fa-home"></i>
-                        Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/user/profile"><i class="fas fa-user"></i> Profile</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/user/vieworders"><i class="fas fa-shopping-bag"></i> Orders</a>
+                            Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/user/profile"><i class="fas fa-user"></i>
+                            Profile</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/wallet"><i class="fas fa-wallet"></i> Wallet</a>
                     </li>
-                    <li class="nav-item bg-dark"><a class="nav-link" href="/user/address"><i class="fas fa-map-marker-alt"></i>
+                    <li class="nav-item"><a class="nav-link" href="/user/vieworders"><i class="fas fa-shopping-bag"></i>
+                            Orders</a>
+                    </li>
+                    <li class="nav-item bg-dark"><a class="nav-link" href="/user/address"><i
+                                class="fas fa-map-marker-alt"></i>
                             Addresses</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/user/logout"><i class="fas fa-power-off"></i> Logout</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/user/logout"><i class="fas fa-power-off"></i>
+                            Logout</a></li>
                 </ul>
             </aside>
             <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
@@ -101,40 +109,50 @@
                         <form action="/user/saveaddress/<%= addr._id %>" method="post" onsubmit="return validateForm()">
                             <div class="form-group">
                                 <label for="addressType">Address Type</label>
-                                <select id="addressType" name="addressType" class="form-control" style="width: 150px;" required>
-                                    <option value="<%= addr.addressType %>"><%= addr.addressType %></option>
+                                <select id="addressType" name="addressType" class="form-control" style="width: 150px;"
+                                    required>
+                                    <option value="<%= addr.addressType %>">
+                                        <%= addr.addressType %>
+                                    </option>
                                     <option value="Home">Home</option>
                                     <option value="Work">Work</option>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label for="name">Name</label>
-                                <input type="text" id="name" name="name" class="form-control" value="<%= addr.name %>" required>
+                                <input type="text" id="name" name="name" class="form-control" value="<%= addr.name %>"
+                                    required>
                             </div>
 
                             <div class="form-group">
                                 <label for="phone">Phone No.</label>
-                                <input type="text" id="phone" value="<%= addr.phone %>" name="phone" class="form-control" required>
+                                <input type="text" id="phone" value="<%= addr.phone %>" name="phone"
+                                    class="form-control" required>
                             </div>
                             <div class="form-group">
                                 <label for="pincode">Pincode</label>
-                                <input type="text" id="pincode" value="<%= addr.pincode %>" name="pincode" class="form-control" required>
+                                <input type="text" id="pincode" value="<%= addr.pincode %>" name="pincode"
+                                    class="form-control" required>
                             </div>
                             <div class="form-group">
                                 <label for="city">City</label>
-                                <input type="text" id="city" name="city" value="<%= addr.city %>" class="form-control" required>
+                                <input type="text" id="city" name="city" value="<%= addr.city %>" class="form-control"
+                                    required>
                             </div>
                             <div class="form-group">
                                 <label for="address">Address:</label>
-                                <input type="textbox" id="address" name="address" value="<%= addr.address %>" class="form-control" required>
+                                <input type="textbox" id="address" name="address" value="<%= addr.address %>"
+                                    class="form-control" required>
                             </div>
                             <div class="form-group">
                                 <label for="locality">Locality</label>
-                                <input type="text" id="locality" name="locality" value="<%= addr.locality %>" class="form-control" required>
+                                <input type="text" id="locality" name="locality" value="<%= addr.locality %>"
+                                    class="form-control" required>
                             </div>
                             <div class="form-group">
                                 <label for="state">State</label>
-                                <input type="text" id="state" name="state" value="<%= addr.state %>" class="form-control" required>
+                                <input type="text" id="state" name="state" value="<%= addr.state %>"
+                                    class="form-control" required>
                             </div>
                             <button type="submit" class="btn btn-primary">Save</button>
                         </form>
@@ -145,46 +163,46 @@
     </div>
     <script>
         function validateForm() {
-             const addType = document.querySelector('[name="addressType"]');
-             const name = document.querySelector('[name="name"]');
-             const phone = document.querySelector('[name="phone"]');
-             const pincode = document.querySelector('[name="pincode"]');
-             const city = document.querySelector('[name="city"]');
-             const address = document.querySelector('[name="address"]');
-             const locality = document.querySelector('[name="locality"]');
-             const state = document.querySelector('[name="state"]');
+            const addType = document.querySelector('[name="addressType"]');
+            const name = document.querySelector('[name="name"]');
+            const phone = document.querySelector('[name="phone"]');
+            const pincode = document.querySelector('[name="pincode"]');
+            const city = document.querySelector('[name="city"]');
+            const address = document.querySelector('[name="address"]');
+            const locality = document.querySelector('[name="locality"]');
+            const state = document.querySelector('[name="state"]');
 
-             // Check if any field is empty or contains only whitespace
-             if (!addType.value.trim() ||!name.value.trim() ||!phone.value.trim() ||!pincode.value.trim() ||
-                !city.value.trim() ||!address.value.trim() ||!locality.value.trim() ||!state.value.trim()) {
-                  Swal.fire({
-                       title: 'Error!',
-                       text: 'All fields are necessary',
-                       icon: 'error',
-                       confirmButton: 'Cool'
-                  })
-                  return false; 
-             } else if(phone.value.trim().split('').length !== 10 ){
+            // Check if any field is empty or contains only whitespace
+            if (!addType.value.trim() || !name.value.trim() || !phone.value.trim() || !pincode.value.trim() ||
+                !city.value.trim() || !address.value.trim() || !locality.value.trim() || !state.value.trim()) {
                 Swal.fire({
-                       title: 'Error!',
-                       text: 'Invalide Phone Number',
-                       icon: 'error',
-                       confirmButton: 'Ok'
-                  })
-                  return false;
-             } else if(pincode.value.trim().split('').length !== 6){
+                    title: 'Error!',
+                    text: 'All fields are necessary',
+                    icon: 'error',
+                    confirmButton: 'Cool'
+                })
+                return false;
+            } else if (phone.value.trim().split('').length !== 10) {
                 Swal.fire({
-                       title: 'Error!',
-                       text: 'Invalide Pincode',
-                       icon: 'error',
-                       confirmButton: 'Ok'
-                  })
-                  return false;
-             }
+                    title: 'Error!',
+                    text: 'Invalide Phone Number',
+                    icon: 'error',
+                    confirmButton: 'Ok'
+                })
+                return false;
+            } else if (pincode.value.trim().split('').length !== 6) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Invalide Pincode',
+                    icon: 'error',
+                    confirmButton: 'Ok'
+                })
+                return false;
+            }
 
-             return true; 
+            return true;
         }
-   </script>
+    </script>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>

@@ -1,0 +1,294 @@
+<!--
+=========================================================
+* Material Dashboard 2 - v3.1.0
+=========================================================
+
+* Product Page: https://www.creative-tim.com/product/material-dashboard
+* Copyright 2023 Creative Tim (https://www.creative-tim.com)
+* Licensed under MIT (https://www.creative-tim.com/license)
+* Coded by Creative Tim
+
+=========================================================
+
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/admin/apple-icon.png">
+  <link rel="icon" type="image/png" href="/img/admin/favicon.png">
+  <title>RISHI STUDIO</title>
+  <!--     Fonts and icons     -->
+  <link rel="stylesheet" type="text/css"
+    href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700" />
+  <!-- Nucleo Icons -->
+  <link href="/css/admin/nucleo-icons.css" rel="stylesheet" />
+  <link href="/css/admin/nucleo-svg.css" rel="stylesheet" />
+  <!-- Font Awesome Icons -->
+  <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <!-- CSS Files -->
+  <link id="pagestyle" href="/css/admin/material-dashboard.css?v=3.1.0" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.all.min.js"></script>
+  <style>
+    .text-end {
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-35%);
+    }
+
+    .object-fit-cover {
+      object-fit: cover;
+      height: 100px;
+      width: 100px;
+    }
+  </style>
+</head>
+
+<body class="g-sidenav-show  bg-gray-200">
+  <aside
+    class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3   bg-gradient-dark"
+    id="sidenav-main">
+    <hr class="horizontal light mt-0 mb-2">
+    <div class="collapse navbar-collapse  w-auto " id="sidenav-collapse-main">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link text-white " href="/admin/dashboard">
+            <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+              <i class="material-icons opacity-10">dashboard</i>
+            </div>
+            <span class="nav-link-text ms-1">Dashboard</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white active bg-gradient-primary" href="/admin/viewproducts">
+            <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+              <i class="material-icons opacity-10">table_view</i>
+            </div>
+            <span class="nav-link-text ms-1">Products</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white" href="/admin/category">
+            <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+              <i class="material-icons opacity-10">table_view</i>
+            </div>
+            <span class="nav-link-text ms-1">Category</span>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link text-white " href="/admin/viewusers">
+            <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+              <i class="material-icons opacity-10">person</i>
+            </div>
+            <span class="nav-link-text ms-1">Users</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white " href="/admin/vieworders">
+            <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+              <i class="material-icons opacity-10">receipt</i>
+            </div>
+            <span class="nav-link-text ms-1">Orders</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white " href="/admin/viewcoupons">
+            <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+              <i class="material-icons opacity-10">local_offer</i>
+            </div>
+            <span class="nav-link-text ms-1">Coupons</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white " href="">
+            <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+              <i class="material-icons opacity-10">card_giftcard</i>
+            </div>
+            <span class="nav-link-text ms-1">Offers</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white " href="/admin/logout">
+            <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+              <i class="material-icons opacity-10">logout</i>
+            </div>
+            <span class="nav-link-text ms-1">Logout</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </aside>
+  <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
+    <!-- Navbar -->
+    <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur"
+      data-scroll="true">
+      <div class="container-fluid py-1 px-3">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
+            <li class="breadcrumb-item text-sm text-dark active" aria-current="page"><a class="opacity-5 text-dark"
+               href="/admin/viewproducts">Products</a></li>
+            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Product Details</li>
+          </ol>
+          <h6 class="font-weight-bolder mb-0">Product Details</h6>
+        </nav>
+      </div>
+    </nav>
+    <!-- End Navbar -->
+
+    <!-- content -->
+  <section class="py-5">
+     <div class="container">
+       <div class="row gx-5">
+         <aside class="col-lg-6 text-center">
+           <div id="product-carousel" class="carousel slide border rounded-4 mb-3" data-bs-ride="carousel">
+             <div class="carousel-inner mx-auto">
+               <% product.images.forEach((image, index)=> { %>
+                 <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+                   <div class="zoom-container">
+                     <div id="lens-<%= index %>" class="lens"></div>
+                     <img id='featured-<%= index %>' style="max-width: 100%; max-height: 100vh; margin: auto;"
+                       class="rounded-4 fit" src="/<%= image %>" />
+                   </div>
+                 </div>
+                 <% }); %>
+             </div>
+             <button class="carousel-control-prev" type="button" data-bs-target="#product-carousel" data-bs-slide="prev">
+               <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+               <span class="visually-hidden">Previous</span>
+             </button>
+             <button class="carousel-control-next" type="button" data-bs-target="#product-carousel" data-bs-slide="next">
+               <span class="carousel-control-next-icon" aria-hidden="true"></span>
+               <span class="visually-hidden">Next</span>
+             </button>
+           </div>
+ 
+           <div class="d-flex justify-content-center mb-3">
+             <% for (let i=0; i < 4; i++) { %>
+               <img width="60" height="60" class="rounded-2 border mx-1 rounded-2" src="/<%= product.images[i] %>"
+                 onclick="updateMainImage(this.src)" /> <!-- Add onclick event here -->
+               <% } %>
+           </div>
+         </aside>
+ 
+         <script>
+           function updateMainImage(src) {
+             var mainImage = document.querySelector('#product-carousel .carousel-item.active img');
+             mainImage.src = src;
+           }
+         </script>
+ 
+ 
+ 
+         <main class="col-lg-6">
+             <h4 class="title display-6 text-dark">
+               <%=product.p_name%>
+             </h4>
+               <!-- <span class="text-muted"><i class="fa fa-shopping-basket fa-sm mx-1"></i>154 orders</span> -->
+               <% if(product.stock>0){ %>
+                 <span class="text-success ms-2">In stock</span>
+                 <%} else {%>
+                   <span class="text-danger ms-2">Out of Stock</span>
+                   <%}%>
+ 
+             <div class="mb-3">
+               <span class="h3">$<%=product.total_price%></span>
+               <span class="text-muted">&nbsp;<del>$<%=product.price%></del></span>
+             </div>
+ 
+             <p style="color: green; font-weight: 700;">
+               <%=product.discount%>% Discount
+             </p>
+ 
+             <p>
+               <%=product.description%>
+             </p>
+ 
+             <hr />
+ 
+             <div class="row mb-4">
+               <div class="col-md-4 col-6">
+                 <label class="mb-2">Stocks Left</label>
+                 <div class="input-group">
+                   <input type="text" class="form-control border border-secondary"
+                     style="height: 35px; text-align: center;" value="<%=product.stock%>" readonly>
+                 </div>
+               </div>
+             </div>
+               <a href="/admin/editproduct/<%= product._id %>" class="btn btn-primary shadow-0" id="addToCartBtn">
+                 <i class="fas fa-pencil-alt"></i> Edit
+               </a>
+ 
+               
+           </div>
+         </main>
+       </div>
+     </div>
+   </section>
+   <!-- content -->
+ 
+   <%if(similar.length> 1){%>
+     <section class="bg-light border-top py-4">
+       <div class="container">
+         <div class="row gx-4">
+           <div class="col-lg-12">
+             <div class="px-0 border rounded-2 shadow-0">
+               <div class="card">
+                 <div class="card-body">
+                   <h5 class="card-title">Similar items</h5>
+                   <div class="d-flex mb-3">
+                     <%for(i=0;i<similar.length;i++){%>
+                       <%if(similar[i]._id.toString()===product._id.toString()) {continue;}%>
+                         <div class="product">
+                           <a href="/user/productview/<%= similar[i]._id %>" class="me-3">
+                             <img src="/<%=similar[i].images[0]%>" style="min-width: 96px; height: 96px;"
+                               class="img-md img-thumbnail" />
+                           </a>
+                           <div class="info">
+                             <a href="/user/productview/<%= similar[i]._id %>" class="nav-link mb-1">
+                               <%=similar[i].p_name%>
+                             </a>
+                             <strong class="text-dark ms-3"> $<%=similar[i].total_price%>.00</strong>
+                           </div>
+                         </div>
+                         <%}%>
+                           <div class="product-border"></div> <!-- Border between products -->
+                   </div>
+                 </div>
+               </div>
+             </div>
+           </div>
+         </div>
+       </div>
+     </section>
+     <%}%>
+  </main>
+ 
+<!--   Core JS Files   -->
+  <script src="/js/admin/core/popper.min.js"></script>
+  <script src="/js/admin/core/bootstrap.min.js"></script>
+  <script src="/js/admin/plugins/perfect-scrollbar.min.js"></script>
+  <script src="/js/admin/plugins/smooth-scrollbar.min.js"></script>
+  <script>
+    var win = navigator.platform.indexOf('Win') > -1;
+    if (win && document.querySelector('#sidenav-scrollbar')) {
+      var options = {
+        damping: '0.5'
+      }
+      Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+    }
+  </script>
+  <!-- Github buttons -->
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
+  <script src="/js/admin/material-dashboard.min.js?v=3.1.0"></script>
+  <script src="/js/admin/function.js"></script>
+</body>
+
+</html>

@@ -28,9 +28,7 @@ route.get("/", (req, res) => {
   }
 });
 
-route.get("/dashboard", cookieJwtAuth, (req, res) => {
-  res.render("admin/dashboard");
-});
+route.get("/dashboard", cookieJwtAuth, admincontroller.dashboard);
 
 // route.get('/profile',(req,res)=>{
 //      res.render('admin/profile')
@@ -42,6 +40,7 @@ route.post("/login", admincontroller.login);
 route.get("/addproduct", cookieJwtAuth, admincontroller.addproductpage);
 route.post("/addproduct", cookieJwtAuth, upload.array("images", 4), admincontroller.addproduct);
 route.get("/viewproducts", cookieJwtAuth, admincontroller.viewproducts);
+route.get("/viewproduct/:pid", cookieJwtAuth, admincontroller.viewSingleProduct)
 route.get("/editproduct/:id", cookieJwtAuth, admincontroller.editproductpage);
 route.post("/editproduct/:id", cookieJwtAuth, upload.array("images", 4), admincontroller.editproduct);
 route.get("/deleteproduct/:id", cookieJwtAuth, admincontroller.deleteproduct);

@@ -5,18 +5,10 @@ let schema = new mongoose.Schema({
     type: String,
     required: [true, "Need the name"],
   },
-  // googleId:{
-  //   type:String,
-  //   unique: true,
-  // },
   email: {
     type: String,
     unique: true,
   },
-  // useremail:{
-  //   type : String,
-  //   unique: true,
-  // },
   password: {
     type: String,
   },
@@ -39,6 +31,10 @@ let schema = new mongoose.Schema({
     default: "active",
     enum: ["active", "blocked"],
   },
+  wallet: {
+    type: Number,
+    default: 0,
+  }
 },
 {
      timestamps: true

@@ -31,6 +31,92 @@ exports.login = async (req, res) => {
   }
 };
 
+exports.dashboard = async (req, res) => {
+  try {
+    const [quantitySold, completedOrdersCount, overallDiscount] = await Promise.all([
+      getTotalQuantitySold(),
+      getCompletedOrdersCount(),
+      getOverallDiscount()
+    ]);
+
+    // Render your dashboard with the retrieved data
+    res.render('admin/dashboard', {
+      totalQuantitySold: quantitySold, totalOrders: completedOrdersCount,
+      overallDiscount: overallDiscount.toFixed(2) // Convert to 2 decimal places
+    });
+  } catch (error) {
+    console.error('Error in dashboard function:', error);
+    res.status(500).send('Internal Server Error');
+  }
+};
+
+// Function to get the total quantity sold
+async function getTotalQuantitySold() {
+  const result = await OrderDb.aggregate([
+    {
+      $match: {
+        'orderedItems.paymentStatus': 'Completed', // Filter by paymentStatus Completed
+        'orderedItems.returned': false // Filter by returned: false within orderedItems
+      }
+    },
+    {
+      $unwind: '$orderedItems' // Deconstruct the orderedItems array
+    },
+    {
+      $group: {
+        _id: null, // Group by null to calculate the total across all documents
+        totalQuantitySold: { $sum: '$orderedItems.quantity' } // Sum the quantities
+      }
+    }
+  ]);
+
+  return result.length > 0 ? result[0].totalQuantitySold : 0;
+}
+
+// Function to get the count of completed orders
+async function getCompletedOrdersCount() {
+  const count = await OrderDb.countDocuments({ 'orderedItems.paymentStatus': 'Completed' });
+  return count;
+}
+
+// Function to calculate the overall discount from each order and sum it up
+async function getOverallDiscount() {
+  const result = await OrderDb.aggregate([
+    {
+      $match: {
+        'orderedItems.paymentStatus': 'Completed', // Filter by paymentStatus Completed
+        'orderedItems.returned': false // Filter by returned: false within orderedItems
+      }
+    },
+    {
+      $unwind: '$orderedItems' // Deconstruct the orderedItems array
+    },
+    {
+      $group: {
+        _id: '$_id', // Group by document _id to maintain document boundaries
+        totalOriginalPrice: { $sum: '$orderedItems.originalPrice' }, // Sum originalPrice per document
+        totalAmount: { $first: '$totalAmount' } // Take the totalAmount from the document
+      }
+    },
+    {
+      $group: {
+        _id: null, // Group by null to calculate the total discount across all documents
+        totalOriginalPrice: { $sum: '$totalOriginalPrice' }, // Sum all originalPrices
+        totalAmount: { $sum: '$totalAmount' } // Sum all totalAmounts
+      }
+    },
+    {
+      $project: {
+        overallDiscount: { $subtract: ['$totalOriginalPrice', '$totalAmount'] } // Calculate overall discount
+      }
+    }
+  ]);
+
+  return result.length > 0 ? result[0].overallDiscount : 0; // Return overall discount or 0 if no data found
+}
+
+
+
 exports.logout = (req, res) => {
   res.cookie("token", "", { maxAge: 0 });
   res.redirect("/?error=logout");
@@ -168,12 +254,12 @@ exports.editproduct = async (req, res) => {
     if (!product) {
       return res.status(400).send("Product Not Found!");
     }
-    const category = editvalues.category.value.trim();
-    const p_name = editvalues.p_name.value.trim();
-    const price = editvalues.price.value.trim();
-    const description = editvalues.description.value.trim();
-    const discount = editvalues.discount.value.trim();
-    const stock = editvalues.stock.value.trim();
+    const category = editvalues.category;
+    const p_name = editvalues.p_name;
+    const price = editvalues.price;
+    const description = editvalues.description;
+    const discount = editvalues.discount;
+    const stock = editvalues.stock;
 
     // Check if any of the trimmed required fields are empty
     if (!category || !p_name || !price || !description || !discount || !stock) {
@@ -217,6 +303,21 @@ exports.editproductpage = async (req, res) => {
     res.redirect("/admin/dashboard");
   }
 };
+
+exports.viewSingleProduct = async (req, res) => {
+  const p_id = req.params.pid;
+  const product = await ProductDb.findById(p_id);
+  const relatedProduct = await ProductDb.find({
+    category: product.category,
+  }).limit(4);
+  if (!product) {
+    res.status(404).send("No such product found!");
+  }
+  res.render("admin/productview", {
+    product: product,
+    similar: relatedProduct,
+  });
+}
 
 exports.addcategory = async (req, res) => {
   const { category } = req.body;
@@ -375,12 +476,16 @@ exports.acceptReturn = async (req, res) => {
   try {
     const productId = req.params.pid;
     const orderId = req.query.oid;
-    // console.log(productId, orderId);
 
     // Use async/await with findByIdAndUpdate to ensure proper error handling
     const updatedOrder = await OrderDb.findByIdAndUpdate(
       orderId,
-      { $set: { "orderedItems.$[elem].status": "Returned" } },
+      {
+        $set: {
+          "orderedItems.$[elem].status": "Returned",
+          "orderedItems.$[elem].paymentStatus": "Refunded",
+        }
+      },
       {
         arrayFilters: [{ "elem.productId": productId }],
         new: true, // Return the updated document
@@ -392,9 +497,20 @@ exports.acceptReturn = async (req, res) => {
       return res.status(404).json({ msg: "Order not found" });
     }
 
-    // Handle the case where the order is updated successfully
-    // console.log('Updated Order:', updatedOrder);
-    return res.status(200).json({ success: true, message: "Return accepted." });
+    // Get the specific item from the updatedOrder
+    const updatedItem = updatedOrder.orderedItems.find(item => item.productId.toString() === productId);
+
+    // Calculate the price of the returned item
+    const returnedItemPrice = updatedItem.price;
+
+    // Get the user ID from the updatedOrder
+    const userId = updatedOrder.user_id;
+
+    // Update the user's wallet with the returnedItemPrice
+    await Userdb.findByIdAndUpdate(userId, { $inc: { wallet: returnedItemPrice } });
+
+    // Handle the case where the order is updated successfully and wallet is updated
+    return res.status(200).json({ success: true, message: "Return accepted and wallet updated." });
   } catch (error) {
     console.error("Error:", error);
     return res.status(500).json({ msg: "Internal server error" });
@@ -440,13 +556,18 @@ exports.statusDelivered = async (req, res) => {
     // Use async/await with findByIdAndUpdate to ensure proper error handling
     const updatedOrder = await OrderDb.findByIdAndUpdate(
       orderId,
-      { $set: { "orderedItems.$[elem].status": "Delivered" } },
+      {
+        $set: {
+          "orderedItems.$[elem].status": "Delivered",
+          "orderedItems.$[elem].paymentStatus": "Completed", // Set paymentStatus to Completed
+        },
+      },
       {
         arrayFilters: [{ "elem.productId": productId }],
         new: true, // Return the updated document
       }
     );
-    console.log(updatedOrder);
+    // console.log(updatedOrder);
 
     // Check if updatedOrder is null (order not found) or if it's updated successfully
     if (!updatedOrder) {

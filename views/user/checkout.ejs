@@ -5,6 +5,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Order Checkout</title>
+  <!-- Font Awesome Icons -->
+  <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.all.min.js"></script>
@@ -136,12 +138,6 @@
       <a href="/">
         <h1 class="title">RISHI STUDIO</h1>
       </a>
-      <!-- <form class="form-outline-inline" action="/product/search" method="get" required>
-            <input type="search" id="form1" class="form-control" placeholder="Search" />
-            <button type="submit" class="btn btn-primary shadow-0">
-                <i class="fa fa-search"></i>
-            </button>
-        </form> -->
       <div class="icons">
         <a href="/user/cart"><i class="fa fa-shopping-cart"></i></a>
         <a href="/user/wishlist"><i class="fa fa-heart"></i></a>
@@ -237,148 +233,181 @@
             <h3>Coupons</h3>
             <hr />
             <div class="position-relative"> <!-- Added a parent div for relative positioning -->
-              <input id="couponInput" class="form-outline-inline" type="text" autocomplete="off">
+              <input id="couponInput" name="coupon" class=" form-outline-inline" type="text" autocomplete="off">
               <div id="couponDropdown" class="dropdown-menu position-absolute"
                 style="top: 100%; left: 0; display: none; z-index: 100;"></div>
             </div>
-            <button type="button" onclick="applyCoupon()" class="btn btn-warning ms-2" id="applyButton">Apply</button>
+            <!-- Apply Coupons Button -->
+            <button type="button" id="applyButton" class="btn btn-warning mt-2 ms-2">Apply</button>
+            <!-- Remove Coupon Button (Initially hidden) -->
+            <button type="button" id="removeButton" class="btn btn-danger mt-2 ms-2"
+              style="display: none;">Remove</button>
             <div id="couponAppliedMessage" style="display: none;" class="mt-2 text-success">Coupon applied!</div>
           </div>
 
           <script>
-            const couponInput = document.getElementById('couponInput');
-            const couponDropdown = document.getElementById('couponDropdown');
-            const grandTotalDisplay = document.getElementById('grandTotalDisplay'))
-            const totalAmountContainer = document.querySelector('.coupon-amount');
-            const applyButton = document.getElementById('applyButton');
-            const couponAppliedMessage = document.getElementById('couponAppliedMessage');
 
-            let debounceTimeout;
-            let couponApplied = false; // Flag to track if coupon is applied
+            document.addEventListener('DOMContentLoaded', function () {
 
-            couponInput.addEventListener('input', function (event) {
-              clearTimeout(debounceTimeout);
-              debounceTimeout = setTimeout(() => {
-                const inputValue = event.target.value.trim();
-                if (inputValue.length > 0) {
-                  fetch(`/user/checkcoupon?code=${inputValue}`, {
-                    method: 'GET',
-                    headers: {
-                      'Content-Type': 'application/json'
-                    }
-                  })
-                    .then(response => response.json())
-                    .then(data => {
-                      console.log('Response from backend:', data);
-                      if (data.valid && data.codes.length > 0) {
-                        displayDropdownItems(data.codes);
-                      } else {
-                        displayNoMatchingCoupons(); // Display "No matching coupons" message
-                      }
-                    })
-                    .catch(error => console.error('Error:', error));
-                } else {
-                  hideCouponDropdown(); // Hide dropdown when input is empty
-                }
-              }, 300);
-            });
+              const applyButton = document.getElementById('applyButton');
+              const removeButton = document.getElementById('removeButton');
 
-            function displayDropdownItems(coupons) {
-              couponDropdown.innerHTML = '';
-              coupons.forEach(coupon => {
-                const couponItem = document.createElement('div');
-                couponItem.classList.add('dropdown-item');
-                couponItem.textContent = `${coupon.code} - Discount: ${coupon.discountAmount}, Min Amount: ${coupon.minimumPurchaseAmount}`;
-                couponItem.addEventListener('click', () => {
-                  couponInput.value = coupon.code;
-                  hideCouponDropdown();
-                });
-                couponDropdown.appendChild(couponItem);
+              applyButton.addEventListener('click', function () {
+                applyCoupon(); // Call the applyCoupon function when the button is clicked
               });
-              couponDropdown.style.display = 'block'; // Show dropdown
-            }
 
-            function displayNoMatchingCoupons() {
-              couponDropdown.innerHTML = '';
-              const noMatchItem = document.createElement('div');
-              noMatchItem.classList.add('dropdown-item', 'text-muted');
-              noMatchItem.textContent = 'No matching coupons';
-              couponDropdown.appendChild(noMatchItem);
-              couponDropdown.style.display = 'block'; // Show dropdown with message
-            }
+              removeButton.addEventListener('click', function () {
+                removeCoupon(); // Call the removeCoupon function when the remove button is clicked
+              });
 
-            function hideCouponDropdown() {
-              couponDropdown.innerHTML = '';
-              couponDropdown.style.display = 'none'; // Hide dropdown
-            }
+              // Your JavaScript code here
+              const couponInput = document.getElementById('couponInput');
+              const couponDropdown = document.getElementById('couponDropdown');
+              const grandTotalDisplay = document.getElementById('grandTotalDisplay');
+              const totalAmountContainer = document.querySelector('.coupon-amount');
+              const couponAppliedMessage = document.getElementById('couponAppliedMessage');
 
-            function applyCouponDiscount(coupon) {
-              // Apply coupon discount to grand total if conditions are met
-              const grandTotal = parseFloat('<%= usercart.subtotal %>'); // Get grand total from EJS as a string
-              const minAmount = parseFloat(coupon.minimumPurchaseAmount);
-              const discountAmount = parseFloat(coupon.discountAmount);
-              // console.log(grandTotal, minAmount, discountAmount);
+              let debounceTimeout;
+              let couponApplied = false; // Flag to track if coupon is applied
 
-              if (grandTotal >= minAmount) {
-                const discountedTotal = grandTotal - discountAmount;
-                console.log(discountedTotal);
-                // Update the displayed total on the frontend
-                grandTotalDisplay.innerText = `$ ${discountedTotal.toFixed(2)}`;
-                totalAmountContainer.style.display = 'block'; // Show total amount container
-                couponAppliedMessage.style.display = 'block'; // Show coupon applied message
-                couponApplied = true; // Set flag to true
-
-                // Disable input and apply button
-                couponInput.disabled = true;
-                applyButton.disabled = true;
-              } else {
-                // Display error message if minimum purchase amount condition is not met
-                Swal.fire({
-                  icon: 'error',
-                  title: 'Oops...',
-                  text: `Minimum purchase amount of $${minAmount} is required to apply this coupon!`,
-                });
-                couponApplied = false; // Reset flag
-              }
-            }
-
-            function applyCoupon() {
-              const appliedCoupon = couponInput.value.trim();
-              fetch(`/user/checkcoupon?code=${appliedCoupon}`, {
-                method: 'GET',
-                headers: {
-                  'Content-Type': 'application/json'
-                }
-              })
-                .then(response => response.json())
-                .then(data => {
-                  console.log('Coupon Check Response:', data);
-                  if (data.valid && data.codes.length > 0) {
-                    // Check if the coupon meets the minimum purchase amount criteria
-                    applyCouponDiscount(data.codes[0]); // Apply coupon discount immediately
-                  } else {
-                    // Coupon does not exist or is not valid
-                    couponInput.value = '';
-                    Swal.fire({
-                      icon: 'error',
-                      title: 'Oops...',
-                      text: 'Invalid coupon or no coupon exists!',
-                    });
-                    couponApplied = false; // Reset flag
+              function applyCoupon() {
+                const appliedCoupon = couponInput.value.trim();
+                console.log(appliedCoupon, "hellooo")
+                fetch(`/user/checkcoupon?code=${appliedCoupon}`, {
+                  method: 'GET',
+                  headers: {
+                    'Content-Type': 'application/json'
                   }
                 })
-                .catch(error => console.error('Error:', error));
-            }
-
-            // Listen for changes in coupon input value to re-enable input and apply button if couponApplied flag is true
-            couponInput.addEventListener('input', function () {
-              if (couponApplied) {
-                couponAppliedMessage.style.display = 'none';
-                totalAmountContainer.style.display = 'none';
-                couponApplied = false; // Reset flag
-                couponInput.disabled = false; // Re-enable input
-                applyButton.disabled = false; // Re-enable apply button
+                  .then(response => response.json())
+                  .then(data => {
+                    console.log('Coupon Check Response:', data);
+                    if (data.valid && data.codes.length > 0) {
+                      // Check if the coupon meets the minimum purchase amount criteria
+                      applyCouponDiscount(data.codes[0]); // Apply coupon discount immediately
+                    } else {
+                      // Coupon does not exist or is not valid
+                      couponInput.value = '';
+                      Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Invalid coupon or no coupon exists!',
+                      });
+                      couponApplied = false; // Reset flag
+                    }
+                  })
+                  .catch(error => console.error('Error:', error));
               }
+
+              // Listen for changes in coupon input value to re-enable input and apply button if couponApplied flag is true
+              couponInput.addEventListener('input', function () {
+                if (couponApplied) {
+                  couponAppliedMessage.style.display = 'none';
+                  totalAmountContainer.style.display = 'none';
+                  couponApplied = false; // Reset flag
+                  couponInput.disabled = false; // Re-enable input
+                  applyButton.disabled = false; // Re-enable apply button
+                }
+              });
+
+              couponInput.addEventListener('input', function (event) {
+                clearTimeout(debounceTimeout);
+                debounceTimeout = setTimeout(() => {
+                  const inputValue = event.target.value.trim();
+                  if (inputValue.length > 0) {
+                    fetch(`/user/checkcoupon?code=${inputValue}`, {
+                      method: 'GET',
+                      headers: {
+                        'Content-Type': 'application/json'
+                      }
+                    })
+                      .then(response => response.json())
+                      .then(data => {
+                        console.log('Response from backend:', data);
+                        if (data.valid && data.codes.length > 0) {
+                          displayDropdownItems(data.codes);
+                        } else {
+                          displayNoMatchingCoupons(); // Display "No matching coupons" message
+                        }
+                      })
+                      .catch(error => console.error('Error:', error));
+                  } else {
+                    hideCouponDropdown(); // Hide dropdown when input is empty
+                  }
+                }, 300);
+              });
+
+              function displayDropdownItems(coupons) {
+                couponDropdown.innerHTML = '';
+                coupons.forEach(coupon => {
+                  const couponItem = document.createElement('div');
+                  couponItem.classList.add('dropdown-item');
+                  couponItem.textContent = `${coupon.code} - Discount: ${coupon.discountAmount}, Min Amount: ${coupon.minimumPurchaseAmount}`;
+                  couponItem.addEventListener('click', () => {
+                    couponInput.value = coupon.code;
+                    hideCouponDropdown();
+                  });
+                  couponDropdown.appendChild(couponItem);
+                });
+                couponDropdown.style.display = 'block'; // Show dropdown
+              }
+
+              function displayNoMatchingCoupons() {
+                couponDropdown.innerHTML = '';
+                const noMatchItem = document.createElement('div');
+                noMatchItem.classList.add('dropdown-item', 'text-muted');
+                noMatchItem.textContent = 'No matching coupons';
+                couponDropdown.appendChild(noMatchItem);
+                couponDropdown.style.display = 'block'; // Show dropdown with message
+              }
+
+              function hideCouponDropdown() {
+                couponDropdown.innerHTML = '';
+                couponDropdown.style.display = 'none'; // Hide dropdown
+              }
+
+              function applyCouponDiscount(coupon) {
+                // Apply coupon discount to grand total if conditions are met
+                const grandTotal = parseFloat('<%= usercart.subtotal %>'); // Get grand total from EJS as a string
+                const minAmount = parseFloat(coupon.minimumPurchaseAmount);
+                const discountAmount = parseFloat(coupon.discountAmount);
+                // console.log(grandTotal, minAmount, discountAmount);
+
+                if (grandTotal >= minAmount) {
+                  const discountedTotal = grandTotal - discountAmount;
+                  console.log(discountedTotal);
+                  // Update the displayed total on the frontend
+                  grandTotalDisplay.innerHTML = `${discountedTotal.toFixed(2)}`;
+                  totalAmountContainer.style.display = 'block'; // Show total amount container
+                  couponAppliedMessage.style.display = 'block'; // Show coupon applied message
+                  couponApplied = true; // Set flag to true
+
+                  // Disable input and apply button
+                  couponInput.readOnly = true;
+                  applyButton.style.display = 'none'; // Hide apply button
+                  removeButton.style.display = 'block'; // Show remove button
+                } else {
+                  // Display error message if minimum purchase amount condition is not met
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: `Minimum purchase amount of $${minAmount} is required to apply this coupon!`,
+                  });
+                  couponApplied = false; // Reset flag
+                }
+              }
+
+              function removeCoupon() {
+                couponInput.value = ''; // Clear coupon input field
+                applyButton.style.display = 'block'; // Show apply button
+                removeButton.style.display = 'none'; // Hide remove button
+                couponAppliedMessage.style.display = 'none'; // Hide coupon applied message
+                totalAmountContainer.style.display = 'none'; // Hide total amount container
+                couponApplied = false; // Reset flag
+                couponInput.readOnly = false;
+              }
+
+
             });
           </script>
 
@@ -387,7 +416,7 @@
             <h3>Grand Total</h3>
             <hr />
             <p><strong>Total Amount: $<%= usercart.subtotal %></strong></p>
-            <p style="display: none;" class="coupon-amount"><strong>Grand Total After Coupon: $<span
+            <p style="display: none;" class="coupon-amount"><strong>Grand Total after applying coupon : $<span
                   id="grandTotalDisplay"></span></strong></p>
           </div>
 
@@ -396,15 +425,32 @@
             <h3>Payment Method</h3>
             <hr />
             <div class="form-check">
-              <input class="form-check-input" type="radio" name="paymentMethod" value="COD" />
-              <label class="form-check-label" for="COD">
-                Cash On Delivery
-              </label>
+              <% if (usercart.subtotal <=1000) { %>
+                <input class="form-check-input" type="radio" name="paymentMethod" value="COD" />
+                <label class="form-check-label" for="COD">
+                  Cash On Delivery
+                </label>
+                <% } else { %>
+                  <label class="form-check-label" style="color: red;">
+                   Cash on delivery not available
+                  </label>
+                <% } %>
               <br>
               <input class="form-check-input" type="radio" name="paymentMethod" value="RazorPay" />
               <label class="form-check-label" for="razorPay">
                 RazorPay
               </label>
+              <br>
+              <% if (usercart.subtotal <=wallet) { %>
+                <input class="form-check-input" type="radio" name="paymentMethod" value="Wallet" />
+                <label class="form-check-label" for="wallet">
+                  Wallet (Remaining: $<%= wallet %>)
+                </label>
+                <% } else { %>
+                  <label class="form-check-label" style="color: red;">
+                    Wallet (Insufficient Balance: $<%= wallet %>)
+                  </label>
+                <% } %>
             </div>
           </div>
 

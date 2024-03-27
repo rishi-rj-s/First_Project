@@ -122,6 +122,7 @@ exports.sortBy = async (req, res) => {
     );
     const categoryNames = categoriesToExclude.map((cat) => cat.category);
     const sortBy = req.query.sortBy;
+    console.log(sortBy);
     let sortedProducts;
 
     switch (sortBy) {
@@ -395,6 +396,19 @@ exports.profile = async (req, res) => {
   res.render("user/userprofile", { user });
 };
 
+exports.showWallet = async(req, res) => {
+  const userId = req.session.user;
+  try{
+    const user = await Userdb.findById(userId);
+    const wallet = user.wallet;
+    const name = user.name;
+    res.render('user/wallet', {wallet, name});
+  }catch(e){
+    console.log(e);
+    res.status(500).send("Internal Error!");
+  }
+}
+
 exports.showAddress = async (req, res) => {
   const user = req.session.user;
   try {
@@ -564,7 +578,7 @@ exports.saveAddress = async (req, res) => {
         res.status(500).send({ message: "Error updating user information" });
       });
   } catch (error) {
-    console.error("Error fetching products:", error);
+    console.error("Error saving address:", error);
     res.redirect("/user/address?msg=erredit");
   }
 };

@@ -13,7 +13,7 @@ exports.showCart = async (req, res) => {
     );
     // console.log(usercart)
 
-    if (usercart.product.length === 0) {
+    if (!usercart ||usercart.product.length === 0) {
       // Cart is empty, redirect to /user/products/All
       return res.redirect('/user/landing?msg=nocart');
     }

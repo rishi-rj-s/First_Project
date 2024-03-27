@@ -158,6 +158,9 @@
                             Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="/user/profile"><i class="fas fa-user"></i>
                             Profile</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/wallet"><i class="fas fa-wallet"></i> Wallet</a>
+                    </li>
                     <li class="nav-item"><a class="nav-link" href="/user/orders"><i class="fas fa-shopping-bag"></i>
                             Orders</a>
                     </li>
@@ -186,7 +189,6 @@
                                                 <tr>
                                                     <th scope="col">Product Image</th>
                                                     <th scope="col">Product Name</th>
-                                                    <th scope="col">Total Amount</th>
                                                     <th scope="col">Quantity</th>
                                                     <th scope="col">Order Date</th>
                                                     <th scope="col">Order Status</th>
@@ -200,13 +202,10 @@
                                                             %>
                                                             <tr>
                                                                 <td><img class="object-fit-cover"
-                                                                        src="/<%= items.productId.images[0] %>"
+                                                                        src="/<%= items.pimages[0] %>"
                                                                         alt="Product Image"></td>
                                                                 <td class="text-center align-middle">
-                                                                    <%= items.productId.p_name %>
-                                                                </td>
-                                                                <td class="text-center align-middle">
-                                                                    <%= items.price %>
+                                                                    <%= items.pname %>
                                                                 </td>
                                                                 <td class="text-center align-middle">
                                                                     <%= items.quantity %>
@@ -303,7 +302,6 @@
                                                 <tr>
                                                     <th scope="col">Product Image</th>
                                                     <th scope="col">Product Name</th>
-                                                    <th scope="col">Total Amount</th>
                                                     <th scope="col">Quantity</th>
                                                     <th scope="col">Order Date</th>
                                                     <th scope="col">Order Status</th>
@@ -322,9 +320,6 @@
                                                                     <%= items.productId.p_name %>
                                                                 </td>
                                                                 <td class="text-center align-middle">
-                                                                    <%= items.price %>
-                                                                </td>
-                                                                <td class="text-center align-middle">
                                                                     <%= items.quantity %>
                                                                 </td>
                                                                 <td class="text-center align-middle">
@@ -339,11 +334,11 @@
                                                                             class="btn btn-warning text-white return">
                                                                             Return
                                                                         </button></td>
-                                                                <%} else {%>
-                                                                    <td class="text-center align-middle">
-                                                                        Return not possible
-                                                                    </td>
-                                                                <%}%>
+                                                                    <%} else {%>
+                                                                        <td class="text-center align-middle">
+                                                                            Return not possible
+                                                                        </td>
+                                                                        <%}%>
                                                             </tr>
                                                             <script>
                                                                 document.addEventListener("DOMContentLoaded", function () {
@@ -427,7 +422,6 @@
                                                 <tr>
                                                     <th scope="col">Product Image</th>
                                                     <th scope="col">Product Name</th>
-                                                    <th scope="col">Total Amount</th>
                                                     <th scope="col">Quantity</th>
                                                     <th scope="col">Order Date</th>
                                                     <th scope="col">Return Status</th>
@@ -443,10 +437,6 @@
                                                                         alt="Product Image"></td>
                                                                 <td class="text-center align-middle">
                                                                     <%= items.productId.p_name %>
-                                                                </td>
-                                                                <td class="text-center align-middle">
-                                                                    <%= items.price
-                                                                        %>
                                                                 </td>
                                                                 <td class="text-center align-middle">
                                                                     <%= items.quantity %>
@@ -472,7 +462,6 @@
                                                 <tr>
                                                     <th scope="col">Product Image</th>
                                                     <th scope="col">Product Name</th>
-                                                    <th scope="col">Total Amount</th>
                                                     <th scope="col">Quantity</th>
                                                     <th scope="col">Order Date</th>
                                                     <th scope="col">Order Status</th>
@@ -488,10 +477,6 @@
                                                                         alt="Product Image"></td>
                                                                 <td class="text-center align-middle">
                                                                     <%= items.productId.p_name %>
-                                                                </td>
-                                                                <td class="text-center align-middle">
-                                                                    <%= items.price
-                                                                        %>
                                                                 </td>
                                                                 <td class="text-center align-middle">
                                                                     <%= items.quantity %>
@@ -517,7 +502,6 @@
                                                 <tr>
                                                     <th scope="col">Product Image</th>
                                                     <th scope="col">Product Name</th>
-                                                    <th scope="col">Total Amount</th>
                                                     <th scope="col">Quantity</th>
                                                     <th scope="col">Order Date</th>
                                                     <th scope="col">Order Status</th>
@@ -533,10 +517,6 @@
                                                                         alt="Product Image"></td>
                                                                 <td class="text-center align-middle">
                                                                     <%= items.productId.p_name %>
-                                                                </td>
-                                                                <td class="text-center align-middle">
-                                                                    <%= items.price
-                                                                        %>
                                                                 </td>
                                                                 <td class="text-center align-middle">
                                                                     <%= items.quantity %>

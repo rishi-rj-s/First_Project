@@ -182,8 +182,8 @@
                             <tr>
                               <th scope="col">Product Image</th>
                               <th scope="col">Product Name</th>
-                              <th scope="col">Total Amount</th>
                               <th scope="col">Quantity</th>
+                              <th scope="col">Payment Status</th>
                               <th scope="col">Order Date</th>
                               <th scope="col">Order Status</th>
                               <th scope="col">Action</th>
@@ -194,16 +194,16 @@
                               <% order.orderedItems.forEach(items=> { %>
                                 <% if (items.status==="Pending" || items.status==="Shipped" ) { %>
                                   <tr>
-                                    <td><img class="object-fit-cover" src="/<%= items.productId.images[0] %>"
+                                    <td><img class="object-fit-cover" src="/<%= items.pimages[0] %>"
                                         alt="Product Image"></td>
                                     <td class="text-center align-middle">
-                                      <%= items.productId.p_name %>
-                                    </td>
-                                    <td class="text-center align-middle">
-                                      <%= (items.productId.total_price) * (items.quantity) %>
+                                      <%= items.pname %>
                                     </td>
                                     <td class="text-center align-middle">
                                       <%= items.quantity %>
+                                    </td>
+                                    <td class="text-center align-middle">
+                                      <%= items.paymentStatus %>
                                     </td>
                                     <td class="text-center align-middle">
                                       <%= order.orderDate.toLocaleDateString() %>
@@ -319,8 +319,8 @@
                             <tr>
                               <th scope="col">Product Image</th>
                               <th scope="col">Product Name</th>
-                              <th scope="col">Total Amount</th>
                               <th scope="col">Quantity</th>
+                              <th scope="col">Payment Status</th>
                               <th scope="col">Order Date</th>
                               <th scope="col">Order Status</th>
                             </tr>
@@ -336,10 +336,10 @@
                                       <%= items.productId.p_name %>
                                     </td>
                                     <td class="text-center align-middle">
-                                      <%= (items.productId.total_price)*(items.quantity) %>
+                                      <%= items.quantity %>
                                     </td>
                                     <td class="text-center align-middle">
-                                      <%= items.quantity %>
+                                      <%= items.paymentStatus %>
                                     </td>
                                     <td class="text-center align-middle">
                                       <%= order.orderDate.toLocaleDateString() %>
@@ -362,8 +362,8 @@
                             <tr>
                               <th scope="col">Product Image</th>
                               <th scope="col">Product Name</th>
-                              <th scope="col">Total Amount</th>
                               <th scope="col">Quantity</th>
+                              <th scope="col">Payment Status</th>
                               <th scope="col">Order Date</th>
                               <th scope="col">Order Status</th>
                               <th scope="col">Action</th>
@@ -380,10 +380,10 @@
                                       <%= items.productId.p_name %>
                                     </td>
                                     <td class="text-center align-middle">
-                                      <%= (items.productId.total_price)*(items.quantity) %>
+                                      <%= items.quantity %>
                                     </td>
                                     <td class="text-center align-middle">
-                                      <%= items.quantity %>
+                                      <%= items.paymentStatus %>
                                     </td>
                                     <td class="text-center align-middle">
                                       <%= order.orderDate.toLocaleDateString() %>
@@ -539,8 +539,8 @@
                             <tr>
                               <th scope="col">Product Image</th>
                               <th scope="col">Product Name</th>
-                              <th scope="col">Total Amount</th>
                               <th scope="col">Quantity</th>
+                              <th scope="col">Payment Status</th>
                               <th scope="col">Order Date</th>
                               <th scope="col">Order Status</th>
                             </tr>
@@ -556,10 +556,10 @@
                                       <%= items.productId.p_name %>
                                     </td>
                                     <td class="text-center align-middle">
-                                      <%= (items.productId.total_price)*(items.quantity) %>
+                                      <%= items.quantity %>
                                     </td>
                                     <td class="text-center align-middle">
-                                      <%= items.quantity %>
+                                      <%= items.paymentStatus %>
                                     </td>
                                     <td class="text-center align-middle">
                                       <%= order.orderDate.toLocaleDateString() %>
@@ -582,8 +582,8 @@
                             <tr>
                               <th scope="col">Product Image</th>
                               <th scope="col">Product Name</th>
-                              <th scope="col">Total Amount</th>
                               <th scope="col">Quantity</th>
+                              <th scope="col">Payment Status</th>
                               <th scope="col">Order Date</th>
                               <th scope="col">Order Status</th>
                             </tr>
@@ -599,10 +599,10 @@
                                       <%= items.productId.p_name %>
                                     </td>
                                     <td class="text-center align-middle">
-                                      <%= (items.productId.total_price)*(items.quantity) %>
+                                      <%= items.quantity %>
                                     </td>
                                     <td class="text-center align-middle">
-                                      <%= items.quantity %>
+                                      <%= items.paymentStatus %>
                                     </td>
                                     <td class="text-center align-middle">
                                       <%= order.orderDate.toLocaleDateString() %>

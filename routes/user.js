@@ -34,6 +34,8 @@ route.post("/login",usercontroller.login)
 
 route.get('/profile',checkBlocked, cookieJwtAuth, usercontroller.profile);
 
+route.get('/wallet',checkBlocked, cookieJwtAuth, usercontroller.showWallet)
+
 route.get('/address',checkBlocked, cookieJwtAuth, usercontroller.showAddress);
 route.get('/addaddress',checkBlocked, cookieJwtAuth, usercontroller.showAddAddress);
 route.post('/addaddress',checkBlocked, cookieJwtAuth, usercontroller.addAddress)

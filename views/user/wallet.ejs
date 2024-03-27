@@ -84,6 +84,28 @@
                align-items: center;
                margin-top: 2rem;
           }
+
+          .wallet-info {
+               display: flex;
+               align-items: center;
+               justify-content: center;
+               padding: 20px;
+               background-color: #f8f9fa;
+               border-radius: 8px;
+               box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+          }
+
+          .wallet-icon {
+               margin-right: 20px;
+               color: #007bff;
+               /* Change the color to your preference */
+          }
+
+          .wallet-balance {
+               font-size: 24px;
+               color: #333;
+               /* Change the color to your preference */
+          }
      </style>
 </head>
 
@@ -120,58 +142,23 @@
                <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
                     <div class="content d-flex justify-content-center align-items-center">
                          <div class="change-password-form">
-                              <h1>Change Username</h1>
-                              <form action="/user/savename" method="post" onsubmit="return validate()">
-                                   <div class="form-group">
-                                        <label for="name">Name:</label>
-                                        <div class="input-group">
-                                             <input type="text" name="name" id="nameInput" value="<%=name%>"
-                                                  class="form-control" required>
-                                        </div>
+                              <h1>Wallet</h1>
+                              <div class="wallet-info">
+                                   <div class="wallet-icon">
+                                        <i class="fas fa-wallet fa-3x"></i>
                                    </div>
-                                   <div class="form-group">
-                                        <label for="email">Email</label>
-                                        <div class="input-group">
-                                             <input type="text" name="email" value="<%= email%>" class="form-control"
-                                                  disabled>
-                                        </div>
+                                   <div class="wallet-balance">
+                                        <h4>Remaining Balance:</h4>
+                                        <p><strong>
+                                                  $<%= wallet %>
+                                             </strong></p>
                                    </div>
-                                   <button id="saveButton" class="btn btn-primary" type="submit" disabled>Save</button>
-                              </form>
-                              <script>
-                                   const nameInput = document.getElementById('nameInput');
-                                   const saveButton = document.getElementById('saveButton');
-
-                                   nameInput.addEventListener('input', () => {
-                                        if (nameInput.value.trim() !== '') {
-                                             saveButton.disabled = false;
-                                        } else {
-                                             saveButton.disabled = true;
-                                        }
-                                   });
-                              </script>
+                              </div>
                          </div>
                     </div>
                </main>
           </div>
      </div>
-     <script>
-          const newname = document.querySelector('[name="newname"]');
-          function validate() {
-               if (!newname.value.trim()) {
-                    Swal.fire({
-                         icon: "error",
-                         title: 'Error',
-                         text: 'No Name Entered!',
-                         confirmButtonText: 'Retry!'
-                    })
-                    return false;
-               } else {
-                    return true;
-               }
-          }
-     </script>
-
      <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
      <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
