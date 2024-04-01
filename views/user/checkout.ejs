@@ -87,47 +87,27 @@
         width: auto;
         margin-right: 0;
       }
-    }
 
-    .banner i {
-      color: white !important;
-    }
+      .row {
+        display: flex;
+      }
 
-    .banner .fa-shopping-cart:hover {
-      color: yellowgreen !important;
-    }
+      .col-half {
+        width: 50%;
+      }
 
-    .banner .fa-heart:hover {
-      color: red !important;
-    }
+      .order-details,
+      .address-selection,
+      .payment-method,
+      .total-amount {
+        margin-top: 0;
+        padding: 10px;
+      }
 
-    .banner .fa-user:hover {
-      color: blue !important;
-    }
-
-    .banner .fa-power-off:hover {
-      color: gray !important;
-    }
-
-    .social-icons i {
-      padding-right: 10px;
-    }
-
-    .icons i {
-      z-index: 9;
-      font-size: 30px;
-    }
-
-    .position-relative {
-      position: relative;
-    }
-
-    .position-absolute {
-      position: absolute;
-    }
-
-    .dropdown-item {
-      cursor: pointer;
+      .total-amount,
+      .payment-method {
+        margin-top: 20px;
+      }
     }
   </style>
 </head>
@@ -163,14 +143,13 @@
       }
     });
   </script>
-
-  <!--  NAVIGATION ENDS  -->
+  <!-- NAVIGATION ENDS -->
   <div class="container mt-4">
     <h1 class="text-center mb-4">Order Checkout</h1>
     <form id="checkoutForm" action="/user/placeorder" method="POST" onsubmit="return validateForm()">
       <div class="row">
-        <div class="col-md-8 mx-auto">
-          <!-- Order Details -->
+        <div class="col-half">
+          <!-- Product Section -->
           <div class="order-details">
             <h3>Your Order</h3>
             <hr />
@@ -190,7 +169,7 @@
                         <p class="card-text">
                           <%= cartItem.productId.description %>
                         </p>
-                        <h5>Price : $<%= cartItem.productId.total_price %>
+                        <h5>Price: $<%= cartItem.productId.total_price %>
                         </h5>
                         <div class="d-flex align-items-center">
                           <div class="input-group me-2">
@@ -203,215 +182,32 @@
                     </div>
                   </div>
                 </div>
-                <%})%>
+                <% }) %>
             </div>
           </div>
-
           <!-- Address Selection -->
           <div class="address-selection">
             <h3>Choose Address</h3>
             <hr>
             <div class="form-scroll">
               <div class="form-check">
-                <% address.forEach(addr=>{%>
-                  <input class="form-check-input" value="<%= addr._id%>" type="radio" name="address" value="address1">
+                <% address.forEach(addr=>{ %>
+                  <input class="form-check-input" value="<%= addr._id %>" type="radio" name="address" value="address1">
                   <label class="form-check-label" for="address1">
                     <h3>
                       <%= addr.name %>
                     </h3>
                     Address 1: <%= addr.address %>,<%= addr.state %>, <%= addr.pincode %>
                   </label> <br><br>
-                  <%})%>
+                  <% }) %>
               </div>
             </div>
             <a href="/user/addaddress"><button class="btn btn-warning" onclick="goToAddAddress()">Add
                 Address</button></a>
           </div>
-
-          <!-- Apply Coupons -->
-          <div class="total-amount">
-            <h3>Coupons</h3>
-            <hr />
-            <div class="position-relative"> <!-- Added a parent div for relative positioning -->
-              <input id="couponInput" name="coupon" class=" form-outline-inline" type="text" autocomplete="off">
-              <div id="couponDropdown" class="dropdown-menu position-absolute"
-                style="top: 100%; left: 0; display: none; z-index: 100;"></div>
-            </div>
-            <!-- Apply Coupons Button -->
-            <button type="button" id="applyButton" class="btn btn-warning mt-2 ms-2">Apply</button>
-            <!-- Remove Coupon Button (Initially hidden) -->
-            <button type="button" id="removeButton" class="btn btn-danger mt-2 ms-2"
-              style="display: none;">Remove</button>
-            <div id="couponAppliedMessage" style="display: none;" class="mt-2 text-success">Coupon applied!</div>
-          </div>
-
-          <script>
-
-            document.addEventListener('DOMContentLoaded', function () {
-
-              const applyButton = document.getElementById('applyButton');
-              const removeButton = document.getElementById('removeButton');
-
-              applyButton.addEventListener('click', function () {
-                applyCoupon(); // Call the applyCoupon function when the button is clicked
-              });
-
-              removeButton.addEventListener('click', function () {
-                removeCoupon(); // Call the removeCoupon function when the remove button is clicked
-              });
-
-              // Your JavaScript code here
-              const couponInput = document.getElementById('couponInput');
-              const couponDropdown = document.getElementById('couponDropdown');
-              const grandTotalDisplay = document.getElementById('grandTotalDisplay');
-              const totalAmountContainer = document.querySelector('.coupon-amount');
-              const couponAppliedMessage = document.getElementById('couponAppliedMessage');
-
-              let debounceTimeout;
-              let couponApplied = false; // Flag to track if coupon is applied
-
-              function applyCoupon() {
-                const appliedCoupon = couponInput.value.trim();
-                console.log(appliedCoupon, "hellooo")
-                fetch(`/user/checkcoupon?code=${appliedCoupon}`, {
-                  method: 'GET',
-                  headers: {
-                    'Content-Type': 'application/json'
-                  }
-                })
-                  .then(response => response.json())
-                  .then(data => {
-                    console.log('Coupon Check Response:', data);
-                    if (data.valid && data.codes.length > 0) {
-                      // Check if the coupon meets the minimum purchase amount criteria
-                      applyCouponDiscount(data.codes[0]); // Apply coupon discount immediately
-                    } else {
-                      // Coupon does not exist or is not valid
-                      couponInput.value = '';
-                      Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: 'Invalid coupon or no coupon exists!',
-                      });
-                      couponApplied = false; // Reset flag
-                    }
-                  })
-                  .catch(error => console.error('Error:', error));
-              }
-
-              // Listen for changes in coupon input value to re-enable input and apply button if couponApplied flag is true
-              couponInput.addEventListener('input', function () {
-                if (couponApplied) {
-                  couponAppliedMessage.style.display = 'none';
-                  totalAmountContainer.style.display = 'none';
-                  couponApplied = false; // Reset flag
-                  couponInput.disabled = false; // Re-enable input
-                  applyButton.disabled = false; // Re-enable apply button
-                }
-              });
-
-              couponInput.addEventListener('input', function (event) {
-                clearTimeout(debounceTimeout);
-                debounceTimeout = setTimeout(() => {
-                  const inputValue = event.target.value.trim();
-                  if (inputValue.length > 0) {
-                    fetch(`/user/checkcoupon?code=${inputValue}`, {
-                      method: 'GET',
-                      headers: {
-                        'Content-Type': 'application/json'
-                      }
-                    })
-                      .then(response => response.json())
-                      .then(data => {
-                        console.log('Response from backend:', data);
-                        if (data.valid && data.codes.length > 0) {
-                          displayDropdownItems(data.codes);
-                        } else {
-                          displayNoMatchingCoupons(); // Display "No matching coupons" message
-                        }
-                      })
-                      .catch(error => console.error('Error:', error));
-                  } else {
-                    hideCouponDropdown(); // Hide dropdown when input is empty
-                  }
-                }, 300);
-              });
-
-              function displayDropdownItems(coupons) {
-                couponDropdown.innerHTML = '';
-                coupons.forEach(coupon => {
-                  const couponItem = document.createElement('div');
-                  couponItem.classList.add('dropdown-item');
-                  couponItem.textContent = `${coupon.code} - Discount: ${coupon.discountAmount}, Min Amount: ${coupon.minimumPurchaseAmount}`;
-                  couponItem.addEventListener('click', () => {
-                    couponInput.value = coupon.code;
-                    hideCouponDropdown();
-                  });
-                  couponDropdown.appendChild(couponItem);
-                });
-                couponDropdown.style.display = 'block'; // Show dropdown
-              }
-
-              function displayNoMatchingCoupons() {
-                couponDropdown.innerHTML = '';
-                const noMatchItem = document.createElement('div');
-                noMatchItem.classList.add('dropdown-item', 'text-muted');
-                noMatchItem.textContent = 'No matching coupons';
-                couponDropdown.appendChild(noMatchItem);
-                couponDropdown.style.display = 'block'; // Show dropdown with message
-              }
-
-              function hideCouponDropdown() {
-                couponDropdown.innerHTML = '';
-                couponDropdown.style.display = 'none'; // Hide dropdown
-              }
-
-              function applyCouponDiscount(coupon) {
-                // Apply coupon discount to grand total if conditions are met
-                const grandTotal = parseFloat('<%= usercart.subtotal %>'); // Get grand total from EJS as a string
-                const minAmount = parseFloat(coupon.minimumPurchaseAmount);
-                const discountAmount = parseFloat(coupon.discountAmount);
-                // console.log(grandTotal, minAmount, discountAmount);
-
-                if (grandTotal >= minAmount) {
-                  const discountedTotal = grandTotal - discountAmount;
-                  console.log(discountedTotal);
-                  // Update the displayed total on the frontend
-                  grandTotalDisplay.innerHTML = `${discountedTotal.toFixed(2)}`;
-                  totalAmountContainer.style.display = 'block'; // Show total amount container
-                  couponAppliedMessage.style.display = 'block'; // Show coupon applied message
-                  couponApplied = true; // Set flag to true
-
-                  // Disable input and apply button
-                  couponInput.readOnly = true;
-                  applyButton.style.display = 'none'; // Hide apply button
-                  removeButton.style.display = 'block'; // Show remove button
-                } else {
-                  // Display error message if minimum purchase amount condition is not met
-                  Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: `Minimum purchase amount of $${minAmount} is required to apply this coupon!`,
-                  });
-                  couponApplied = false; // Reset flag
-                }
-              }
-
-              function removeCoupon() {
-                couponInput.value = ''; // Clear coupon input field
-                applyButton.style.display = 'block'; // Show apply button
-                removeButton.style.display = 'none'; // Hide remove button
-                couponAppliedMessage.style.display = 'none'; // Hide coupon applied message
-                totalAmountContainer.style.display = 'none'; // Hide total amount container
-                couponApplied = false; // Reset flag
-                couponInput.readOnly = false;
-              }
-
-
-            });
-          </script>
-
-          <!-- Total Amount -->
+        </div>
+        <div class="col-half">
+          <!-- Grand Total -->
           <div class="total-amount">
             <h3>Grand Total</h3>
             <hr />
@@ -419,6 +215,43 @@
             <p style="display: none;" class="coupon-amount"><strong>Grand Total after applying coupon : $<span
                   id="grandTotalDisplay"></span></strong></p>
           </div>
+          <!-- Coupons -->
+          <div class="total-amount">
+            <h3>Coupons</h3>
+            <hr />
+            <div class="position-relative">
+              <input id="couponInput" name="coupon" class=" form-outline-inline" type="text" autocomplete="off">
+              <div id="couponDropdown" class="dropdown-menu position-absolute"
+                style="top: 100%; left: 0; display: none; z-index: 100;"></div>
+            </div>
+            <button type="button" id="applyButton" class="btn btn-warning mt-2 ms-2">Apply</button>
+            <button type="button" id="removeButton" class="btn btn-danger mt-2 ms-2"
+              style="display: none;">Remove</button>
+            <div id="couponAppliedMessage" style="display: none;" class="mt-2 text-success">Coupon applied!</div>
+          </div>
+          <script>
+            document.addEventListener('DOMContentLoaded', function () {
+              const applyButton = document.getElementById('applyButton');
+              const couponInput = document.getElementById('couponInput');
+
+              // Function to enable or disable the apply button based on the input field's value
+              function toggleApplyButton() {
+                if (couponInput.value.trim().length > 0) {
+                  applyButton.disabled = false; // Enable the apply button
+                } else {
+                  applyButton.disabled = true; // Disable the apply button
+                }
+              }
+
+              // Add event listeners for input and change events on the coupon input field
+              couponInput.addEventListener('input', toggleApplyButton);
+              couponInput.addEventListener('change', toggleApplyButton);
+
+              // Call the toggleApplyButton function initially to set the initial state of the apply button
+              toggleApplyButton();
+            });
+
+          </script>
 
           <!-- Payment Method -->
           <div class="payment-method">
@@ -432,45 +265,208 @@
                 </label>
                 <% } else { %>
                   <label class="form-check-label" style="color: red;">
-                   Cash on delivery not available
+                    Cash on delivery not available
                   </label>
-                <% } %>
-              <br>
-              <input class="form-check-input" type="radio" name="paymentMethod" value="RazorPay" />
-              <label class="form-check-label" for="razorPay">
-                RazorPay
-              </label>
-              <br>
-              <% if (usercart.subtotal <=wallet) { %>
-                <input class="form-check-input" type="radio" name="paymentMethod" value="Wallet" />
-                <label class="form-check-label" for="wallet">
-                  Wallet (Remaining: $<%= wallet %>)
-                </label>
-                <% } else { %>
-                  <label class="form-check-label" style="color: red;">
-                    Wallet (Insufficient Balance: $<%= wallet %>)
-                  </label>
-                <% } %>
+                  <% } %>
+                    <br>
+                    <input class="form-check-input" type="radio" name="paymentMethod" value="RazorPay" />
+                    <label class="form-check-label" for="razorPay">
+                      RazorPay
+                    </label>
+                    <br>
+                    <% if (usercart.subtotal <=wallet) { %>
+                      <input class="form-check-input" type="radio" name="paymentMethod" value="Wallet" />
+                      <label class="form-check-label" for="wallet">
+                        Wallet (Remaining: $<%= wallet %>)
+                      </label>
+                      <% } else { %>
+                        <label class="form-check-label" style="color: red;">
+                          Wallet (Insufficient Balance: $<%= wallet %>)
+                        </label>
+                        <% } %>
             </div>
           </div>
-
           <!-- Place Order Button -->
-          <button type="submit" class="btn btn-primary btn-block btn-place-order" id="placeOrderBtn">
-            Place Order
-          </button>
+          <button type="submit" class="btn btn-primary btn-block btn-place-order" id="placeOrderBtn">Place
+            Order</button>
         </div>
       </div>
     </form>
   </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+      const applyButton = document.getElementById('applyButton');
+      const removeButton = document.getElementById('removeButton');
+
+      applyButton.addEventListener('click', function () {
+        applyCoupon(); // Call the applyCoupon function when the button is clicked
+      });
+
+      removeButton.addEventListener('click', function () {
+        removeCoupon(); // Call the removeCoupon function when the remove button is clicked
+      });
+
+      // Your JavaScript code here
+      const couponInput = document.getElementById('couponInput');
+      const couponDropdown = document.getElementById('couponDropdown');
+      const grandTotalDisplay = document.getElementById('grandTotalDisplay');
+      const totalAmountContainer = document.querySelector('.coupon-amount');
+      const couponAppliedMessage = document.getElementById('couponAppliedMessage');
+
+      let debounceTimeout;
+      let couponApplied = false; // Flag to track if coupon is applied
+
+      function applyCoupon() {
+        const appliedCoupon = couponInput.value.trim();
+        console.log(appliedCoupon, "hellooo")
+        fetch(`/user/checkcoupon?code=${appliedCoupon}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+          .then(response => response.json())
+          .then(data => {
+            console.log('Coupon Check Response:', data);
+            if (data.valid && data.codes.length > 0) {
+              // Check if the coupon meets the minimum purchase amount criteria
+              applyCouponDiscount(data.codes[0]); // Apply coupon discount immediately
+            } else {
+              // Coupon does not exist or is not valid
+              couponInput.value = '';
+              Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Invalid coupon or no coupon exists!',
+              });
+              couponApplied = false; // Reset flag
+            }
+          })
+          .catch(error => console.error('Error:', error));
+      }
+
+      // Listen for changes in coupon input value to re-enable input and apply button if couponApplied flag is true
+      couponInput.addEventListener('input', function () {
+        if (couponApplied) {
+          couponAppliedMessage.style.display = 'none';
+          totalAmountContainer.style.display = 'none';
+          couponApplied = false; // Reset flag
+          couponInput.disabled = false; // Re-enable input
+          applyButton.disabled = false; // Re-enable apply button
+        }
+      });
+
+      couponInput.addEventListener('input', function (event) {
+        clearTimeout(debounceTimeout);
+        debounceTimeout = setTimeout(() => {
+          const inputValue = event.target.value.trim();
+          if (inputValue.length > 0) {
+            fetch(`/user/checkcoupon?code=${inputValue}`, {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            })
+              .then(response => response.json())
+              .then(data => {
+                console.log('Response from backend:', data);
+                if (data.valid && data.codes.length > 0) {
+                  displayDropdownItems(data.codes);
+                } else {
+                  displayNoMatchingCoupons(); // Display "No matching coupons" message
+                }
+              })
+              .catch(error => console.error('Error:', error));
+          } else {
+            hideCouponDropdown(); // Hide dropdown when input is empty
+          }
+        }, 300);
+      });
+
+      function displayDropdownItems(coupons) {
+        couponDropdown.innerHTML = '';
+        coupons.forEach(coupon => {
+          const couponItem = document.createElement('div');
+          couponItem.classList.add('dropdown-item');
+          couponItem.textContent = `${coupon.code} - Discount: ${coupon.discountAmount}, Min Amount: ${coupon.minimumPurchaseAmount}`;
+          couponItem.addEventListener('click', () => {
+            couponInput.value = coupon.code;
+            hideCouponDropdown();
+          });
+          couponDropdown.appendChild(couponItem);
+        });
+        couponDropdown.style.display = 'block'; // Show dropdown
+      }
+
+      function displayNoMatchingCoupons() {
+        couponDropdown.innerHTML = '';
+        const noMatchItem = document.createElement('div');
+        noMatchItem.classList.add('dropdown-item', 'text-muted');
+        noMatchItem.textContent = 'No matching coupons';
+        couponDropdown.appendChild(noMatchItem);
+        couponDropdown.style.display = 'block'; // Show dropdown with message
+      }
+
+      function hideCouponDropdown() {
+        couponDropdown.innerHTML = '';
+        couponDropdown.style.display = 'none'; // Hide dropdown
+      }
+
+      function applyCouponDiscount(coupon) {
+        // Apply coupon discount to grand total if conditions are met
+        const grandTotal = parseFloat('<%= usercart.subtotal %>'); // Get grand total from EJS as a string
+        const minAmount = parseFloat(coupon.minimumPurchaseAmount);
+        const discountAmount = parseFloat(coupon.discountAmount);
+        // console.log(grandTotal, minAmount, discountAmount);
+
+        if (grandTotal >= minAmount) {
+          const discountedTotal = grandTotal - discountAmount;
+          console.log(discountedTotal);
+          // Update the displayed total on the frontend
+          grandTotalDisplay.innerHTML = `${discountedTotal.toFixed(2)}`;
+          totalAmountContainer.style.display = 'block'; // Show total amount container
+          couponAppliedMessage.style.display = 'block'; // Show coupon applied message
+          couponApplied = true; // Set flag to true
+
+          // Disable input and apply button
+          couponInput.readOnly = true;
+          applyButton.style.display = 'none'; // Hide apply button
+          removeButton.style.display = 'block'; // Show remove button
+        } else {
+          // Display error message if minimum purchase amount condition is not met
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: `Minimum purchase amount of $${minAmount} is required to apply this coupon!`,
+          });
+          couponApplied = false; // Reset flag
+        }
+      }
+
+      function removeCoupon() {
+        couponInput.value = ''; // Clear coupon input field
+        applyButton.style.display = 'block'; // Show apply button
+        removeButton.style.display = 'none'; // Hide remove button
+        couponAppliedMessage.style.display = 'none'; // Hide coupon applied message
+        totalAmountContainer.style.display = 'none'; // Hide total amount container
+        couponApplied = false; // Reset flag
+        couponInput.readOnly = false;
+      }
+
+
+    });
+  </script>
+
   <script>
     // Function to navigate to the Add Address page
     function goToAddAddress() {
       // Navigate to the specified URL
       window.location.href = "/user/addaddress";
     }
+
     function validateForm() {
       const checkoutForm = document.getElementById('checkoutForm');
-
       // Check if all required fields are filled
       if (!checkoutForm.checkValidity()) {
         // If not, show validation messages and prevent form submission
@@ -496,7 +492,7 @@
         Swal.fire({
           icon: 'error',
           title: 'Oops...',
-          text: "Please select a address!",
+          text: "Please select an address!",
           confirmButtonText: 'Ok'
         });
         return false;
@@ -506,7 +502,6 @@
       return true;
     }
   </script>
-
 </body>
 
 </html>

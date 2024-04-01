@@ -338,6 +338,7 @@ exports.addcategory = async (req, res) => {
 exports.categorystatus = async (req, res) => {
   try {
     const id = req.params.id;
+    // console.log(id);
     const category = await CatDb.findById(id);
     if (category.listing === true) {
       category.listing = false;
@@ -374,7 +375,19 @@ exports.updatecategory = async (req, res) => {
 exports.deletecategory = async (req, res) => {
   const id = req.params.id;
   try {
-    await CatDb.findByIdAndDelete(id);
+    // Find the category to be deleted
+    const deletedCategory = await CatDb.findById(id);
+    if (!deletedCategory) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+
+    await Promise.all([
+      // Delete products with the same category as the deleted category
+      ProductDb.deleteMany({ category: deletedCategory.category }),
+      // Delete the category itself
+      CatDb.findByIdAndDelete(id)
+    ]);
+
     res.status(200).redirect("/admin/category");
   } catch (e) {
     console.log(e);
@@ -427,7 +440,6 @@ exports.viewOrders = async (req, res) => {
   try {
     // Fetch orders, categories, and user from the database
     const orders = await OrderDb.find()
-      .populate("orderedItems.productId")
       .sort({ orderDate: -1 });
     // console.log(orders)
     // Render the order list page and pass the orders, categories, user, and cancelledProducts data to the view
@@ -440,20 +452,18 @@ exports.viewOrders = async (req, res) => {
 
 exports.rejectReturn = async (req, res) => {
   try {
-    const productId = req.params.pid;
-    const orderId = req.query.oid;
+    const orderId = req.params.oid;
 
     // Use async/await with findByIdAndUpdate to ensure proper error handling
     const updatedOrder = await OrderDb.findByIdAndUpdate(
       orderId,
       {
         $set: {
-          "orderedItems.$[elem].status": "Delivered",
-          "orderedItems.$[elem].returned": true,
+          status: "Delivered",
+          returned: true,
         },
       },
       {
-        arrayFilters: [{ "elem.productId": productId }],
         new: true, // Return the updated document
       }
     );
@@ -474,20 +484,18 @@ exports.rejectReturn = async (req, res) => {
 
 exports.acceptReturn = async (req, res) => {
   try {
-    const productId = req.params.pid;
-    const orderId = req.query.oid;
+    const orderId = req.params.oid;
 
     // Use async/await with findByIdAndUpdate to ensure proper error handling
     const updatedOrder = await OrderDb.findByIdAndUpdate(
       orderId,
       {
         $set: {
-          "orderedItems.$[elem].status": "Returned",
-          "orderedItems.$[elem].paymentStatus": "Refunded",
+          status: "Returned",
+          paymentStatus: "Refunded",
         }
       },
       {
-        arrayFilters: [{ "elem.productId": productId }],
         new: true, // Return the updated document
       }
     );
@@ -497,11 +505,8 @@ exports.acceptReturn = async (req, res) => {
       return res.status(404).json({ msg: "Order not found" });
     }
 
-    // Get the specific item from the updatedOrder
-    const updatedItem = updatedOrder.orderedItems.find(item => item.productId.toString() === productId);
-
     // Calculate the price of the returned item
-    const returnedItemPrice = updatedItem.price;
+    const returnedItemPrice = updatedOrder.totalAmount;
 
     // Get the user ID from the updatedOrder
     const userId = updatedOrder.user_id;
@@ -517,20 +522,30 @@ exports.acceptReturn = async (req, res) => {
   }
 };
 
+exports.singleOrder = async(req, res)=> {
+  try{
+    const orderId = req.query.oid;
+    const order = await OrderDb.findById(orderId);
+    if(!order || order.length == 0){
+      res.status(404).send("No order found");
+    }
+    res.render('admin/order',{order})
+  }catch(e){
+    console.log(e.toString());
+    res.status(500).send("Internal Server Error");
+  }
+}
+
 exports.statusShipped = async (req, res) => {
   try {
-    const productId = req.params.pid;
-    const orderId = req.query.oid;
-    // console.log(productId, orderId);
+    const orderId = req.params.oid;
+    console.log(orderId);
 
     // Use async/await with findByIdAndUpdate to ensure proper error handling
     const updatedOrder = await OrderDb.findByIdAndUpdate(
       orderId,
-      { $set: { "orderedItems.$[elem].status": "Shipped" } },
-      {
-        arrayFilters: [{ "elem.productId": productId }],
-        new: true, // Return the updated document
-      }
+      { $set: { status: "Shipped" } },
+      { new: true } // Return the updated document
     );
 
     // Check if updatedOrder is null (order not found) or if it's updated successfully
@@ -539,7 +554,6 @@ exports.statusShipped = async (req, res) => {
     }
 
     // Handle the case where the order is updated successfully
-    // console.log('Updated Order:', updatedOrder);
     return res.status(200).json({ success: true, message: "Order Shipped." });
   } catch (error) {
     console.error("Error:", error);
@@ -549,21 +563,19 @@ exports.statusShipped = async (req, res) => {
 
 exports.statusDelivered = async (req, res) => {
   try {
-    const productId = req.params.pid;
-    const orderId = req.query.oid;
-    // console.log(productId, orderId);
+    const orderId = req.params.oid;
+    // console.log(orderId);
 
     // Use async/await with findByIdAndUpdate to ensure proper error handling
     const updatedOrder = await OrderDb.findByIdAndUpdate(
       orderId,
       {
         $set: {
-          "orderedItems.$[elem].status": "Delivered",
-          "orderedItems.$[elem].paymentStatus": "Completed", // Set paymentStatus to Completed
+          status: "Delivered",
+          paymentStatus: "Completed", // Set paymentStatus to Completed
         },
       },
       {
-        arrayFilters: [{ "elem.productId": productId }],
         new: true, // Return the updated document
       }
     );

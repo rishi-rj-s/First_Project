@@ -27,8 +27,12 @@ route.get('/landing',checkBlocked, cookieJwtAuth, usercontroller.showLanding)
 route.get('/logout',cookieJwtAuth, usercontroller.logout)
 
 route.get('/products',checkBlocked ,cookieJwtAuth, usercontroller.products)
+route.get('/check',checkBlocked, cookieJwtAuth, usercontroller.checkSearch)
+route.get('/search',checkBlocked, cookieJwtAuth, usercontroller.searchProduct)
+route.get('/fetchproducts',checkBlocked, cookieJwtAuth, usercontroller.fetchProducts)
 route.get('/sortby',checkBlocked, cookieJwtAuth, usercontroller.sortBy)
 route.get('/productview/:id',checkBlocked , cookieJwtAuth, usercontroller.productview)
+route.get('/filter',checkBlocked, cookieJwtAuth, usercontroller.filterProducts)
 
 route.post("/login",usercontroller.login)
 
@@ -60,11 +64,13 @@ route.get('/addwishlist/:id', checkBlocked, cookieJwtAuth, wishcontroller.addToW
 route.get('/removewish/:id', checkBlocked, cookieJwtAuth, wishcontroller.removeWish);  
 
 route.get('/orders',checkBlocked, cookieJwtAuth, ordercontroller.renderOrderPage);
+route.get('/viewsingleorder',checkBlocked, cookieJwtAuth, ordercontroller.singleOrder);
 route.get('/checkcoupon',checkBlocked, cookieJwtAuth, couponcontroller.checkCoupon);
 route.post('/placeorder',checkBlocked, cookieJwtAuth, ordercontroller.placeOrder);
 route.get('/vieworders',checkBlocked, cookieJwtAuth, ordercontroller.viewOrders);
-route.get('/cancelorder/:pid',checkBlocked, cookieJwtAuth, ordercontroller.cancelOrder);
-route.get('/returnorder/:pid',checkBlocked, cookieJwtAuth, ordercontroller.returnOrder);
+route.get('/rayzorpaypage/:oid',checkBlocked, cookieJwtAuth,)
+route.get('/cancelorder/:oid',checkBlocked, cookieJwtAuth, ordercontroller.cancelOrder);
+route.get('/returnorder/:oid',checkBlocked, cookieJwtAuth, ordercontroller.returnOrder);
 
 route.get("**",(req,res)=>{
      res.render('pagenotfound');

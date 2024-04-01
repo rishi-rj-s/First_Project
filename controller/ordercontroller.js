@@ -19,15 +19,15 @@ const razorpay = new Razorpay({
 exports.renderOrderPage = async (req, res) => {
   try {
     const id = req.session.user._id;
-    const usercart = await Cart.findOne({ user: id }).populate(
-      "product.productId"
-    );
-    const user = await User.findById(id);
+    const [usercart, user, address] = await Promise.all([
+      Cart.findOne({ user: id }).populate("product.productId"),
+      User.findById(id),
+      Address.find({ user_id: id })
+    ]);
     const wallet = user.wallet
     if (!usercart) {
       return res.redirect("/cart?msg=cartemp");
     }
-    const address = await Address.find({ user_id: id });
     res.render("user/checkout", { usercart, address, wallet });
   } catch (e) {
     console.log(e);
@@ -38,16 +38,19 @@ exports.renderOrderPage = async (req, res) => {
 exports.placeOrder = async (req, res) => {
   try {
     const userId = req.session.user._id;
-    const usercart = await Cart.findOne({ user: userId }).populate("product.productId");
     const addsId = req.body.address;
-    const addressId = await Address.findById(addsId);
     const paymentMethod = req.body.paymentMethod;
-    let totalAmountAfterDiscount = usercart.subtotal; // Initialize with subtotal
-    // console.log(totalAmountAfterDiscount);
     let couponApplied = null;
     let paymentStatus = "Pending";
 
-    let user = await User.findById(userId);
+    const [usercart, addressId, user] = await Promise.all([
+      Cart.findOne({ user: userId }).populate("product.productId"),
+      Address.findById(addsId),
+      User.findById(userId)
+    ])
+
+    let totalAmountAfterDiscount = usercart.subtotal; // Initialize with subtotal
+    // console.log(totalAmountAfterDiscount);
 
     if (req.body.coupon) {
       const couponCode = req.body.coupon;
@@ -91,9 +94,6 @@ exports.placeOrder = async (req, res) => {
         originalPrice: item.productId.price * item.quantity,
         price: totalPrice || 0, // Set default value if calculation results in NaN
         quantity: item.quantity,
-        status: "Pending",
-        paymentStatus: paymentStatus,
-        returned: false,
       };
     });
     // console.log(totalAmountAfterDiscount)
@@ -105,8 +105,20 @@ exports.placeOrder = async (req, res) => {
       totalAmount: totalAmountAfterDiscount,
       shippingAddress: addressId,
       paymentMethod: paymentMethod,
+      paymentStatus: paymentStatus,
       couponApplied: couponApplied
     });
+
+    if (paymentMethod == "RazorPay") {
+      const razorpayOrder = await razorpay.orders.create({
+        amount: totalAmount * 100,
+        currency: 'INR',
+        payment_capture: 1
+      });
+      orders.paymentStatus = 'Failed';
+      await order.save();
+      return res.redirect(`/user/rayzorpaypage/${order._id}`); // Redirect to Razorpay page
+    }
 
     await order.save();
 
@@ -157,49 +169,47 @@ exports.viewOrders = async (req, res) => {
 exports.cancelOrder = async (req, res) => {
   try {
     const id = req.session.user._id;
-    const productId = req.params.pid;
-    const orderId = req.query.oid;
+    const orderId = req.params.oid;
+    // console.log(id, orderId)
 
     // Find the order and check its payment status
     let userorder = await Order.findById(orderId);
     if (!userorder) {
       throw new Error("No such order found");
     }
-
-    // Find the cancelled item within orderedItems array
-    const cancelledItem = userorder.orderedItems.find(
-      (item) => item.productId.toString() === productId
-    );
-    if (!cancelledItem) {
-      throw new Error("Cancelled item not found");
-    }
+    // console.log(userorder)
 
     // Check the current payment status and update accordingly
-    const paymentStatus = cancelledItem.paymentStatus;
+    const paymentStatus = userorder.paymentStatus;
     const newPaymentStatus = paymentStatus === "Completed" ? "Refunded" : "Cancelled";
 
     // Update the order item with the new payment status
-    cancelledItem.status = "Cancelled";
-    cancelledItem.paymentStatus = newPaymentStatus;
+    userorder.status = "Cancelled";
+    userorder.paymentStatus = newPaymentStatus;
 
     // Save the updated order
     await userorder.save();
-    
-    if (cancelledItem.paymentStatus == "Refunded") {
-      const refund = cancelledItem.price;
+
+    if (userorder.paymentStatus == "Refunded") {
+      const refund = userorder.totalAmount;
       await User.findByIdAndUpdate(id, { $inc: { wallet: refund } })
     }
 
-    // Get the quantity of the cancelled product
-    const cancelledQuantity = cancelledItem.quantity;
+    // Iterate through ordered items to restock the products
+    for (const orderedItem of userorder.orderedItems) {
+      const productId = orderedItem.productId;
+      const cancelledQuantity = orderedItem.quantity;
 
-    // Retrieve the current stock of the product
-    const product = await Product.findById(productId);
-    const currentStock = product.stock;
-
-    // Update the product with the new stock value
-    const newStock = currentStock + cancelledQuantity;
-    await Product.findByIdAndUpdate(productId, { stock: newStock });
+      // Find the product and update its stock
+      const product = await Product.findById(productId);
+      if (product) {
+        const currentStock = product.stock;
+        const newStock = currentStock + cancelledQuantity;
+        
+        // Update the product's stock in the database
+        await Product.findByIdAndUpdate(productId, { stock: newStock });
+      }
+    }
 
     return res
       .status(200)
@@ -212,16 +222,14 @@ exports.cancelOrder = async (req, res) => {
 
 exports.returnOrder = async (req, res) => {
   try {
-    const productId = req.params.pid;
-    const orderId = req.query.oid;
-    // console.log(productId, orderId)
+    const orderId = req.params.oid;
+    // console.log(orderId)
 
     // Use async/await with findByIdAndUpdate to ensure proper error handling
     const updatedOrder = await Order.findByIdAndUpdate(
       orderId,
-      { $set: { "orderedItems.$[elem].status": "Processing" } },
+      { $set: { status: "Processing" } },
       {
-        arrayFilters: [{ "elem.productId": productId }],
         new: true, // Return the updated document
       }
     );
@@ -242,3 +250,18 @@ exports.returnOrder = async (req, res) => {
     return res.status(500).json({ msg: "Internal server error" });
   }
 };
+
+exports.singleOrder = async (req, res) => {
+  try{
+    const orderId = req.query.oid;
+    const name = req.session.user.name
+    const order = await Order.findById(orderId);
+    if(!order || order.length == 0){
+      res.status(404).send("No order found");
+    }
+    res.render('user/vieworder',{order, name})
+  }catch(e){
+    console.log(e.toString());
+    res.status(500).send("Internal Server Error");
+  }
+}

@@ -180,56 +180,68 @@
                         <table class="table">
                           <thead>
                             <tr>
-                              <th scope="col">Product Image</th>
-                              <th scope="col">Product Name</th>
-                              <th scope="col">Quantity</th>
+                              <th scope="col">Order ID</th>
                               <th scope="col">Payment Status</th>
                               <th scope="col">Order Date</th>
                               <th scope="col">Order Status</th>
-                              <th scope="col">Action</th>
+                              <th scope="col">Order Total</th>
+                              <th scope="col"></th>
                             </tr>
                           </thead>
                           <tbody>
                             <% orders.forEach(order=> { %>
-                              <% order.orderedItems.forEach(items=> { %>
-                                <% if (items.status==="Pending" || items.status==="Shipped" ) { %>
-                                  <tr>
-                                    <td><img class="object-fit-cover" src="/<%= items.pimages[0] %>"
-                                        alt="Product Image"></td>
-                                    <td class="text-center align-middle">
-                                      <%= items.pname %>
-                                    </td>
-                                    <td class="text-center align-middle">
-                                      <%= items.quantity %>
-                                    </td>
-                                    <td class="text-center align-middle">
-                                      <%= items.paymentStatus %>
-                                    </td>
-                                    <td class="text-center align-middle">
-                                      <%= order.orderDate.toLocaleDateString() %>
-                                    </td>
-                                    <td class="text-center align-middle">
-                                      <%= items.status %>
-                                    </td>
-                                    <td class="text-center align-middle">
-                                      <select id="<%= items.productId._id %>" class="form-select status-dropdown"
-                                        data-product-id="<%= items.productId._id %>" data-order-id="<%= order._id %>">
-                                        <% if (items.status==='Pending' ) { %>
-                                          <option value="Pending" <%=items.status==='Pending' ? 'selected' : '' %>
-                                            >Pending</option>
-                                          <option value="Shipped" <%=items.status==='Shipped' ? 'selected' : '' %>
+                              <% if (order.status==="Pending" || order.status==="Shipped" ) { %>
+                                <tr>
+                                  <td class=" align-middle">
+                                    <%= order._id %>
+                                  </td>
+                                  <td class="text-center align-middle">
+                                    <%= order.paymentStatus %>
+                                  </td>
+                                  <td class="text-center align-middle">
+                                    <%= order.orderDate.toLocaleDateString() %>
+                                  </td>
+                                  <td class="text-center align-middle">
+                                    $<%= order.totalAmount %>
+                                  </td>
+                                  <td class="text-center align-middle">
+                                    <select class="form-select status-dropdown" data-order-id="<%= order._id %>">
+                                      <% if (order.status==='Pending' ) { %>
+                                        <option value="Pending" <%=order.status==='Pending' ? 'selected' : '' %>
+                                          >Pending</option>
+                                        <option value="Shipped" <%=order.status==='Shipped' ? 'selected' : '' %>
+                                          >Shipped</option>
+                                        <option value="Delivered" <%=order.status==='Delivered' ? 'selected' : '' %>
+                                          >Delivered</option>
+                                        <% } else if (order.status==='Shipped' ) { %>
+                                          <option value="Shipped" <%=order.status==='Shipped' ? 'selected' : '' %>
                                             >Shipped</option>
-                                          <option value="Delivered" <%=items.status==='Delivered' ? 'selected' : '' %>
+                                          <option value="Delivered" <%=order.status==='Delivered' ? 'selected' : '' %>
                                             >Delivered</option>
-                                          <% } else if (items.status==='Shipped' ) { %>
-                                            <option value="Shipped" <%=items.status==='Shipped' ? 'selected' : '' %>
-                                              >Shipped</option>
-                                            <option value="Delivered" <%=items.status==='Delivered' ? 'selected' : '' %>
-                                              >Delivered</option>
-                                            <% } %>
-                                      </select>
-                                    </td>
-                                  </tr>
+                                          <% } %>
+                                    </select>
+                                  </td>
+                                  <td class="text-center align-middle">
+                                    <button class="btn btn-info view-order-btn"
+                                      data-order-id="<%= order._id %>">View</button>
+                                  </td>
+                                  <script>
+                                    document.addEventListener('DOMContentLoaded', function () {
+                                      const viewOrderBtns = document.querySelectorAll('.view-order-btn');
+
+                                      viewOrderBtns.forEach(btn => {
+                                        btn.addEventListener('click', function () {
+                                          const orderId = this.getAttribute('data-order-id');
+                                          const url = `/admin/viewsingleorder?oid=${orderId}`;
+
+                                          // Redirect to the specified URL
+                                          window.location.href = url;
+                                        });
+                                      });
+                                    });
+                                  </script>
+                                </tr>
+                                <% } %>
                                   <script>
                                     document.addEventListener('DOMContentLoaded', function () {
                                       const dropdowns = document.querySelectorAll('.status-dropdown');
@@ -237,15 +249,14 @@
                                       dropdowns.forEach(dropdown => {
                                         dropdown.addEventListener('change', function () {
                                           const selectedOption = this.value;
-                                          const productId = this.id;
                                           const orderId = this.getAttribute('data-order-id'); // Assuming you have a data attribute for order ID
 
                                           let url;
 
                                           if (selectedOption === 'Shipped') {
-                                            url = `/admin/statusshipped/${productId}?oid=${orderId}`;
+                                            url = `/admin/statusshipped/${orderId}`;
                                           } else if (selectedOption === 'Delivered') {
-                                            url = `/admin/statusdelivered/${productId}?oid=${orderId}`;
+                                            url = `/admin/statusdelivered/${orderId}`;
                                           }
 
                                           if (url) {
@@ -305,9 +316,7 @@
                                       });
                                     });
                                   </script>
-                                  <% } %>
-                                    <% }) %>
-                                      <% }) %>
+                                  <% }) %>
                           </tbody>
                         </table>
                       </div>
@@ -317,39 +326,54 @@
                         <table class="table">
                           <thead>
                             <tr>
-                              <th scope="col">Product Image</th>
-                              <th scope="col">Product Name</th>
-                              <th scope="col">Quantity</th>
+                              <th scope="col">Order ID</th>
                               <th scope="col">Payment Status</th>
                               <th scope="col">Order Date</th>
                               <th scope="col">Order Status</th>
+                              <th scope="col">Order Total</th>
+                              <th></th>
                             </tr>
                           </thead>
                           <tbody>
                             <% orders.forEach(order=> {%>
-                              <% order.orderedItems.forEach(items=> { %>
-                                <% if (items.status==="Delivered" ) { %>
+                                <% if (order.status==="Delivered" ) { %>
                                   <tr>
-                                    <td><img class="object-fit-cover" src="/<%= items.productId.images[0] %>"
-                                        alt="Product Image"></td>
                                     <td class="text-center align-middle">
-                                      <%= items.productId.p_name %>
+                                      <%= order._id %>
                                     </td>
                                     <td class="text-center align-middle">
-                                      <%= items.quantity %>
-                                    </td>
-                                    <td class="text-center align-middle">
-                                      <%= items.paymentStatus %>
+                                      <%= order.paymentStatus %>
                                     </td>
                                     <td class="text-center align-middle">
                                       <%= order.orderDate.toLocaleDateString() %>
                                     </td>
                                     <td class="text-center align-middle">
-                                      <%= items.status %>
+                                      <%= order.status %>
                                     </td>
+                                    <td class="text-center align-middle">
+                                      $<%= order.totalAmount %>
+                                    </td>
+                                    <td class="text-center align-middle">
+                                      <button class="btn btn-info view-order-btn"
+                                        data-order-id="<%= order._id %>">View</button>
+                                    </td>
+                                    <script>
+                                      document.addEventListener('DOMContentLoaded', function () {
+                                        const viewOrderBtns = document.querySelectorAll('.view-order-btn');
+  
+                                        viewOrderBtns.forEach(btn => {
+                                          btn.addEventListener('click', function () {
+                                            const orderId = this.getAttribute('data-order-id');
+                                            const url = `/admin/viewsingleorder?oid=${orderId}`;
+  
+                                            // Redirect to the specified URL
+                                            window.location.href = url;
+                                          });
+                                        });
+                                      });
+                                    </script>
                                   </tr>
                                   <% } %>
-                                    <% }) %>
                                       <% }) %>
                           </tbody>
                         </table>
@@ -360,54 +384,69 @@
                         <table class="table">
                           <thead>
                             <tr>
-                              <th scope="col">Product Image</th>
-                              <th scope="col">Product Name</th>
-                              <th scope="col">Quantity</th>
+                              <th scope="col">Order ID</th>
                               <th scope="col">Payment Status</th>
                               <th scope="col">Order Date</th>
                               <th scope="col">Order Status</th>
+                              <th scope="col">Order Total</th>
                               <th scope="col">Action</th>
+                              <th></th>
                             </tr>
                           </thead>
                           <tbody>
                             <% orders.forEach(order=> {%>
-                              <% order.orderedItems.forEach(items=> { %>
-                                <% if (items.status==="Processing" ) { %>
+                                <% if (order.status==="Processing" ) { %>
                                   <tr>
-                                    <td><img class="object-fit-cover" src="/<%= items.productId.images[0] %>"
-                                        alt="Product Image"></td>
                                     <td class="text-center align-middle">
-                                      <%= items.productId.p_name %>
+                                      <%= order._id %>
                                     </td>
                                     <td class="text-center align-middle">
-                                      <%= items.quantity %>
-                                    </td>
-                                    <td class="text-center align-middle">
-                                      <%= items.paymentStatus %>
+                                      <%= order.paymentStatus %>
                                     </td>
                                     <td class="text-center align-middle">
                                       <%= order.orderDate.toLocaleDateString() %>
                                     </td>
                                     <td class="text-center align-middle">
-                                      <%= items.status %>
+                                      <%= order.status %>
                                     </td>
                                     <td class="text-center align-middle">
-                                      <button id="accept<%= items.productId._id %>" class="btn btn-success accept"
-                                        data-productid="<%= items.productId._id %>" data-orderid="<%= order._id %>">
+                                      <%= order.totalAmount %>
+                                    </td>
+                                    <td class="text-center align-middle">
+                                      <button class="btn btn-success accept"
+                                        data-orderid="<%= order._id %>">
                                         Accept
                                       </button>
-                                      <button id="reject<%= items.productId._id %>" class="btn btn-danger reject"
-                                        data-productid="<%= items.productId._id %>" data-orderid="<%= order._id %>">
+                                      <button class="btn btn-danger reject"
+                                        data-orderid="<%= order._id %>">
                                         Reject
                                       </button>
                                     </td>
+                                    <td class="text-center align-middle">
+                                      <button class="btn btn-info view-order-btn"
+                                        data-order-id="<%= order._id %>">View</button>
+                                    </td>
+                                    <script>
+                                      document.addEventListener('DOMContentLoaded', function () {
+                                        const viewOrderBtns = document.querySelectorAll('.view-order-btn');
+  
+                                        viewOrderBtns.forEach(btn => {
+                                          btn.addEventListener('click', function () {
+                                            const orderId = this.getAttribute('data-order-id');
+                                            const url = `/admin/viewsingleorder?oid=${orderId}`;
+  
+                                            // Redirect to the specified URL
+                                            window.location.href = url;
+                                          });
+                                        });
+                                      });
+                                    </script>
                                   </tr>
                                   <script>
                                     document.addEventListener("DOMContentLoaded", function () {
                                       // Add event listener to Accept buttons
                                       document.querySelectorAll('.accept').forEach(button => {
                                         button.addEventListener('click', function () {
-                                          const productId = this.getAttribute('data-productid');
                                           const orderId = this.getAttribute('data-orderid'); // Replace with actual order ID
 
                                           // Display SweetAlert confirmation dialog
@@ -422,7 +461,7 @@
                                           }).then((result) => {
                                             if (result.isConfirmed) {
                                               // Send AJAX request to accept route
-                                              fetch(`/admin/acceptreturn/${productId}?oid=${orderId}`, {
+                                              fetch(`/admin/acceptreturn/${orderId}`, {
                                                 method: "GET",
                                               })
                                                 .then((response) => {
@@ -467,7 +506,6 @@
                                       // Add event listener to Reject buttons
                                       document.querySelectorAll('.reject').forEach(button => {
                                         button.addEventListener('click', function () {
-                                          const productId = this.getAttribute('data-productid');
                                           const orderId = this.getAttribute('data-orderid'); // Replace with actual order ID
 
                                           // Display SweetAlert confirmation dialog
@@ -482,7 +520,7 @@
                                           }).then((result) => {
                                             if (result.isConfirmed) {
                                               // Send AJAX request to reject route
-                                              fetch(`/admin/rejectreturn/${productId}?oid=${orderId}`, {
+                                              fetch(`/admin/rejectreturn/${orderId}`, {
                                                 method: "GET",
                                               })
                                                 .then((response) => {
@@ -526,7 +564,6 @@
                                     });
                                   </script>
                                   <% } %>
-                                    <% }) %>
                                       <% }) %>
                           </tbody>
                         </table>
@@ -537,39 +574,54 @@
                         <table class="table">
                           <thead>
                             <tr>
-                              <th scope="col">Product Image</th>
-                              <th scope="col">Product Name</th>
-                              <th scope="col">Quantity</th>
+                              <th scope="col">Order ID</th>
                               <th scope="col">Payment Status</th>
                               <th scope="col">Order Date</th>
                               <th scope="col">Order Status</th>
+                              <th scope="col">Order Total</th>
+                              <th></th>
                             </tr>
                           </thead>
                           <tbody>
                             <% orders.forEach(order=> {%>
-                              <% order.orderedItems.forEach(items=> { %>
-                                <% if (items.status==="Cancelled" ) { %>
+                                <% if (order.status==="Cancelled" ) { %>
                                   <tr>
-                                    <td><img class="object-fit-cover" src="/<%= items.productId.images[0] %>"
-                                        alt="Product Image"></td>
                                     <td class="text-center align-middle">
-                                      <%= items.productId.p_name %>
+                                      <%= order._id %>
                                     </td>
                                     <td class="text-center align-middle">
-                                      <%= items.quantity %>
-                                    </td>
-                                    <td class="text-center align-middle">
-                                      <%= items.paymentStatus %>
+                                      <%= order.paymentStatus %>
                                     </td>
                                     <td class="text-center align-middle">
                                       <%= order.orderDate.toLocaleDateString() %>
                                     </td>
                                     <td class="text-center align-middle">
-                                      <%= items.status %>
+                                      <%= order.status %>
                                     </td>
+                                    <td class="text-center align-middle">
+                                      <%= order.totalAmount %>
+                                    </td>
+                                    <td class="text-center align-middle">
+                                      <button class="btn btn-info view-order-btn"
+                                        data-order-id="<%= order._id %>">View</button>
+                                    </td>
+                                    <script>
+                                      document.addEventListener('DOMContentLoaded', function () {
+                                        const viewOrderBtns = document.querySelectorAll('.view-order-btn');
+  
+                                        viewOrderBtns.forEach(btn => {
+                                          btn.addEventListener('click', function () {
+                                            const orderId = this.getAttribute('data-order-id');
+                                            const url = `/admin/viewsingleorder?oid=${orderId}`;
+  
+                                            // Redirect to the specified URL
+                                            window.location.href = url;
+                                          });
+                                        });
+                                      });
+                                    </script>
                                   </tr>
                                   <% } %>
-                                    <% }) %>
                                       <% }) %>
                           </tbody>
                         </table>
@@ -580,39 +632,54 @@
                         <table class="table">
                           <thead>
                             <tr>
-                              <th scope="col">Product Image</th>
-                              <th scope="col">Product Name</th>
-                              <th scope="col">Quantity</th>
+                              <th scope="col">Order ID</th>
                               <th scope="col">Payment Status</th>
                               <th scope="col">Order Date</th>
                               <th scope="col">Order Status</th>
+                              <th scope="col">Order Total</th>
+                              <th></th>
                             </tr>
                           </thead>
                           <tbody>
                             <% orders.forEach(order=> {%>
-                              <% order.orderedItems.forEach(items=> { %>
-                                <% if (items.status==="Returned" ) { %>
+                                <% if (order.status==="Returned" ) { %>
                                   <tr>
-                                    <td><img class="object-fit-cover" src="/<%= items.productId.images[0] %>"
-                                        alt="Product Image"></td>
                                     <td class="text-center align-middle">
-                                      <%= items.productId.p_name %>
+                                      <%= order._id %>
                                     </td>
                                     <td class="text-center align-middle">
-                                      <%= items.quantity %>
-                                    </td>
-                                    <td class="text-center align-middle">
-                                      <%= items.paymentStatus %>
+                                      <%= order.paymentStatus %>
                                     </td>
                                     <td class="text-center align-middle">
                                       <%= order.orderDate.toLocaleDateString() %>
                                     </td>
                                     <td class="text-center align-middle">
-                                      <%= items.status %>
+                                      <%= order.status %>
                                     </td>
+                                    <td class="text-center align-middle">
+                                      <%= order.totalAmount %>
+                                    </td>
+                                    <td class="text-center align-middle">
+                                      <button class="btn btn-info view-order-btn"
+                                        data-order-id="<%= order._id %>">View</button>
+                                    </td>
+                                    <script>
+                                      document.addEventListener('DOMContentLoaded', function () {
+                                        const viewOrderBtns = document.querySelectorAll('.view-order-btn');
+  
+                                        viewOrderBtns.forEach(btn => {
+                                          btn.addEventListener('click', function () {
+                                            const orderId = this.getAttribute('data-order-id');
+                                            const url = `/admin/viewsingleorder?oid=${orderId}`;
+  
+                                            // Redirect to the specified URL
+                                            window.location.href = url;
+                                          });
+                                        });
+                                      });
+                                    </script>
                                   </tr>
                                   <% } %>
-                                    <% }) %>
                                       <% }) %>
                           </tbody>
                         </table>

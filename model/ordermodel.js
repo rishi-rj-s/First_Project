@@ -31,26 +31,22 @@ const schema = new mongoose.Schema({
         quantity: {
             type: Number,
             required: true
-        },
-        status: {
-            type: String,
-            default: "Pending",
-            enum: ['Pending', 'Shipped', 'Processing', 'Delivered', 'Cancelled', 'Returned']
-        },
-        returned: {
-            type: Boolean,
-            default: false
-        },
-        paymentStatus: {
-            type: String,
-            enum: ['Pending', 'Processing', 'Completed', 'Failed', 'Cancelled', 'Refunded'],
-            default: 'Pending',
-        },
+        }
     }],
-    // deliveryDate: {
-    //     type: Date,
-    //     default: null
-    // },
+    status: {
+        type: String,
+        default: "Pending",
+        enum: ['Pending', 'Shipped', 'Processing', 'Delivered', 'Cancelled', 'Returned']
+    },
+    returned: {
+        type: Boolean,
+        default: false
+    },
+    paymentStatus: {
+        type: String,
+        enum: ['Pending', 'Processing', 'Completed', 'Failed', 'Cancelled', 'Refunded'],
+        default: 'Pending',
+    },
     paymentMethod: {
         type: String,
         required: true,

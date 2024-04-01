@@ -99,50 +99,107 @@ exports.showLanding = async (req, res) => {
 
 exports.products = async (req, res) => {
   try {
-    const categoriesToExclude = await CatDb.find({ listing: false }).select(
+    const perPage = 3; // Number of products per page
+    const page = parseInt(req.query.page) || 1; // Current page number, default is 1
+    const skip = (page - 1) * perPage; // Calculate the number of documents to skip
+
+    // Find categories with listing: true to include in products query
+    const categoriesToInclude = await CatDb.find({ listing: true }).select(
       "category"
     );
-    const categoryNames = categoriesToExclude.map((cat) => cat.category);
-    const products = await ProductDb.find({ category: { $nin: categoryNames } }).sort({ p_name: 1 });
-    if (!products) {
-      res.status(404).json({ message: "No product found." });
-      return;
+    const categoryNames = categoriesToInclude.map((cat) => cat.category);
+
+    // Find products including categories with listing: true, paginated
+    const products = await ProductDb.find({ category: { $in: categoryNames } })
+      .skip(skip)
+      .limit(perPage);
+
+    if (!products || products.length === 0) {
+      return res.render("user/products", {
+        message: "No products found.",
+        products: [],
+        category: categoriesToInclude,
+        currentPage: page,
+        totalPages: 0
+      });
     }
-    res.render("user/products", {products});
+
+    // Calculate total pages for pagination
+    const totalProducts = await ProductDb.countDocuments({ category: { $in: categoryNames } });
+    const totalPages = Math.ceil(totalProducts / perPage);
+
+    res.render("user/products", {
+      products,
+      category: categoriesToInclude,
+      currentPage: page,
+      totalPages
+    });
   } catch (e) {
     console.log(e);
     return res.status(500).send("Internal Server Error!");
   }
 };
 
-exports.sortBy = async (req, res) => {
+exports.fetchProducts = async (req, res) => {
   try {
-    const categoriesToExclude = await CatDb.find({ listing: false }).select(
+    const perPage = 3; // Number of products per page
+    const page = parseInt(req.query.page) || 1; // Current page number, default is 1
+    const skip = (page - 1) * perPage; // Calculate the number of documents to skip
+
+    // Find categories with listing: true to include in products query
+    const categoriesToInclude = await CatDb.find({ listing: true }).select(
       "category"
     );
-    const categoryNames = categoriesToExclude.map((cat) => cat.category);
+    const categoryNames = categoriesToInclude.map((cat) => cat.category);
+
+    // Find products including categories with listing: true, paginated
+    const products = await ProductDb.find({ category: { $in: categoryNames } })
+      .skip(skip)
+      .limit(perPage);
+
+    if (!products || products.length === 0) {
+      return res.status(404).json({ message: "No products found." });
+    }
+
+    res.status(200).json({
+      products,
+      currentPage: page
+    });
+  } catch (e) {
+    console.log(e);
+    return res.status(500).json({ message: "Internal Server Error!" });
+  }
+};
+
+exports.sortBy = async (req, res) => {
+  try {
+    const categoriesToInclude = await CatDb.find({ listing: true }).select(
+      "category"
+    );
+    const category = categoriesToInclude.map((cat) => cat.category);
     const sortBy = req.query.sortBy;
-    console.log(sortBy);
+    // console.log(sortBy);
     let sortedProducts;
 
     switch (sortBy) {
       case "nameAsc":
-        sortedProducts = await ProductDb.find({ category: { $nin: categoryNames } }).sort({ p_name: 1 });
+        sortedProducts = await ProductDb.find({ category: { $in: category } }).sort({ p_name: 1 });
         break;
       case "nameDesc":
-        sortedProducts = await ProductDb.find({ category: { $nin: categoryNames } }).sort({ p_name: -1 });
+        sortedProducts = await ProductDb.find({ category: { $in: category } }).sort({ p_name: -1 });
         break;
       case "priceAsc":
-        sortedProducts = await ProductDb.find({ category: { $nin: categoryNames } }).sort({ total_price: 1 });
+        sortedProducts = await ProductDb.find({ category: { $in: category } }).sort({ total_price: 1 });
         break;
       case "priceDesc":
-        sortedProducts = await ProductDb.find({ category: { $nin: categoryNames } }).sort({ total_price: -1 });
+        sortedProducts = await ProductDb.find({ category: { $in: category } }).sort({ total_price: -1 });
         break;
       case "available":
-        sortedProducts = await ProductDb.find({ category: { $nin: categoryNames } , stock: { $gt: 0 } });
+        sortedProducts = await ProductDb.find({ category: { $in: category }, stock: { $gt: 0 } });
         break;
       case "newest":
-        sortedProducts = await ProductDb.find({ category: { $nin: categoryNames } }).sort({_id: -1});
+        sortedProducts = await ProductDb.find({ category: { $in: category } }).sort({ _id: -1 });
+        break;
       default:
         // Default case can be handled as per your requirement, such as sorting by default field or showing all products
         sortedProducts = await ProductDb.find();
@@ -155,12 +212,82 @@ exports.sortBy = async (req, res) => {
 
     res.render("user/products", {
       products: sortedProducts,
+      category: categoriesToInclude
     });
   } catch (error) {
     console.error("Error fetching products:", error);
     res.redirect("/user/landing?msg=errdata");
   }
 };
+
+exports.checkSearch = async (req, res) => {
+  try {
+    const searchQuery = req.query.check;
+
+    if (!searchQuery) {
+      return res.status(400).json({ message: 'Missing search query.' });
+    }
+
+    const regex = new RegExp(`^${searchQuery}`, 'i');
+    const searchResults = await ProductDb.find({
+      p_name: { $regex: regex }
+    }).select('p_name'); // Select only the product name for the dropdown
+
+    if (!searchResults || searchResults.length === 0) {
+      return res.status(404).json({ message: 'No products found based on the search query.' });
+    }
+
+    return res.json(searchResults);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+exports.searchProduct = async(req, res) => {
+  try {
+    const search = req.query.search;
+    console.log(search);
+    const categoriesToExclude = await CatDb.find({ listing: false }).select(
+      "category"
+    );
+    const categoryNames = categoriesToExclude.map((cat) => cat.category);
+    const products = await ProductDb.find({p_name: search, category: { $nin: categoryNames } }).sort({ p_name: 1 });
+    if (!products) {
+      res.status(404).json({ message: "No product found." });
+      return;
+    }
+    res.render("user/search", {products});
+  } catch (e) {
+    console.log(e);
+    return res.status(500).send("Internal Server Error!");
+  }
+}
+
+exports.filterProducts = async (req, res) => {
+  try {
+    const filterQuery = req.query.categories;
+
+    if (!filterQuery) {
+      return res.status(400).json({ message: 'Missing filter query.' });
+    }
+
+    const selectedCategories = filterQuery.split(',');
+    const filteredResults = await ProductDb.find({
+      category: { $in: selectedCategories }
+    });
+
+    if (!filteredResults || filteredResults.length === 0) {
+      return res.status(404).json({ message: 'No products found based on the filter criteria.' });
+    }
+
+    return res.json(filteredResults);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 
 exports.productview = async (req, res) => {
   const p_id = req.params.id;
@@ -177,26 +304,25 @@ exports.productview = async (req, res) => {
   });
 };
 
-// exports.search = (req, res) => {
-//   const search = req.body.search;
-//   Userdb.find({ name: {$regex: new RegExp(username,'i')} })
-//     .then((data) => {
-//       if (!data) {
-//         res
-//           .status(404)
-//           .send({
-//             message: `Cannot find with name ${username}. Maybe name is wrong!`,
-//           });
-//       } else {
-//         return res.send(data);
-//       }
-//     })
-//     .catch((err) => {
-//       res
-//         .status(500)
-//         .send({ message: `Could not find user with name ${username}` });
-//     });
-// };
+exports.search = async (req, res) => {
+  try {
+    const check = req.query.check;
+    console.log(check);
+
+    const regex = new RegExp(`^${check}`, 'i'); // Create a regex pattern for case-insensitive search that starts with check
+
+    const products = await ProductDb.find({ p_name: { $regex: regex } }, { p_name: 1 }); // Only return the product name
+
+    if (products.length === 0) {
+      return res.status(404).json([]); // Return an empty array if no products are found
+    }
+
+    return res.json(products.map(product => ({ pname: product.p_name }))); // Map the products to match the expected structure
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
 
 // Function to send OTP email
 const sendOtpEmail = async (email, otp) => {
@@ -396,14 +522,14 @@ exports.profile = async (req, res) => {
   res.render("user/userprofile", { user });
 };
 
-exports.showWallet = async(req, res) => {
+exports.showWallet = async (req, res) => {
   const userId = req.session.user;
-  try{
+  try {
     const user = await Userdb.findById(userId);
     const wallet = user.wallet;
     const name = user.name;
-    res.render('user/wallet', {wallet, name});
-  }catch(e){
+    res.render('user/wallet', { wallet, name });
+  } catch (e) {
     console.log(e);
     res.status(500).send("Internal Error!");
   }
@@ -434,7 +560,7 @@ exports.addAddress = async (req, res) => {
     const address = req.body.address;
     const city = req.body.city;
     const state = req.body.state;
-    const addressType = req.body.addressType ;
+    const addressType = req.body.addressType;
     if (!name || !phone || !pincode || !locality || !address || !city || !state || !addressType) {
       res.status(401).send("Please fill all fields");
     }

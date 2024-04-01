@@ -11,10 +11,10 @@ let schema = new mongoose.Schema({
     required: true,
     default: true,
   },
-  offerActive: {
-    type: Boolean,
-    default: false,
-   }
+  offerId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'categorie',
+  }
 });
 
 const CatDb = mongoose.model("categorie", schema);

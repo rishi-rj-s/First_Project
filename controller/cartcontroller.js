@@ -65,9 +65,13 @@ exports.addToCart = async (req, res) => {
     const quantity = req.query.quantity;
     // console.log(quantity);
 
-    // Fetch the product
-    const product = await ProductDb.findById(id);
-
+    // Fetch the product and check stock availability
+    const [product, isInWishlist, cart] = await Promise.all([
+      ProductDb.findById(id),
+      WishDb.find({ user: userId, product: id }),
+      CartDb.findOne({ user: userId })
+    ]);
+    
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
@@ -75,8 +79,6 @@ exports.addToCart = async (req, res) => {
     if (product.stock <= 0) {
       return res.redirect("/user/cart?msg=nostock");
     }
-    const isInWishlist = await  WishDb.find({user: userId, product: id});
-    // console.log(isInWishlist);
 
     if (isInWishlist) {
       // Remove the product from the wishlist document
@@ -85,8 +87,6 @@ exports.addToCart = async (req, res) => {
       );
     }
     
-    let cart = await CartDb.findOne({ user: userId });
-
     if (!cart) {
       cart = new CartDb({ user: userId, product: [], subtotal: 0 });
     }

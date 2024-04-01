@@ -93,7 +93,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white "  href="/admin/viewcoupons">
+          <a class="nav-link text-white " href="/admin/viewcoupons">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">local_offer</i>
             </div>
@@ -176,6 +176,55 @@
                           </span>
                         </button>
                       </td>
+                      <script>
+                        document.addEventListener('DOMContentLoaded', () => {
+                          const statusElements = document.querySelectorAll('.category-status');
+                          statusElements.forEach(statusElement => {
+                            statusElement.addEventListener('click', async () => {
+                              const categoryId = statusElement.getAttribute('data-category-id');
+
+                              try {
+                                const response = await fetch(`/admin/categorystatus/${categoryId}`, {
+                                  method: 'PUT',
+                                  headers: {
+                                    'Content-Type': 'application/json'
+                                  },
+                                });
+
+                                if (!response.ok) {
+                                  Swal.fire({
+                                    title: "Error!",
+                                    text: "Error Updating",
+                                    icon: "error",
+                                    confirmButtonText: "Ok"
+                                  });
+                                  return;
+                                }
+
+                                const data = await response.json(); // Parse JSON response
+
+                                // Update status text in the UI based on the response
+                                if (data.status === true) {
+                                  statusElement.textContent = true;
+                                } else {
+                                  statusElement.textContent = false;
+                                }
+
+                                // Alert for successful update
+                                Swal.fire({
+                                  title: "Success!",
+                                  text: "Listing status updated successfully",
+                                  icon: "success",
+                                  confirmButtonText: "Ok"
+                                });
+
+                              } catch (error) {
+                                console.error('Error:', error);
+                              }
+                            });
+                          });
+                        });
+                      </script>
                       <td>
                         <a href="/admin/editcategory/<%= category._id %>">
                           <button class="btn btn-warning"><i class="fas fa-pencil-alt"></i></button>
@@ -253,56 +302,6 @@
     // Initial display of categories
     displayCategories();
   </script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const statusElements = document.querySelectorAll('.category-status');
-      statusElements.forEach(statusElement => {
-        statusElement.addEventListener('click', async () => {
-          const categoryId = statusElement.getAttribute('data-category-id');
-
-          try {
-            const response = await fetch(`/admin/categorystatus/${categoryId}`, {
-              method: 'PUT',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-            });
-
-            if (!response.ok) {
-              Swal.fire({
-                title: "Error!",
-                text: "Error Updating",
-                icon: "error",
-                confirmButtonText: "Ok"
-              });
-              return;
-            }
-
-            const data = await response.json(); // Parse JSON response
-
-            // Update status text in the UI based on the response
-            if (data.status === true) {
-              statusElement.textContent = true;
-            } else {
-              statusElement.textContent = false;
-            }
-
-            // Alert for successful update
-            Swal.fire({
-              title: "Success!",
-              text: "Listing status updated successfully",
-              icon: "success",
-              confirmButtonText: "Ok"
-            });
-
-          } catch (error) {
-            console.error('Error:', error);
-          }
-        });
-      });
-    });
-  </script>
-
 
   <script>
     function deleteC(event) {

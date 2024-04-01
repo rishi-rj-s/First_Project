@@ -59,10 +59,11 @@ route.get("/viewusers", cookieJwtAuth, admincontroller.viewusers);
 route.put("/userstatus/:id", cookieJwtAuth, admincontroller.userstatus);
 
 route.get('/vieworders', cookieJwtAuth, admincontroller.viewOrders);
-route.get('/acceptreturn/:pid', cookieJwtAuth, admincontroller.acceptReturn);
-route.get('/rejectreturn/:pid', cookieJwtAuth, admincontroller.rejectReturn);
-route.get('/statusshipped/:pid', cookieJwtAuth, admincontroller.statusShipped);
-route.get('/statusdelivered/:pid', cookieJwtAuth, admincontroller.statusDelivered);
+route.get('/viewsingleorder', cookieJwtAuth, admincontroller.singleOrder)
+route.get('/acceptreturn/:oid', cookieJwtAuth, admincontroller.acceptReturn);
+route.get('/rejectreturn/:oid', cookieJwtAuth, admincontroller.rejectReturn);
+route.get('/statusshipped/:oid', cookieJwtAuth, admincontroller.statusShipped);
+route.get('/statusdelivered/:oid', cookieJwtAuth, admincontroller.statusDelivered);
 
 route.get('/viewcoupons', cookieJwtAuth, couponcontroller.showCoupons);
 route.get('/addcoupon', cookieJwtAuth, couponcontroller.showAddCoupon);

@@ -65,6 +65,30 @@
       margin-right: 10px;
     }
 
+    .form-control {
+      display: inline-block !important;
+      /* Change display property to inline-block */
+    }
+
+    @media screen and (min-width: 768px) {
+      .form-outline-inline {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+
+      .form-outline-inline input[type="search"] {
+        flex: 1;
+        /* Take remaining space */
+        margin-right: 5px;
+      }
+
+      .form-outline-inline button[type="submit"] {
+        flex-shrink: 0;
+        /* Prevent button from shrinking */
+      }
+    }
+
     @media (min-width: 768px) {
       .banner h1 {
         margin-bottom: 0;
@@ -131,6 +155,49 @@
         margin-top: 2rem;
       }
     }
+
+    .form-outline-inline {
+      position: relative;
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      top: calc(100% + 10px);
+      left: 0;
+      z-index: 100;
+      display: none;
+      width: 100%;
+      background-color: #fff;
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      padding: 10px;
+    }
+
+    .dropdown-item {
+      cursor: pointer;
+      padding: 5px 10px;
+      border-radius: 3px;
+      transition: background-color 0.3s ease;
+    }
+
+    .dropdown-item:hover {
+      background-color: #f8f9fa;
+    }
+
+    .dropdown-item.text-muted {
+      color: #6c757d;
+    }
+
+    .small-label {
+      font-size: 15px;
+      /* Adjust the font size as needed */
+      white-space: nowrap;
+      /* Prevent text from wrapping to the next line */
+      overflow: hidden;
+      /* Hide any overflow beyond the container */
+      text-overflow: ellipsis;
+      /* Display ellipsis (...) for truncated text */
+    }
   </style>
 </head>
 
@@ -139,12 +206,97 @@
   <div class="banner-wrapper fixed-top">
     <div class="banner">
       <h1>RISHI STUDIO</h1>
-      <form class="form-outline-inline" method="get" required>
-        <input type="search" id="form1" class="form-control" placeholder="Search" />
-        <button type="submit" class="btn btn-primary shadow-0">
-          <i class="fa fa-search"></i>
-        </button>
-      </form>
+
+      <!-- Search -->
+      <div class="form-outline-inline" required>
+        <form id="searchForm" action="/user/search" method="GET">
+          <input type="search" id="form1" name="search" class="form-control" placeholder="Search" />
+          <button type="submit" class="btn btn-primary shadow-0">
+            <i class="fa fa-search"></i>
+          </button>
+        </form>
+      </div>
+      <div id="searchDropdown" class="dropdown-menu position-absolute"
+        style="top: 100%; left: 0; display: none; z-index: 100;"></div>
+
+      <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          const searchInput = document.getElementById('form1');
+          const searchForm = document.getElementById('searchForm');
+          const searchDropdown = document.getElementById('searchDropdown');
+
+          let debounceTimeout;
+
+          searchForm.addEventListener('submit', function (event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const inputValue = searchInput.value.trim();
+            if (inputValue.length > 0) {
+              // Redirect to /user/search with the search query as a query parameter
+              window.location.href = `/user/search?search=${encodeURIComponent(inputValue)}`;
+            }
+          });
+
+          searchInput.addEventListener('input', function (event) {
+            clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(() => {
+              const inputValue = event.target.value.trim();
+              if (inputValue.length > 0) {
+                fetch(`/user/check?check=${inputValue}`, {
+                  method: 'GET',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  }
+                })
+                  .then(response => response.json())
+                  .then(data => {
+                    console.log('Response from backend:', data);
+                    if (data.length > 0) {
+                      displayDropdownItems(data);
+                    } else {
+                      displayNoMatchingProducts();
+                    }
+                  })
+                  .catch(error => console.error('Error:', error));
+              } else {
+                hideSearchDropdown();
+              }
+            }, 300);
+          });
+
+          function displayDropdownItems(products) {
+            searchDropdown.innerHTML = '';
+            products.forEach(product => {
+              const productItem = document.createElement('div');
+              productItem.classList.add('dropdown-item');
+              productItem.textContent = product.p_name; // Corrected property name
+              productItem.addEventListener('click', () => {
+                searchInput.value = product.p_name;
+                hideSearchDropdown();
+              });
+              searchDropdown.appendChild(productItem);
+            });
+            searchDropdown.style.display = 'block';
+          }
+
+          function displayNoMatchingProducts() {
+            searchDropdown.innerHTML = '';
+            const noMatchItem = document.createElement('div');
+            noMatchItem.classList.add('dropdown-item', 'text-muted');
+            noMatchItem.textContent = 'No matching products';
+            searchDropdown.appendChild(noMatchItem);
+            searchDropdown.style.display = 'block';
+          }
+
+          function hideSearchDropdown() {
+            searchDropdown.innerHTML = '';
+            searchDropdown.style.display = 'none';
+          }
+        });
+      </script>
+
+
+
       <div class="icons">
         <a href="/user/cart"><i class="fa fa-shopping-cart"></i></a>
         <a href="/user/wishlist"><i class="fa fa-heart"></i></a>
@@ -185,120 +337,279 @@
       <div class="col-12 col-md-4"></div>
     </div>
   </div>
-    <div class="container mt-3">
-      <div class="row justify-content-end">
-        <div class="col-md-4">
-          <label for="sortSelect">Sort By:</label>
-          <select id="sortSelect" class="form-control">
-            <option value="/user/sortby?sortBy=nameAsc">Name (A-Z)</option>
-            <option value="/user/sortby?sortBy=nameDesc">Name (Z-A)</option>
-            <option value="/user/sortby?sortBy=priceAsc">Price (Low to High)</option>
-            <option value="/user/sortby?sortBy=priceDesc">Price (High to Low)</option>
-            <option value="/user/sortby?sortBy=available">Available</option>
-            <option value="/user/sortby?sortBy=newest">Newest Models</option>
-          </select>
+
+  <div class="container mt-3">
+    <div class="row align-items-start">
+      <!-- Filter Categories -->
+      <div class="col-md-4 order-md-1 order-2 mt-4">
+        <div class="row">
+          <% if (category && category.length> 0) { %>
+            <% category.forEach((cat)=> { %>
+              <div class="col-6 mb-2">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="<%= cat.category %>" id="<%= cat.category %>"
+                    checked>
+                  <label class="form-check-label small-label" for="<%= cat.category %>">
+                    <%= cat.category %>
+                  </label>
+                </div>
+              </div>
+              <% }); %>
+                <% } %>
+        </div>
+      </div>
+
+      <!-- Sort Functions -->
+      <div class="col-md-8 order-md-2 order-1">
+        <div class="row justify-content-end">
+          <div class="col-md-4">
+            <label for="sortSelect">Sort By:</label>
+            <select id="sortSelect" class="form-control">
+              <option value="/user/sortby?sortBy=nameAsc">Name (A-Z)</option>
+              <option value="/user/sortby?sortBy=nameDesc">Name (Z-A)</option>
+              <option value="/user/sortby?sortBy=priceAsc">Price (Low to High)</option>
+              <option value="/user/sortby?sortBy=priceDesc">Price (High to Low)</option>
+              <option value="/user/sortby?sortBy=available">Available</option>
+              <option value="/user/sortby?sortBy=newest">Latest</option>
+            </select>
+          </div>
         </div>
       </div>
     </div>
+  </div>
 
-    <script>
-      document.addEventListener('DOMContentLoaded', function () {
-        const sortSelect = document.getElementById('sortSelect');
-        // Retrieve the selected option from local storage
-        const selectedOption = localStorage.getItem('selectedSortOption');
-        if (selectedOption) {
-          sortSelect.value = selectedOption;
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const sortSelect = document.getElementById('sortSelect');
+      // Retrieve the selected option from local storage
+      const selectedOption = localStorage.getItem('selectedSortOption');
+      if (selectedOption) {
+        sortSelect.value = selectedOption;
+      }
+
+      // Add change event listener to store selected option in local storage
+      sortSelect.addEventListener('change', function () {
+        const selectedUrl = this.value;
+        console.log(selectedUrl);
+        // Store the selected option in local storage, or remove it for "No Filter"
+        if (selectedUrl) {
+          localStorage.setItem('selectedSortOption', selectedUrl);
+        } else {
+          localStorage.removeItem('selectedSortOption');
         }
-
-        // Add change event listener to store selected option in local storage
-        sortSelect.addEventListener('change', function () {
-          const selectedUrl = this.value;
-          console.log(selectedUrl);
-          // Store the selected option in local storage, or remove it for "No Filter"
-          if (selectedUrl) {
-            localStorage.setItem('selectedSortOption', selectedUrl);
-          } else {
-            localStorage.removeItem('selectedSortOption');
-          }
-          // Redirect to the selected URL
-          window.location.href = selectedUrl.toString();
-        });
+        // Redirect to the selected URL
+        window.location.href = selectedUrl.toString();
       });
-    </script>
+    });
+  </script>
 
-      <!-- partial:index.partial.html -->
-      <section class="section-products">
-        <div class="container">
-          <div class="row justify-content-center text-center">
-            <div class="col-md-8 col-lg-6">
-              <h2 class="mb-5">
-                RISHI STUDIO
-              </h2>
+  <!-- partial:index.partial.html -->
+  <section class="section-products">
+    <div class="container">
+      <div class="row justify-content-center text-center">
+        <div class="col-md-8 col-lg-6">
+          <h2 class="mb-5">
+            RISHI STUDIO
+          </h2>
+        </div>
+      </div>
+
+      <div class="row" id="productGrid">
+        <% products.forEach((pdt)=> { %>
+          <div class="col-md-4">
+            <div id="product-<%= pdt._id %>" class="single-product">
+              <div class="part-1">
+                <img src="/<%= pdt.images[0] %>" alt="Product Image"
+                  style="height: 100%; width: 100%; background-repeat: no-repeat; background-size: cover; background-position: center;">
+                <ul>
+                  <% if(pdt.stock> 0) { %>
+                    <li><a href="/user/addtocart/<%= pdt._id %>"><i class="fa fa-shopping-cart"></i></a></li>
+                    <% } %>
+                      <li><a href="/user/addwishlist/<%= pdt._id %>"><i class="fa fa-heart"></i></a></li>
+                      <li><a href="/user/productview/<%= pdt._id %>"><i class="fa fa-expand"></i></a></li>
+                </ul>
+              </div>
+              <div class="part-2">
+                <h3 class="product-title">
+                  <%= pdt.p_name %>
+                </h3>
+                <% if(pdt.stock <=0) { %>
+                  <p class="text-danger">Out of Stock</p>
+                  <% } else { %>
+                    <h4 class="product-old-price">$<%= pdt.price %>
+                    </h4>
+                    <h4 class="product-price text-lg">$<%= pdt.total_price %>
+                    </h4>
+                    <% } %>
+              </div>
             </div>
           </div>
+          <% }); %>
+      </div>
 
-            <div class="row">
-              <% products.forEach((pdt)=> { %>
-                <div class="col-md-4">
-                  <div id="product-<%= pdt._id %>" class="single-product">
+      <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          console.log('Document loaded'); // Debugging: Check if document is loaded
+
+          const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+
+          checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function () {
+              console.log('Checkbox change event triggered'); // Debugging: Check if checkbox change event is triggered
+
+              const checkedCategories = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
+                .map(input => input.value);
+              console.log('Checked categories:', checkedCategories); // Debugging: Log checked categories
+
+              fetch(`/user/filter?categories=${checkedCategories.join(',')}`, {
+                method: 'GET',
+                headers: {
+                  'Content-Type': 'application/json'
+                }
+              })
+                .then(response => response.json())
+                .then(data => {
+                  console.log('Filtered products:', data); // Debugging: Log filtered products
+                  updateProductGrid(data); // Call function to update the product grid with filtered products
+                })
+                .catch(error => console.error('Error applying filter:', error)); // Debugging: Log any errors
+            });
+          });
+
+          // Function to update the product grid with filtered products
+          function updateProductGrid(products) {
+            const productGrid = document.getElementById('productGrid');
+            productGrid.innerHTML = ''; // Clear the existing products
+
+            if (products && products.length > 0) {
+              products.forEach(product => {
+                const productItem = document.createElement('div');
+                productItem.classList.add('col-md-4');
+                productItem.innerHTML = `
+                  <div id="product-${product._id}" class="single-product">
                     <div class="part-1">
-                      <img src="/<%= pdt.images[0] %>" alt=""
-                        style="height: 100%; width: 100%; background-repeat: no-repeat; background-size: cover; background-position: center;">
+                      <img src="/${product.images[0]}" alt="Product Image" style="height: 100%; width: 100%; background-repeat: no-repeat; background-size: cover; background-position: center;">
                       <ul>
-                        <% if(pdt.stock>0){%>
-                          <li><a href="/user/addtocart/<%= pdt._id%>"><i class="fa fa-shopping-cart"></i></a>
-                          </li>
-                          <%}%>
-                            <li><a href="/user/addwishlist/<%= pdt._id%>"><i class="fa fa-heart"></i></a></li>
-                            <li><a href="/user/productview/<%= pdt._id %>"><i class="fa fa-expand"></i></a></li>
+                        ${product.stock > 0 ? `<li><a href="/user/addtocart/${product._id}"><i class="fa fa-shopping-cart"></i></a></li>` : ''}
+                        <li><a href="/user/addwishlist/${product._id}"><i class="fa fa-heart"></i></a></li>
+                        <li><a href="/user/productview/${product._id}"><i class="fa fa-expand"></i></a></li>
                       </ul>
                     </div>
                     <div class="part-2">
-                      <h3 class="product-title">
-                        <%= pdt.p_name %>
-                      </h3>
-                      <% if(pdt.stock<=0){%>
-                        <p class="text-danger">Out of Stock</p>
-                        <%}else{%>
-                          <h4 class="product-old-price">$<%= pdt.price %>
-                          </h4>
-                          <h4 class="product-price text-lg">$<%= pdt.total_price %>
-                          </h4>
-                          <%}%>
+                      <h3 class="product-title">${product.p_name}</h3>
+                      ${product.stock <= 0 ? `<p class="text-danger">Out of Stock</p>` : `<h4 class="product-old-price">$${product.price}</h4><h4 class="product-price text-lg">$${product.total_price}</h4>`}
                     </div>
                   </div>
-                </div>
-                <% }); %>
-            </div>
-        </div>
-      </section>
-      <!--  FOOTER MARKUP STARTS  -->
+                `;
+                productGrid.appendChild(productItem);
+              });
+            } else {
+              // Handle case when no products are found
+              productGrid.innerHTML = '<p>No products found.</p>';
+            }
+          }
+        });
+      </script>
 
-      <footer class="bg-dark text-light py-5">
-        <div class="container">
-          <div class="row">
-            <div class="col-md-6">
-              <h3>Connect with Us</h3>
-              <p>Follow us on social media for updates:</p>
-              <div class="social-icons">
-                <a href="#" class="text-light me-2"><i class="fa fa-facebook"></i></a>
-                <a href="#" class="text-light me-2"><i class="fa fa-twitter"></i></a>
-                <a href="#" class="text-light me-2"><i class="fa fa-instagram"></i></a>
-                <a href="#" class="text-light me-2"><i class="fa fa-linkedin"></i></a>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <h3>Contact Us</h3>
-              <p>Email: info@example.com</p>
-              <p>Phone: +1 234 567 890</p>
-            </div>
+    </div>
+    <div class="col-md-8 text-right">
+      <button id="prevPageBtn" class="btn btn-primary">Previous Page</button>
+      <button id="nextPageBtn" class="btn btn-primary">Next Page</button>
+    </div>
+  </section>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const productGrid = document.getElementById('productGrid');
+      const nextPageBtn = document.getElementById('nextPageBtn');
+      const prevPageBtn = document.getElementById('prevPageBtn');
+      let currentPage = <%= currentPage %>;
+      const totalPages = <%= totalPages %>;
+
+      nextPageBtn.addEventListener('click', function () {
+        if (currentPage < totalPages) {
+          currentPage++;
+          fetchProducts(`/user/fetchProducts?page=${currentPage}`);
+        }
+      });
+
+      prevPageBtn.addEventListener('click', function () {
+        if (currentPage > 1) {
+          currentPage--;
+          fetchProducts(`/user/fetchProducts?page=${currentPage}`);
+        }
+      });
+
+      function fetchProducts(url) {
+        fetch(url, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+          .then(response => response.json())
+          .then(data => {
+            updateProductGrid(data.products); // Update the product grid with the new products
+            currentPage = data.currentPage; // Update the current page number
+          })
+          .catch(error => console.error('Error fetching products:', error));
+      }
+
+      function updateProductGrid(productsData) {
+        productGrid.innerHTML = ''; // Clear existing products in the grid
+
+        productsData.forEach(product => {
+          // Create product element and append it to the grid
+          const productItem = document.createElement('div');
+          productItem.classList.add('col-md-4');
+          productItem.innerHTML = `
+                  <div id="product-${product._id}" class="single-product">
+                    <div class="part-1">
+                      <img src="/${product.images[0]}" alt="Product Image" style="height: 100%; width: 100%; background-repeat: no-repeat; background-size: cover; background-position: center;">
+                      <ul>
+                        ${product.stock > 0 ? `<li><a href="/user/addtocart/${product._id}"><i class="fa fa-shopping-cart"></i></a></li>` : ''}
+                        <li><a href="/user/addwishlist/${product._id}"><i class="fa fa-heart"></i></a></li>
+                        <li><a href="/user/productview/${product._id}"><i class="fa fa-expand"></i></a></li>
+                      </ul>
+                    </div>
+                    <div class="part-2">
+                      <h3 class="product-title">${product.p_name}</h3>
+                      ${product.stock <= 0 ? `<p class="text-danger">Out of Stock</p>` : `<h4 class="product-old-price">$${product.price}</h4><h4 class="product-price text-lg">$${product.total_price}</h4>`}
+                    </div>
+                  </div>
+                `;
+          productGrid.appendChild(productItem);
+        });
+      }
+    });
+  </script>
+  <!--  FOOTER MARKUP STARTS  -->
+
+  <footer class="bg-dark text-light py-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <h3>Connect with Us</h3>
+          <p>Follow us on social media for updates:</p>
+          <div class="social-icons">
+            <a href="#" class="text-light me-2"><i class="fa fa-facebook"></i></a>
+            <a href="#" class="text-light me-2"><i class="fa fa-twitter"></i></a>
+            <a href="#" class="text-light me-2"><i class="fa fa-instagram"></i></a>
+            <a href="#" class="text-light me-2"><i class="fa fa-linkedin"></i></a>
           </div>
         </div>
-      </footer>
+        <div class="col-md-6">
+          <h3>Contact Us</h3>
+          <p>Email: info@example.com</p>
+          <p>Phone: +1 234 567 890</p>
+        </div>
+      </div>
+    </div>
+  </footer>
 
-      <!--  FOOTER MARKUP ENDS  -->
-      <!-- Include jQuery library -->
-      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!--  FOOTER MARKUP ENDS  -->
+  <!-- Include jQuery library -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </body>
 
 </html>

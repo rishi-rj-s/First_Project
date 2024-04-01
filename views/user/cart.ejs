@@ -105,8 +105,7 @@
     .icons i {
       font-size: 30px;
     }
-    
-    </style>
+  </style>
 </head>
 
 <body>
@@ -134,183 +133,195 @@
     <h1 class="text-center mb-4">Cart</h1>
     <div class="row">
       <div class="col-md-8 mx-auto">
-        <% if (!usercart || usercart.length === 0){%>
+        <% if (!usercart || usercart.length===0){%>
           <h3 class="text-danger d-flex justify-content-center align-items-center mt-5">No items in cart</h3>
-        <%}else{%>
-        <!-- Order Details -->
-        <div class="order-details">
-          <h3>Products</h3>
-          <hr />
-          <div class="cart-items">
-            <div class="cart-items-container">
-              <% usercart.product.forEach(cartItem=> { %> 
+          <%}else{%>
+            <!-- Order Details -->
+            <div class="order-details">
+              <h3>Products</h3>
+              <hr />
+              <div class="cart-items">
+                <div class="cart-items-container">
+                  <% usercart.product.forEach(cartItem=> { %>
 
-                  <div class="card" data-product-id="<%= cartItem.productId._id %>">
-                    <div class="card-body">
-                      <div class="row align-items-center">
-                        <div class="col-md-4">
-                          <img src="/<%= cartItem.productId.images[0] %>" alt="Product Image"
-                            class="img-fluid object-fit-cover" />
-                        </div>
-                        <div class="col-md-8">
-                          <h4 class="card-title">
-                            <%= cartItem.productId.p_name %>
-                          </h4>
-                          <h5>Price - $<%=cartItem.productId.total_price%></h5>
-                          <% if (cartItem.productId.stock> 0) { %>
-                            <div class="input-group me-2 mb-2">
-                              <button class="btn btn-outline-secondary decrement-btn" type="button"
-                                onclick="updateQuantity('<%= cartItem.productId._id %>', 'sub')">-</button>
-                              <input type="number" class="form-control custom-width quantity-input"
-                                value="<%= cartItem.quantity %>" aria-label="Quantity"
-                                data-product-id="<%= cartItem.productId._id %>" onchange="handleQuantityChange(this)" disabled>
-                              <button class="btn btn-outline-secondary increment-btn" type="button"
-                                onclick="updateQuantity('<%= cartItem.productId._id %>', 'add')">+</button>
-                            </div>
-                            <h5>
-                              $<%= (cartItem.productId.total_price)*(cartItem.quantity) %>
+                    <div class="card" data-product-id="<%= cartItem.productId._id %>">
+                      <div class="card-body">
+                        <div class="row align-items-center">
+                          <div class="col-md-4">
+                            <img src="/<%= cartItem.productId.images[0] %>" alt="Product Image"
+                              class="img-fluid object-fit-cover" />
+                          </div>
+                          <div class="col-md-8">
+                            <h4 class="card-title">
+                              <%= cartItem.productId.p_name %>
+                            </h4>
+                            <h5>Price - $<%=cartItem.productId.total_price%>
                             </h5>
+                            <% if (cartItem.productId.stock> 0) { %>
+                              <div class="input-group me-2 mb-2">
+                                <button class="btn btn-outline-secondary decrement-btn" type="button"
+                                  onclick="updateQuantity('<%= cartItem.productId._id %>', 'sub')">-</button>
+                                <input type="number" class="form-control custom-width quantity-input"
+                                  value="<%= cartItem.quantity %>" aria-label="Quantity"
+                                  data-product-id="<%= cartItem.productId._id %>" disabled>
+                                <button class="btn btn-outline-secondary increment-btn" type="button"
+                                  onclick="updateQuantity('<%= cartItem.productId._id %>', 'add')">+</button>
+                              </div>
+                              <h5>
+                                $<%= (cartItem.productId.total_price)*(cartItem.quantity) %>
+                              </h5>
 
-                            <script>
-                              async function updateQuantity(productId, action) {
-                                try {
-                                  const quantityInput = document.querySelector(`input[data-product-id="${productId}"]`);
-                                  const totalAmountValue = document.getElementById('totalAmountValue');
-                                  const newQuantity = action === 'add' ? parseInt(quantityInput.value) + 1 : parseInt(quantityInput.value) - 1;
-                                  if (newQuantity < 1 || newQuantity > 5) {
-                                    return; // Prevent decreasing quantity below 1
-                                  }
-
-                                  const response = await fetch(`/user/updatequantity/${productId}?quantity=${newQuantity}`, {
-                                    method: 'GET',
-                                    headers: {
-                                      'Content-Type': 'application/json',
-                                    },
-                                  });
-
-                                  if (!response.ok) {
-                                    throw new Error('Failed to update quantity');
-                                  }
-
-                                  const data = await response.json();
-                                  totalAmountValue.value = `Total Amount: ${data.subtotal}`
-                                  window.location.reload()
-                                } catch (error) {
-                                  console.error(error); // Log the error for debugging
-                                  Swal.fire({
-                                    title: 'Error',
-                                    icon: 'error',
-                                    text: 'Failed to update the quantity',
-                                    confirmButtonText: 'Ok',
-                                  });
-                                }
-                              }
-
-                            </script>
-
-                            <% } else { %>
-                              <!-- If the product is out of stock -->
-                              <div class="text-danger">Out of Stock</div>
-                              <!-- Disable buy button -->
                               <script>
-                                document.getElementById(
-                                  "placeOrderBtn"
-                                ).disabled = true;
+                                async function updateQuantity(productId, action) {
+                                  try {
+                                    const quantityInput = document.querySelector(`input[data-product-id="${productId}"]`);
+                                    const totalAmountValue = document.getElementById('totalAmountValue');
+                                    const newQuantity = action === 'add' ? parseInt(quantityInput.value) + 1 : parseInt(quantityInput.value) - 1;
+                                    if (newQuantity < 1 || newQuantity > 5) {
+                                      return; // Prevent decreasing quantity below 1
+                                    }
+
+                                    const currentStock = <%= cartItem.productId.stock %>; // Get current stock from server-side
+                                    if (action === 'add' && newQuantity > currentStock) {
+                                      Swal.fire({
+                                        title: 'Error',
+                                        icon: 'warning',
+                                        text: 'No more stock',
+                                        confirmButtonText: 'Ok',
+                                      });
+                                      return; // Prevent further execution
+                                    }
+
+                                    const response = await fetch(`/user/updatequantity/${productId}?quantity=${newQuantity}`, {
+                                      method: 'GET',
+                                      headers: {
+                                        'Content-Type': 'application/json',
+                                      },
+                                    });
+
+                                    if (!response.ok) {
+                                      throw new Error('Failed to update quantity');
+                                    }
+
+                                    const data = await response.json();
+                                    totalAmountValue.value = `Total Amount: ${data.subtotal}`
+                                    window.location.reload()
+                                  } catch (error) {
+                                    console.error(error); // Log the error for debugging
+                                    Swal.fire({
+                                      title: 'Error',
+                                      icon: 'error',
+                                      text: 'Failed to update the quantity',
+                                      confirmButtonText: 'Ok',
+                                    });
+                                  }
+                                }
+
                               </script>
-                              <% } %>
-                                <br />
-                                <button class="btn btn-danger delete" data-id="<%= cartItem.productId._id %>">
-                                  <i class="fas fa-trash"></i> Remove
-                                </button>
-                                <% if (cartItem.productId.discount) { %>
-                                  <div class="d-flex">
-                                    Discount:
-                                    <p class="text-success">
-                                      &emsp13; <%= cartItem.productId.discount %>%
-                                    </p>
-                                  </div>
-                                  <% } %>
+
+                              <% } else { %>
+                                <!-- If the product is out of stock -->
+                                <div class="text-danger">Out of Stock</div>
+                                <!-- Disable buy button -->
+                                <script>
+                                  document.getElementById(
+                                    "placeOrderBtn"
+                                  ).disabled = true;
+                                </script>
+                                <% } %>
+                                  <br />
+                                  <button class="btn btn-danger delete" data-id="<%= cartItem.productId._id %>">
+                                    <i class="fas fa-trash"></i> Remove
+                                  </button>
+                                  <% if (cartItem.productId.discount) { %>
+                                    <div class="d-flex">
+                                      Discount:
+                                      <p class="text-success">
+                                        &emsp13; <%= cartItem.productId.discount %>%
+                                      </p>
+                                    </div>
+                                    <% } %>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <% }); %>
-            </div>
-          </div>
+                    <% }); %>
+                </div>
+              </div>
 
-          <script>
-            const deleteButtons = document.querySelectorAll(".delete");
-            deleteButtons.forEach(function (button) {
-              button.addEventListener("click", function () {
-                const productId = this.getAttribute("data-id");
+              <script>
+                const deleteButtons = document.querySelectorAll(".delete");
+                deleteButtons.forEach(function (button) {
+                  button.addEventListener("click", function () {
+                    const productId = this.getAttribute("data-id");
 
-                // Display SweetAlert confirmation dialog
-                Swal.fire({
-                  title: "Are you sure?",
-                  text: "Remove this item from the cart?",
-                  icon: "warning",
-                  showCancelButton: true,
-                  confirmButtonColor: "#3085d6",
-                  cancelButtonColor: "#d33",
-                  confirmButtonText: "Remove!",
-                }).then((result) => {
-                  if (result.isConfirmed) {
-                    // User confirmed deletion, send request to delete address
-                    fetch(`/user/removecart/${productId}`, {
-                      method: "GET",
-                    })
-                      .then((response) => {
-                        if (response.ok) {
-                          // Show success message using SweetAlert
-                          Swal.fire({
-                            title: "Removed!",
-                            text: "Product has been removed.",
-                            icon: "success",
-                          }).then(() => {
-                            // Reload the page
-                            window.location.reload();
+                    // Display SweetAlert confirmation dialog
+                    Swal.fire({
+                      title: "Are you sure?",
+                      text: "Remove this item from the cart?",
+                      icon: "warning",
+                      showCancelButton: true,
+                      confirmButtonColor: "#3085d6",
+                      cancelButtonColor: "#d33",
+                      confirmButtonText: "Remove!",
+                    }).then((result) => {
+                      if (result.isConfirmed) {
+                        // User confirmed deletion, send request to delete address
+                        fetch(`/user/removecart/${productId}`, {
+                          method: "GET",
+                        })
+                          .then((response) => {
+                            if (response.ok) {
+                              // Show success message using SweetAlert
+                              Swal.fire({
+                                title: "Removed!",
+                                text: "Product has been removed.",
+                                icon: "success",
+                              }).then(() => {
+                                // Reload the page
+                                window.location.reload();
+                              });
+                            } else {
+                              // Failed to delete address
+                              console.error("Failed to delete address");
+                              // Show error message using SweetAlert
+                              Swal.fire({
+                                title: "Failed!",
+                                text: "Product cannot be removed.",
+                                icon: "error",
+                              });
+                            }
+                          })
+
+                          .catch((error) => {
+                            console.error("Error:", error);
+                            // Show error message using SweetAlert
+                            Swal.fire({
+                              title: "Error!",
+                              text: "An error occurred while removing the product.",
+                              icon: "error",
+                            });
                           });
-                        } else {
-                          // Failed to delete address
-                          console.error("Failed to delete address");
-                          // Show error message using SweetAlert
-                          Swal.fire({
-                            title: "Failed!",
-                            text: "Product cannot be removed.",
-                            icon: "error",
-                          });
-                        }
-                      })
-
-                      .catch((error) => {
-                        console.error("Error:", error);
-                        // Show error message using SweetAlert
-                        Swal.fire({
-                          title: "Error!",
-                          text: "An error occurred while removing the product.",
-                          icon: "error",
-                        });
-                      });
-                  }
+                      }
+                    });
+                  });
                 });
-              });
-            });
-          </script>
-        </div>
-        <!-- Total Amount -->
-        <div class="total-amount">
-          <h3>Grand Total</h3>
-          <hr />
-          <p><strong id="totalAmountValue">Total Amount: <%= subtotal %></strong></p>
-        </div>
-        <div class="d-flex justify-content-center mb-5">
-          <!-- Place Order Button -->
-          <a href="/user/orders"><button style="width: 200px" class="btn btn-primary btn-block btn-place-order"
-              id="placeOrderBtn">
-              Checkout
-            </button></a>
-        </div>
-        <%}%>
+              </script>
+            </div>
+            <!-- Total Amount -->
+            <div class="total-amount">
+              <h3>Grand Total</h3>
+              <hr />
+              <p><strong id="totalAmountValue">Total Amount: $<%= subtotal %></strong></p>
+            </div>
+            <div class="d-flex justify-content-center mb-5">
+              <!-- Place Order Button -->
+              <a href="/user/orders"><button style="width: 200px" class="btn btn-primary btn-block btn-place-order"
+                  id="placeOrderBtn">
+                  Checkout
+                </button></a>
+            </div>
+            <%}%>
       </div>
     </div>
   </div>
