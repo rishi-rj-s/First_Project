@@ -161,7 +161,7 @@
                          </a>
                     </li>
                     <li class="nav-item">
-                         <a class="nav-link text-white " href="/admin/category">
+                         <a class="nav-link text-white active bg-gradient-primary" href="/admin/category">
                               <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
                                    <i class="material-icons opacity-10">table_view</i>
                               </div>
@@ -186,7 +186,7 @@
                          </a>
                     </li>
                     <li class="nav-item">
-                         <a class="nav-link text-white active bg-gradient-primary" href="/admin/viewcoupons">
+                         <a class="nav-link text-white " href="/admin/viewcoupons">
                               <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
                                    <i class="material-icons opacity-10">local_offer</i>
                               </div>
@@ -220,10 +220,10 @@
                     <nav aria-label="breadcrumb">
                          <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
                               <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark"
-                                        href="/admin/viewcoupons">Coupons</a></li>
-                              <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Edit Coupon</li>
+                                        href="/admin/offers">Offers</a></li>
+                              <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Add Offer</li>
                          </ol>
-                         <h6 class="font-weight-bolder mb-0">Edit Coupon</h6>
+                         <h6 class="font-weight-bolder mb-0">Add Offer</h6>
                     </nav>
           </nav>
           <!-- End Navbar -->
@@ -233,57 +233,52 @@
                          <div class="card my-4">
                               <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
                                    <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
-                                        <h6 class="text-white text-capitalize ps-3">Add Category</h6>
+                                        <h6 class="text-white text-capitalize ps-3">Add Product Offer</h6>
                                    </div>
                               </div>
                               <div class="container-fluid">
                                    <div class="row">
                                         <div class="col-md-8">
-                                             <form id="editCouponForm" action="/admin/editcoupon/<%= coupon._id %>"
-                                                  method="POST" onsubmit="return validateForm()">
+                                             <form action="/admin/addpoffer" method="post"
+                                                  onsubmit="return validateForm()">
                                                   <div class="form-group">
-                                                       <label for="code">Code</label>
-                                                       <input type="text" class="form-control" name="code"
-                                                            placeholder="Enter Coupon code" value="<%= coupon.code %>"
-                                                            required>
+                                                       <label for="product">Choose Product</label>
+                                                       <select class="form-control" name="product" required>
+                                                            <option value="">Select a product</option>
+                                                            <% product.forEach((pdt)=> { %>
+                                                                 <option value="<%= pdt.p_name %>">
+                                                                      <%= pdt.p_name %>
+                                                                 </option>
+                                                                 <% }) %>
+                                                       </select>
                                                   </div>
                                                   <div class="form-group">
-                                                       <label for="discountAmount">Discount Amount</label>
-                                                       <input type="number" class="form-control" name="discountAmount"
-                                                            placeholder="Enter Discount Amount"
-                                                            value="<%= coupon.discountAmount %>" required>
+                                                       <label for="discount">Discount (Between 10-30%)</label>
+                                                       <input type="number" class="form-control" name="discount"
+                                                            placeholder="Enter discount" min="10" max="30" required>
                                                   </div>
-                                                  <div class="form-group">
-                                                       <label for="minimumPurchaseAmount">Minimum Purchase
-                                                            Amount</label>
-                                                       <input type="number" class="form-control"
-                                                            name="minimumPurchaseAmount"
-                                                            placeholder="Enter Minimum Purchase Amount"
-                                                            value="<%= coupon.minimumPurchaseAmount %>" required>
-                                                  </div>
-                                                  <input type="submit" class="btn btn-primary" value="Save">
+                                                  <input type="submit" class="btn btn-primary" value="Add">
                                              </form>
                                              <script>
                                                   function validateForm() {
-                                                       const code = document.querySelector('[name="code"]');
-                                                       const discount = document.querySelector('[name="discountAmount"]');
-                                                       const minimum = document.querySelector('[name="minimumPurchaseAmount"]');
+                                                       const product = document.querySelector('[name="product"]');
+                                                       const discount = document.querySelector('[name="discount"]');
 
                                                        // Check if any field is empty or contains only whitespace
-                                                       if (!code.value.trim() || !discount.value.trim() || !minimum.value.trim()) {
+                                                       if (!product.value.trim() || !discount.value.trim()) {
                                                             Swal.fire({
                                                                  title: 'Error!',
                                                                  text: 'All fields are necessary',
                                                                  icon: 'error',
                                                                  confirmButton: 'Cool'
-                                                            })
+                                                            });
                                                             return false; // Prevent form submission
-                                                       } else if (parseInt(discount.value) > parseInt(minimum.value)) {
+                                                       } else if (discount.value < 10 || discount.value > 30) {
                                                             Swal.fire({
                                                                  title: 'Error!',
-                                                                 text: 'Discount is more than Min. Purchase',
-                                                                 icon: 'warning',
-                                                                 confirmButton: 'Change'
+                                                                 text: 'Discount must be between 10-30%',
+                                                                 icon: 'error',
+                                                                 confirmButton: 'Cool'
                                                             });
                                                             return false; // Prevent form submission
                                                        }
@@ -291,6 +286,7 @@
                                                        return true; // Allow form submission
                                                   }
                                              </script>
+
                                         </div>
                                    </div>
                               </div>

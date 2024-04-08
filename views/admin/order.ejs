@@ -33,9 +33,21 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
   <!-- CSS Files -->
   <link id="pagestyle" href="/css/admin/material-dashboard.css?v=3.1.0" rel="stylesheet" />
-  <!-- Nepcha Analytics (nepcha.com) -->
-  <!-- Nepcha is a easy-to-use web analytics. No cookies and fully compliant with GDPR, CCPA and PECR. -->
-  <script defer data-site="YOUR_DOMAIN_HERE" src="https://api.nepcha.com/js/nepcha-analytics.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.all.min.js"></script>
+  <style>
+    .text-end {
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-35%);
+    }
+
+    .object-fit-cover {
+      object-fit: cover;
+      height: 100px;
+      width: 100px;
+    }
+  </style>
 </head>
 
 <body class="g-sidenav-show  bg-gray-200">
@@ -54,7 +66,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white  " href="/admin/viewproducts">
+          <a class="nav-link text-white active" href="/admin/viewproducts">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">table_view</i>
             </div>
@@ -62,7 +74,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white " href="/admin/category">
+          <a class="nav-link text-white" href="/admin/category">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">table_view</i>
             </div>
@@ -71,7 +83,7 @@
         </li>
 
         <li class="nav-item">
-          <a class="nav-link text-white active bg-gradient-primary" href="/admin/viewusers">
+          <a class="nav-link text-white " href="/admin/viewusers">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">person</i>
             </div>
@@ -79,7 +91,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white " href="/admin/vieworders">
+          <a class="nav-link text-white bg-gradient-primary" href="/admin/vieworders">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">receipt</i>
             </div>
@@ -95,7 +107,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white " href="/admin/offers">
+          <a class="nav-link text-white " href="">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">card_giftcard</i>
             </div>
@@ -113,18 +125,19 @@
       </ul>
     </div>
   </aside>
-  <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
+  <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
     <!-- Navbar -->
     <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur"
       data-scroll="true">
       <div class="container-fluid py-1 px-3">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
-            <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Pages</a></li>
-            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Users</li>
+            <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="/admin/vieworders">Orders</a></li>
+            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">order</li>
           </ol>
-          <h6 class="font-weight-bolder mb-0">Users</h6>
+          <h6 class="font-weight-bolder mb-0">Order</h6>
         </nav>
+      </div>
     </nav>
     <!-- End Navbar -->
     <div class="container-fluid py-4">
@@ -133,110 +146,49 @@
           <div class="card my-4">
             <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
               <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
-                <h6 class="text-white text-capitalize ps-3">User table</h6>
+                <h6 class="text-white text-capitalize ps-3">Current Order</h6>
               </div>
             </div>
             <div class="card-body px-0 pb-2">
               <div class="table-responsive p-0">
-                <table class="table align-items-center mb-0">
+                <table id="productsTable" class="table align-items-center mb-0">
                   <thead>
                     <tr>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Name</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Email</th>
-                      <!-- <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Gender</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Mobile -->
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Product Image</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ">
+                        Product Name</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Price
                       </th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status
-                      </th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                        Quantity</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <% users.forEach(user=> { %>
-                      <tr>
-                        <td>
-                          <div class="d-flex px-2 py-1">
-                            <div class="d-flex flex-column justify-content-center">
-                              <h6 class="mb-0 text-sm">
-                                <%= user.name %>
-                              </h6>
-                            </div>
-                          </div>
-                        </td>
-                        <td>
-                          <p class="text-xs font-weight-bold mb-0">
-                            <%= user.email %>
-                          </p>
-                        </td>
-                        <!-- <td>
-                          <p class="text-xs font-weight-bold mb-0">
-                            <%= user.gender %>
-                          </p>
-                        </td>
-                        <td class="align-middle text-center text-sm">
-                          <span class="text-secondary text-xs font-weight-bold">
-                            <%= user.mobile %>
-                          </span>
-                        </td> -->
-                        <td class="align-middle text-center">
-                          <button class="badge badge-sm bg-gradient-success user-status" data-user-id="<%= user._id %>">
-                            <span>
-                              <%= user.status %>
-                            </span></button>
-                        </td>
-                      </tr>
-                      <% }); %>
+                      <% order.orderedItems.forEach((pdt)=> { %>
+                        <tr>
+                          <td>
+                                <img src="/<%= pdt.pimages[0] %>" class="object-fit-cover border-radius-lg"
+                                  alt="img">
+                          </td>
+                          <td class="align-middle text-center">
+                              <span class="text-secondary text-xs font-weight-bold">
+                                <%= pdt.pname %>
+                              </span>
+                            </td>
+                          <td class="align-middle text-center">
+                            <span class="text-secondary text-xs font-weight-bold">
+                              <%= pdt.price %>
+                            </span>
+                          </td>
+                          <td class="align-middle text-center">
+                            <span class="text-secondary text-xs font-weight-bold">
+                              <%= pdt.quantity %>
+                            </span>
+                          </td>
+                        </tr>
+                        <% }) %>
                   </tbody>
                 </table>
-                <script>
-                  document.addEventListener('DOMContentLoaded', () => {
-                    const statusElements = document.querySelectorAll('.user-status');
-                    statusElements.forEach(statusElement => {
-                      statusElement.addEventListener('click', async () => {
-                        const userId = statusElement.getAttribute('data-user-id');
-                        console.log(userId)
-
-                        try {
-                          const response = await fetch(`/admin/userstatus/${userId}`, {
-                            method: 'PUT',
-                            headers: {
-                              'Content-Type': 'application/json'
-                            },
-                          });
-
-                          if (!response.ok) {
-                            Swal.fire({
-                              title: "Error!",
-                              text: "Error Updating",
-                              icon: "failure",
-                              confirmButtonText: "Ok"
-
-                            })
-                          }
-                          Swal.fire({
-                            title: "Success!",
-                            text: "Updated successfully",
-                            icon: "success",
-                            confirmButtonText: "Ok"
-
-                          })
-                          const data = await response.json();
-
-                          // Update status text in the UI based on the response
-                          if (data.status === 'active') {
-                            statusElement.textContent = 'Active';
-                          } else {
-                            statusElement.textContent = 'Blocked';
-                          }
-
-                        } catch (error) {
-                          console.error('Error:', error);
-                        }
-                      });
-                    });
-                  });
-
-                </script>
-
               </div>
             </div>
           </div>
@@ -244,12 +196,44 @@
       </div>
     </div>
   </main>
+
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const message = urlParams.get('msg');
+    if (typeof message !== 'undefined') {
+      if (message.includes('success')) {
+        Swal.fire({
+          title: 'Success!',
+          text: 'Product added successfully',
+          icon: 'success',
+          confirmButtonText: 'Cool'
+        })
+        window.history.replaceState({}, document.title, window.location.pathname);
+      } else if (message.includes('updated')) {
+        Swal.fire({
+          title: 'Success!',
+          text: 'Successfully updated the product',
+          icon: 'success',
+          confirmButtonText: 'Cool'
+        })
+        window.history.replaceState({}, document.title, window.location.pathname);
+      } else if (message.includes('deleted')) {
+        Swal.fire({
+          title: 'Success!',
+          text: 'Successfully deleted the product',
+          icon: 'success',
+          confirmButtonText: 'Cool'
+        })
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    }
+  </script>
   <!--   Core JS Files   -->
   <script src="/js/admin/core/popper.min.js"></script>
   <script src="/js/admin/core/bootstrap.min.js"></script>
   <script src="/js/admin/plugins/perfect-scrollbar.min.js"></script>
   <script src="/js/admin/plugins/smooth-scrollbar.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.all.min.js"></script>
   <script>
     var win = navigator.platform.indexOf('Win') > -1;
     if (win && document.querySelector('#sidenav-scrollbar')) {
@@ -263,6 +247,7 @@
   <script async defer src="https://buttons.github.io/buttons.js"></script>
   <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
   <script src="/js/admin/material-dashboard.min.js?v=3.1.0"></script>
+  <script src="/js/admin/function.js"></script>
 </body>
 
 </html>

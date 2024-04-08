@@ -1,4 +1,5 @@
 const CartDb = require("../model/cartmodel");
+const CouponDb = require("../model/couponmodel");
 const ProductDb = require("../model/productmodel");
 const Userdb = require("../model/usermodel");
 const WishDb = require("../model/wishlistmodel")
@@ -13,7 +14,7 @@ exports.showCart = async (req, res) => {
     );
     // console.log(usercart)
 
-    if (!usercart ||usercart.product.length === 0) {
+    if (!usercart || usercart.product.length === 0) {
       // Cart is empty, redirect to /user/products/All
       return res.redirect('/user/landing?msg=nocart');
     }
@@ -71,7 +72,7 @@ exports.addToCart = async (req, res) => {
       WishDb.find({ user: userId, product: id }),
       CartDb.findOne({ user: userId })
     ]);
-    
+
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
@@ -86,7 +87,7 @@ exports.addToCart = async (req, res) => {
         { user: userId, product: id }
       );
     }
-    
+
     if (!cart) {
       cart = new CartDb({ user: userId, product: [], subtotal: 0 });
     }
@@ -119,21 +120,34 @@ exports.removeCart = async (req, res) => {
   try {
     const productId = req.params.id;
     const userId = req.session.user._id;
-    // console.log(productId, userId)
 
-    // Remove the product from the cart
-    const cart = await CartDb.findOneAndUpdate(
+    // Create promises for each operation
+    const pullOperation = CartDb.findOneAndUpdate(
       { user: userId },
       { $pull: { product: { productId: productId } } },
-      { new: true }
+      { new: true } // Return the updated document
     );
-    // console.log(cart)
 
-    if (cart) {
+    const unsetOperation = CartDb.findOneAndUpdate(
+      { user: userId },
+      { $unset: { coupon: "", couponCode: "" } },
+      { new: true } // Return the updated document
+    );
+
+    // Combine the promises and wait for all to complete
+    const [cartAfterPull, cartAfterUnset] = await Promise.all([
+      pullOperation,
+      unsetOperation,
+    ]);
+
+    if (cartAfterPull) {
+      // Update couponApplied to false
+      cartAfterPull.couponApplied = false;
+
       // Recalculate the subtotal if the cart still contains products
       let subtotal = 0;
-      if (cart.product.length > 0) {
-        for (const product of cart.product) {
+      if (cartAfterPull.product.length > 0) {
+        for (const product of cartAfterPull.product) {
           const updatedProduct = await ProductDb.findById(product.productId);
           if (
             updatedProduct &&
@@ -147,12 +161,12 @@ exports.removeCart = async (req, res) => {
       }
 
       // Update the subtotal in the cart
-      cart.subtotal = subtotal;
+      cartAfterPull.subtotal = subtotal;
 
       // Save the updated cart
-      await cart.save();
+      await cartAfterPull.save();
 
-      res.status(204).end();
+      res.status(204).end(); // Successfully removed from cart
     } else {
       res.status(404).json({ message: "Cart not found" });
     }
@@ -216,3 +230,51 @@ exports.updateQuantity = async (req, res) => {
     res.status(500).json({ message: "Internal server error." });
   }
 };
+
+exports.applyCoupon = async (req, res) => {
+  try {
+    const cartId = req.params.cid;
+    const couponCode = req.query.code;
+    // console.log(cartId, couponId);
+    const [cart, coupon] = await Promise.all([
+      CartDb.findById(cartId),
+      CouponDb.findOne({ code: couponCode })
+    ]);
+    // console.log(cart, coupon)
+
+    if (!cart || !coupon) {
+      return res.status(404).json({ error: 'Cart or coupon not found' });
+    }
+
+    let subtotal = cart.subtotal;
+    let discount = coupon.discountAmount;
+    let minAmount = coupon.minimumPurchaseAmount;
+
+    if (subtotal < minAmount) {
+      return res.json({ valid: false, message: 'Subtotal does not meet minimum amount' });
+    }
+    const newSubtotal = subtotal - discount;
+
+    await CartDb.findByIdAndUpdate(cartId, {
+      subtotal: newSubtotal,
+      couponApplied: true,
+      coupon: coupon._id,
+      couponCode: coupon.code,
+    })
+    return res.json({ valid: true, message: "Coupon applied successfully", newSubtotal })
+
+  } catch (e) {
+    console.log(e);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
+exports.removeCoupon = async (req, res) => {
+  try {
+    const cartId = req.params.cid;
+    const couponCode = req.query.code;
+  } catch (e) {
+    console.log(e)
+    return res.status(500).send("Internal Server Error");
+  }
+}

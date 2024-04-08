@@ -148,59 +148,64 @@
   </div>
 
   <div class="row">
-     <div class="col-md-6">
-         <div class="card mb-3">
-             <div class="card-body">
-                 <h5 class="card-title">Order Details</h5>
-                 <p class="card-text">Order ID: <%= order._id %></p>
-                 <p class="card-text">Username: <%= user.name %></p>
-                 <p class="card-text">Total Amount: ₹<%= order.totalAmount %></p>
-                 <p class="card-text">Address: <%= order.shippingAddress.address %>, <%= order.shippingAddress.city %>, <%= order.shippingAddress.state %>, <%= order.shippingAddress.country %> - <%= order.shippingAddress.zip %></p>
- 
-             </div>
-         </div>
-     </div>
- </div>
- 
- <% order.orderedItems.forEach(item => { %>
-     <div class="col-md-6">
-         <div class="card mb-3">
-             <h5 class="card-title">Product: <%= item.productId.name %></h5>
-             <p class="card-text">Quantity: <%= item.quantity %></p>
-             
- 
-             <!-- Display product image if available -->
-             <% if (item.productId.images.length > 0) { %>
-                 <img src="/<%= item.productId.images[0] %>" alt="<%= item.productId.name %>" style="width: 100px; height: 100px;">
-             <% } %>
-         </div>
-     </div>
- <% }); %>
- 
- 
- 
- <!-- Razorpay checkout form -->
- <div class="row">
-     <div class="col-md-6">
-         <form id="razorpay-form" action="/paylater/<%=order._id %>" method="POST">
-             <input type="hidden" name="orderId" value="<%= order._id %>">
-             <script src="https://checkout.razorpay.com/v1/checkout.js"
-                     data-key="rzp_test_xKuv2UTXtdieZH"
-                     data-amount="<%= order.totalAmount * 100 %>"
-                     data-currency="INR"
-                     data-order_id="<%= order.razorpayOrderId %>"
-                     data-buttontext=""
-                     data-name="Rishi Studio"
-                     data-description="Payment for Order <%= order._id %>"
-                     data-image="/img/landing/dp.png"
-                     data-prefill.name="<%= user.name %>"
-                     data-prefill.email="<%= user.email %>"
-                     data-theme.color="#4169E1">
-             </script>
-             <button id="rzp-button" class="btn btn-primary">Pay with Razorpay</button>
-         </form>
-     </div>
- </div>
- </div>
+    <div class="col-md-6">
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Order Details</h5>
+          <p class="card-text">Order ID: <%= order._id %>
+          </p>
+          <p class="card-text">Username: <%= order.name %>
+          </p>
+          <p class="card-text">Total Amount: ₹<%= order.totalAmount %>
+          </p>
+          <p class="card-text">Address: <%= order.shippingAddress.address %>, <%= order.shippingAddress.state %>, India
+                - <%= order.shippingAddress.pincode %>
+          </p>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <% order.orderedItems.forEach(item=> { %>
+    <div class="col-md-6">
+      <div class="card mb-3">
+        <h5 class="card-title">Product: <%= item.pname %>
+        </h5>
+        <p class="card-text">Quantity: <%= item.quantity %>
+        </p>
 
 
+        <!-- Display product image if available -->
+        <% if (item.pimages.length> 0) { %>
+          <img src="/<%= item.pimages[0] %>" alt="<%= item.pname %>" style="width: 100px; height: 100px;">
+          <% } %>
+      </div>
+    </div>
+    <% }); %>
+
+
+
+      <!-- Razorpay checkout form -->
+      <div class="row">
+        <div class="col-md-6">
+          <form id="razorpay-form" action="/razorpay/pay/<%=order._id %>" method="POST">
+            <input type="hidden" name="orderId" value="<%= order._id %>">
+            <script src="https://checkout.razorpay.com/v1/checkout.js" data-key="<%= razorpayKeyId %>"
+              data-amount="<%= order.totalAmount * 100 %>" data-currency="INR"
+              data-order_id="<%= order.razorpayOrderId %>" data-buttontext="" data-name="RISHI STUDIO"
+              data-description="Payment for Order <%= order._id %>"
+              data-prefill.name="<%= user.name %>" data-prefill.email="<%= user.email %>">
+              </script>
+            <button id="rzp-button" class="btn btn-primary">Pay with Razorpay</button>
+          </form>
+        </div>
+      </div>
+      </div>
+      <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>

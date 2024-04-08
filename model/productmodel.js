@@ -41,23 +41,30 @@ let schema = new mongoose.Schema({
    default: "Listed",
    enum: ["Listed", "Unlisted"],
   },
-  offerActive: {
+  offerApplied: {
    type: Boolean,
-   default: false,
+   required: true,
+   default: false
+  },
+  offerDiscount: {
+   type: Number,
+   default: 0,
+   required: true
   }
 },
 {
    timestamps: true
 });
 
+// Pre save middleware
 schema.pre('save', function (next) {
    if (!this.total_price) {
-     this.total_price = Math.round(this.price - (this.price * (this.discount / 100)));
+     const discountPrice = Math.round(this.price - (this.price * (this.discount / 100)));
+     const offerDiscountPrice = Math.round(discountPrice - (discountPrice * (this.offerDiscount / 100)));
+     this.total_price = offerDiscountPrice;
    }
- 
    next();
- });
- 
+});
 
 const ProductDb = mongoose.model("product", schema);
 
