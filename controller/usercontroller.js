@@ -5,6 +5,7 @@ const CatDb = require("../model/categorymodel");
 const AdminDb = require("../model/adminmodel");
 const AddressDb = require("../model/addressmodel");
 const CartDb = require("../model/cartmodel");
+const WalletHistory = require("../model/wallethistory");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const path = require("path");
@@ -422,9 +423,11 @@ exports.showWallet = async (req, res) => {
   const userId = req.session.user;
   try {
     const user = await Userdb.findById(userId);
+    const walletHistory = await WalletHistory.find({userId: userId._id}).sort({ timestamp: -1 });
+    // console.log(walletHistory);
     const wallet = user.wallet;
     const name = user.name;
-    res.render('user/wallet', { wallet, name });
+    res.render('user/wallet', { wallet, name, history: walletHistory });
   } catch (e) {
     console.log(e);
     res.status(500).send("Internal Error!");
@@ -629,19 +632,3 @@ exports.editUsername = async (req, res) => {
     res.redirect("/user/profile?msg=nameerr");
   }
 };
-
-exports.showRazorPay = async (req, res) => {
-  try{
-    const orderId = req.params.oid;
-    const order = await OrderDb.findById(orderId).populate("shippingAddress");
-    const user = req.session.user;
-    if(!order){
-      return res.status(404).send("No Order with this Id found!");
-    }
-    const razorpayKeyId = process.env.KEY_ID;
-    res.render('user/razorpay',{order, razorpayKeyId, user })
-  }catch(e){
-    console.log(e);
-    res.status(500).send("Internal Server Error")
-  }
-}

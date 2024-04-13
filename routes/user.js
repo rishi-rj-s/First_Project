@@ -55,7 +55,7 @@ route.get('/cart',checkBlocked, cookieJwtAuth, cartcontroller.showCart);
 route.get('/addtocart/:id',checkBlocked, cookieJwtAuth, cartcontroller.addToCart);
 route.get('/removecart/:id',checkBlocked, cookieJwtAuth, cartcontroller.removeCart)
 route.get('/updatequantity/:pid',checkBlocked, cookieJwtAuth, cartcontroller.updateQuantity);
-route.get('/applycoupon/:cid',checkBlocked, cookieJwtAuth, cartcontroller.applyCoupon)
+route.get('/couponaction/:cid',checkBlocked, cookieJwtAuth, cartcontroller.couponAction)
 
 route.get('/wishlist',checkBlocked, cookieJwtAuth, wishcontroller.showWishlist);
 route.get('/addwishlist/:id', checkBlocked, cookieJwtAuth, wishcontroller.addToWishlist);  
@@ -66,10 +66,9 @@ route.get('/viewsingleorder',checkBlocked, cookieJwtAuth, ordercontroller.single
 route.get('/checkcoupon',checkBlocked, cookieJwtAuth, couponcontroller.checkCoupon);
 route.post('/placeorder',checkBlocked, cookieJwtAuth, ordercontroller.placeOrder);
 route.get('/vieworders',checkBlocked, cookieJwtAuth, ordercontroller.viewOrders);
-route.get('/rayzorpaypage/:oid',checkBlocked, cookieJwtAuth, usercontroller.showRazorPay)
+route.post('/razorpay/:cid',checkBlocked, cookieJwtAuth, ordercontroller.razorPayOrder)
 route.get('/cancelorder/:oid',checkBlocked, cookieJwtAuth, ordercontroller.cancelOrder);
 route.get('/returnorder/:oid',checkBlocked, cookieJwtAuth, ordercontroller.returnOrder);
-
 route.get('/generateinvoice/:oid',checkBlocked, cookieJwtAuth, ordercontroller.generateInvoice);
 
 route.get("**",(req,res)=>{

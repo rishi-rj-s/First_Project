@@ -20,13 +20,10 @@ const walletHistorySchema = new mongoose.Schema({
         default: Date.now
     },
     order:{
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'order',
         required: true
-    },
-    state:{
-        type: String,
-        required:true
-    },
+    }
 });
 
 const WalletHistory = mongoose.model('wallethistory', walletHistorySchema);

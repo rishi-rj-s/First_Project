@@ -28,6 +28,7 @@
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "pdfkit": "^0.15.0",
+    "pdfkit-table": "^0.1.99",
     "razorpay": "^2.9.2",
     "sweetalert2": "^11.6.13",
     "uuid": "^9.0.1"

@@ -106,6 +106,65 @@
                color: #333;
                /* Change the color to your preference */
           }
+
+          @media (max-width: 768px) {
+               .wallet-info {
+                    flex-direction: column;
+                    align-items: center;
+                    text-align: center;
+               }
+
+               .wallet-icon {
+                    margin-right: 0;
+                    margin-bottom: 10px;
+               }
+
+               .wallet-balance {
+                    font-size: 20px;
+               }
+
+               .transaction-history h2 {
+                    font-size: 24px;
+               }
+
+               .table-responsive {
+                    overflow-x: auto;
+               }
+          }
+
+          .transaction-history {
+               margin-top: 20px;
+          }
+
+          /* Style the transaction history table */
+          .transaction-history table {
+               width: 100%;
+               background-color: #f8f9fa;
+               border-radius: 8px;
+               box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+          }
+
+          .transaction-history th,
+          .transaction-history td {
+               padding: 10px;
+               text-align: center;
+          }
+
+          .transaction-history th {
+               background-color: #007bff;
+               /* Change the color to your preference */
+               color: #fff;
+          }
+
+          .transaction-history tbody tr:nth-child(even) {
+               background-color: #f2f2f2;
+               /* Change the color to your preference */
+          }
+
+          .transaction-history tbody tr:hover {
+               background-color: #e9ecef;
+               /* Change the color to your preference */
+          }
      </style>
 </head>
 
@@ -135,6 +194,9 @@
                                    Addresses</a>
                          </li>
                          <li class="nav-item">
+                              <a class="nav-link" href="/user/changepass"><i class="fas fa-lock"></i> Change Pass</a>
+                         </li>
+                         <li class="nav-item">
                               <a class="nav-link" href="/user/logout"><i class="fas fa-power-off"></i> Logout</a>
                          </li>
                     </ul>
@@ -149,14 +211,49 @@
                                    </div>
                                    <div class="wallet-balance">
                                         <h4>Remaining Balance:</h4>
-                                        <p><strong>
-                                                  $<%= wallet %>
-                                             </strong></p>
+                                        <p><strong>$<%= wallet %></strong></p>
                                    </div>
+                                   </div>
+                                   <!-- Transaction History starts here -->
+                                   <div class="transaction-history mt-4">
+                                        <h4>Transaction History</h4>
+                                        <div class="table-responsive">
+                                             <table class="table table-striped">
+                                                  <thead>
+                                                       <tr>
+                                                            <th>Date</th>
+                                                            <th>Transaction Method</th>
+                                                            <th>Amount</th>
+                                                       </tr>
+                                                  </thead>
+                                                  <tbody>
+                                                       <% history.forEach(item=> { %>
+                                                            <tr>
+                                                                 <td>
+                                                                      <%= item.timestamp.toLocaleDateString() %>
+                                                                 </td>
+                                                                 <td>
+                                                                      <%= item.transactionType %>
+                                                                 </td>
+                                                                 <%if(item.transactionType == "Debit"){%>
+                                                                 <td class="text-danger">-$<%= item.amount %>
+                                                                 </td>
+                                                                 <%}else{%>
+                                                                 <td class="text-success">+$<%= item.amount %>
+                                                                 </td>
+                                                                 <%}%>
+                                                            </tr>
+                                                            <% }); %>
+                                                  </tbody>
+                                             </table>
+                                        </div>
+                                   </div>
+                                   <!-- Transaction History ends here -->
                               </div>
                          </div>
                     </div>
                </main>
+
           </div>
      </div>
      <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

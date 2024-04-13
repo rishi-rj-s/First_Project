@@ -4,7 +4,8 @@ const CatDb = require("../model/categorymodel");
 const AdminDb = require("../model/adminmodel");
 const AddressDb = require("../model/addressmodel");
 const OrderDb = require("../model/ordermodel");
-const OfferDb = require('../model/offermodel')
+const OfferDb = require('../model/offermodel');
+const WalletHistory = require("../model/wallethistory");
 const jwt = require("jsonwebtoken");
 const multer = require("multer");
 const path = require("path");
@@ -514,6 +515,14 @@ exports.acceptReturn = async (req, res) => {
 
     // Update the user's wallet with the returnedItemPrice
     await Userdb.findByIdAndUpdate(userId, { $inc: { wallet: returnedItemPrice } });
+    
+    const history = new WalletHistory({
+      userId: updatedOrder.user_id,
+      transactionType: "Credit",
+      amount: returnedItemPrice,
+      order: updatedOrder._id
+    })
+    await history.save();
 
     // Handle the case where the order is updated successfully and wallet is updated
     return res.status(200).json({ success: true, message: "Return accepted and wallet updated." });

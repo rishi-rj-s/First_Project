@@ -332,6 +332,17 @@
                 });
               </script>
             </div>
+
+            <% if(usercart.couponApplied){ %>
+            <!-- Coupon Applied? -->
+            <div class="total-amount">
+              <h3 class="text-success">Coupon Applied</h3>
+              <hr />
+              <p><strong >Coupon : <%= usercart.couponCode %></strong></p>
+              <p><strong >Discount : $<%= usercart.discount %></strong></p>
+            </div>
+            <%}%>
+
             <!-- Total Amount -->
             <div class="total-amount">
               <h3>Grand Total</h3>

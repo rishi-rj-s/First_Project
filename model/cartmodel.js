@@ -30,6 +30,10 @@ const schema = new mongoose.Schema({
     couponCode:{
         type: String,
     },
+    discount: {
+        type: Number,
+        default: 0
+    },
     subtotal: {
         type: Number,
         default: 0

@@ -4,10 +4,10 @@ const Category = require("../model/categorymodel");
 const User = require("../model/usermodel")
 const Cart = require("../model/cartmodel");
 const Product = require("../model/productmodel");
-const CouponDb = require("../model/couponmodel")
+const CouponDb = require("../model/couponmodel");
+const WalletHistory = require("../model/wallethistory");
 const { KEY_ID, KEY_SECRET } = process.env;
 const Razorpay = require("razorpay");
-const AddressDb = require("../model/addressmodel");
 const PDFDocument = require('pdfkit');
 
 
@@ -28,13 +28,16 @@ exports.renderOrderPage = async (req, res) => {
       User.findById(id),
       Address.find({ user_id: id })
     ]);
+    let subtotal = usercart.subtotal;
+    let coupons = await CouponDb.find({ minimumPurchaseAmount: { $lte: subtotal } });
+
     const razorpayKeyId = process.env.KEY_ID;
     // console.log(razorpayKeyId);
     const wallet = user.wallet
     if (!usercart) {
       return res.redirect("/cart?msg=cartemp");
     }
-    res.render("user/checkout", { usercart, address, username, wallet, razorpayKeyId });
+    res.render("user/checkout", { usercart, address, username, wallet, coupons, razorpayKeyId });
   } catch (e) {
     console.log(e);
     res.redirect("/?msg=error");
@@ -49,31 +52,20 @@ exports.placeOrder = async (req, res) => {
     let couponApplied = null;
     let paymentStatus = "Pending";
 
-    const [usercart, addressId, user, address] = await Promise.all([
+    const [usercart, address, user] = await Promise.all([
       Cart.findOne({ user: userId }).populate("product.productId"),
       Address.findById(addsId),
       User.findById(userId),
-      AddressDb.findById(addsId)
     ])
 
-    let totalAmountAfterDiscount = usercart.subtotal; // Initialize with subtotal
-    // console.log(totalAmountAfterDiscount);
-
-    if (req.body.coupon) {
-      const couponCode = req.body.coupon;
-      const coupon = await CouponDb.findOne({ code: couponCode });
-      // console.log(coupon)
-
-      if (coupon && coupon != null && usercart.subtotal >= coupon.minimumPurchaseAmount) {
-        totalAmountAfterDiscount = usercart.subtotal - coupon.discountAmount;
-        couponApplied = coupon._id; // Assign the couponId if a coupon is applied
-      }
+    if (usercart.couponApplied === true) {
+      couponApplied = true;
     }
 
     if (!usercart) {
       return res.status(404).json({ message: "Cart not found" });
     }
-    if (!addressId) {
+    if (!address) {
       return res.status(404).json({ message: "Address not found" });
     }
 
@@ -82,12 +74,16 @@ exports.placeOrder = async (req, res) => {
       return res.status(400).json({ message: 'Cash On Delivery is not allowed for orders above 1000' });
     }
 
+    if (paymentMethod === 'RazorPay') {
+      return res.status(400).json({ message: 'Cash On Delivery is not allowed for orders above 1000' });
+    }
+
     if (paymentMethod == "Wallet") {
-      if (totalAmountAfterDiscount > user.wallet) {
+      if (usercart.subtotal > user.wallet) {
         return res.status(201).send("Insufficient Balance...!");
       }
       paymentStatus = 'Completed';
-      user.wallet -= totalAmountAfterDiscount;
+      user.wallet -= usercart.subtotal;
       await user.save();
     }
 
@@ -110,15 +106,25 @@ exports.placeOrder = async (req, res) => {
       user_id: userId,
       name: address.name,
       orderedItems: orderedItemsWithPrice,
-      totalAmount: totalAmountAfterDiscount,
-      shippingAddress: addressId,
+      totalAmount: usercart.subtotal,
+      shippingAddress: address._id,
       paymentMethod: paymentMethod,
       paymentStatus: paymentStatus,
       couponApplied: couponApplied
     });
 
-    await order.save();
+    const a = await order.save();
 
+    if(paymentMethod === "Wallet"){
+      const history = new WalletHistory({
+        userId: userId,
+        transactionType: "Debit",
+        amount : usercart.subtotal,
+        order: a._id
+      })
+      await history.save();
+    }
+    
     // Remove ordered products from the cart
     await Cart.findOneAndUpdate(
       { user: userId },
@@ -139,14 +145,6 @@ exports.placeOrder = async (req, res) => {
       });
     });
 
-    if (paymentMethod == "RazorPay") {
-      const razorpayOrder = await razorpay.orders.create({
-        amount: totalAmountAfterDiscount * 100,
-        currency: 'INR',
-        payment_capture: 1
-      });
-      return res.redirect(`/user/rayzorpaypage/${order._id}`); // Redirect to Razorpay page
-    }
 
     // Redirect to order success page
     return res.render("user/orderplaced", { order: "Success" });
@@ -155,6 +153,88 @@ exports.placeOrder = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+exports.razorPayOrder = async (req, res) => {
+  try {
+    const cartId = req.params.cid;
+    const addId = req.body.addressId;
+    const userId = req.session.user;
+    let coupon;
+    // console.log(cartId, addId);
+
+    const [usercart, address, user] = await Promise.all([
+      Cart.findOne({ user: userId }).populate("product.productId"),
+      Address.findById(addId),
+      User.findById(userId),
+    ])
+
+    if (!usercart) {
+      return res.status(404).json({ message: "Cart not found" });
+    }
+    if (!address) {
+      return res.status(404).json({ message: "Address not found" });
+    }
+
+    if(usercart.couponApplied){
+      coupon = usercart.coupon;
+    }
+
+    // Calculate individual prices for ordered items
+    const orderedItemsWithPrice = usercart.product.map((item) => {
+      const totalPrice = item.productId.total_price * item.quantity;
+      return {
+        productId: item.productId,
+        pname: item.productId.p_name,
+        pimages: item.productId.images,
+        originalPrice: item.productId.price * item.quantity,
+        price: totalPrice || 0, // Set default value if calculation results in NaN
+        quantity: item.quantity,
+      };
+    });
+    // console.log(totalAmountAfterDiscount)
+
+    // Create the order with calculated prices
+    const order = new Order({
+      user_id: userId,
+      name: address.name,
+      orderedItems: orderedItemsWithPrice,
+      totalAmount: usercart.subtotal,
+      shippingAddress: address._id,
+      paymentMethod: "RazorPay",
+      paymentStatus: "Completed",
+      couponApplied: coupon
+    });
+
+    await order.save();
+
+
+    await Cart.findOneAndUpdate(
+      { user: userId },
+      {
+        $pull: {
+          product: {
+            productId: { $in: usercart.product.map((item) => item.productId) },
+          },
+        },
+      },
+      { new: true }
+    );
+
+    // Reduce the stock of ordered products
+    usercart.product.forEach(async (product) => {
+      await Product.findByIdAndUpdate(product.productId, {
+        $inc: { stock: -product.quantity },
+      });
+    });
+
+    // Redirect to order success page
+    return res.render("user/orderplaced", { order: "Success" });
+    
+  } catch (e) {
+    console.log(e);
+    res.status(500).send("Internal Server Error")
+  }
+}
 
 exports.viewOrders = async (req, res) => {
   try {
@@ -198,7 +278,14 @@ exports.cancelOrder = async (req, res) => {
 
     if (userorder.paymentStatus == "Refunded") {
       const refund = userorder.totalAmount;
-      await User.findByIdAndUpdate(id, { $inc: { wallet: refund } })
+      await User.findByIdAndUpdate(id, { $inc: { wallet: refund } });
+      const history = new WalletHistory({
+        userId: id,
+        transactionType: "Credit",
+        amount : userorder.totalAmount,
+        order: userorder._id
+      })
+      await history.save();  
     }
 
     // Iterate through ordered items to restock the products
@@ -315,6 +402,7 @@ exports.generateInvoice = async (req, res) => {
     doc.fontSize(12).text(`Order ID: ${order._id}`);
     doc.fontSize(12).text(`Order Date: ${order.orderDate.toDateString()}`);
     doc.fontSize(12).text(`Payment Status: ${order.paymentStatus}`);
+    doc.fontSize(12).text(`Payment Method: ${order.paymentMethod}`);
     doc.moveDown();
 
 
@@ -333,16 +421,18 @@ exports.generateInvoice = async (req, res) => {
       doc.moveDown();
     });
 
-    doc.fontSize(12).text(`Discount reduction: $${order.couponApplied.discountAmount}`);
+    if(order.couponApplied!=null){
+      doc.fontSize(12).text(`Discount reduction: $${order.couponApplied.discountAmount}`);
+    }
 
     // Total amount
     doc.fontSize(14).text(`Total Amount: Rs.${order.totalAmount}/-`, { align: 'right' });
 
     doc.end();
 
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Internal server error' });
-    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 };
 
