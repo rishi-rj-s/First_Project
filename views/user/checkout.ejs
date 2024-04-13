@@ -15,29 +15,26 @@
       background-color: #f8f9fa;
     }
 
-    .container {
-      margin-top: 50px;
-    }
-
     .order-details,
     .address-selection,
     .payment-method,
     .total-amount {
       background-color: #fff;
       padding: 20px;
-      margin-top: 20px;
       border-radius: 5px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
 
     .btn-place-order {
-      margin-top: 20px;
+      display: block;
+      margin: 20px auto;
+      width: 100%;
     }
 
     .object-fit-cover {
       object-fit: cover;
-      height: 150px;
-      width: 150px
+      height: 75px;
+      width: 75px;
     }
 
     .banner-wrapper {
@@ -90,24 +87,105 @@
 
       .row {
         display: flex;
+        flex-wrap: wrap;
+        margin-right: -15px;
+        margin-left: -15px;
       }
 
       .col-half {
-        width: 50%;
+        flex: 0 0 50%;
+        max-width: 50%;
+        padding-right: 15px;
+        padding-left: 15px;
       }
 
-      .order-details,
-      .address-selection,
-      .payment-method,
-      .total-amount {
-        margin-top: 0;
-        padding: 10px;
+      /* Additional styles for medium and large screens */
+      .col-md-6 {
+        flex: 0 0 50%;
+        max-width: 50%;
+        padding-right: 15px;
+        padding-left: 15px;
       }
 
-      .total-amount,
-      .payment-method {
-        margin-top: 20px;
+      .col-lg-12 {
+        flex: 0 0 100%;
+        max-width: 100%;
+        padding-right: 15px;
+        padding-left: 15px;
       }
+    }
+
+    @media (max-width: 767px) {
+
+      /* Adjustments for small screens */
+      .col-half {
+        flex: 0 0 100%;
+        max-width: 100%;
+        padding-right: 15px;
+        padding-left: 15px;
+      }
+    }
+
+    .btn-place-order {
+      display: flex;
+      justify-content: center;
+      margin: 20px auto;
+      width: 50%;
+      /* Adjust the width as needed */
+    }
+
+    @media (max-width: 767px) {
+
+      /* Additional styles for small screens */
+      .btn-place-order {
+        width: 100%;
+        /* Full width on small screens */
+      }
+    }
+
+    .address-selection-container {
+      background-color: #f8f9fa;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      margin-top: 20px;
+    }
+
+    .address-title {
+      margin-bottom: 10px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .address-details {
+      border-top: 1px solid #ccc;
+      margin-top: 10px;
+      padding-top: 10px;
+    }
+
+    .address-label {
+      font-size: 16px;
+      margin-bottom: 5px;
+      color: #333;
+    }
+
+    .address-value {
+      font-size: 14px;
+      color: #555;
+    }
+
+    .add-address-btn {
+      margin-top: 10px;
+      background-color: #ffc107;
+      color: #000;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .add-address-btn:hover {
+      background-color: #ffcd38;
     }
   </style>
 </head>
@@ -126,6 +204,329 @@
       </div>
     </div>
   </div>
+
+  <!-- NAVIGATION ENDS -->
+  <div class="container mt-4">
+    <h1 class="text-center pt-5">Order Checkout</h1>
+    <form id="checkoutForm" action="/user/placeorder" method="POST" onsubmit="return validateForm()">
+      <div class="row mt-3">
+        <div class="col-half pr-1">
+          <!-- Product Section -->
+          <div class="order-details">
+            <h3>Your Order</h3>
+            <hr />
+            <div class="cart-items">
+              <% usercart.product.forEach(cartItem=> { %>
+                <div class="card">
+                  <div class="card-body">
+                    <div class="row align-items-center">
+                      <div class="col-md-2">
+                        <img src="/<%= cartItem.productId.images[0] %>" alt="Product Image"
+                          class="img-fluid object-fit-cover" />
+                      </div>
+                      <div class="col-md-8 d-flex">
+                        <h5 class="card-title mr-2">
+                          <%= cartItem.productId.p_name %>
+                        </h5>
+                        <p>Qty: <%= cartItem.quantity %> || Total Price: <%= (cartItem.productId.total_price *
+                              cartItem.quantity) %>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <% }) %>
+            </div>
+          </div>
+          <!-- Address Selection -->
+          <div class="address-selection mt-2" id="address-selection-original">
+            <h3>Choose Address</h3>
+            <hr>
+            <div class="form-scroll">
+              <div class="form-check">
+                <% address.forEach((addr, i)=>{ %>
+                  <input class="form-check-input" value="<%= addr._id %>" type="radio" name="address" value="address1">
+                  <label class="form-check-label" for="address1">
+                    <h3>
+                      <%= addr.name %>
+                    </h3>
+                    Address <%= ++i %>: <%= addr.address %>,<%= addr.state %>, <%= addr.pincode %>
+                  </label> <br><br>
+                  <% }) %>
+              </div>
+            </div>
+            <a href="/user/addaddress"><button class="btn btn-warning" onclick="goToAddAddress()">Add
+                Address</button></a>
+          </div>
+        </div>
+        <div class="col-half">
+          <!-- Grand Total -->
+          <div class="total-amount mb-1 col-md-6 col-lg-12">
+            <h3>Grand Total</h3>
+            <hr />
+            <p><strong>Total Amount: $<%= usercart.subtotal %></strong></p>
+            <p style="display: none;" class="coupon-amount"><strong>Grand Total after applying coupon : $<span
+                  id="grandTotalDisplay"></span></strong></p>
+          </div>
+
+          <!-- Coupons -->
+          <div class="total-amount mt-2 mb-1 col-md-6 col-lg-12">
+            <h3>Coupons</h3>
+            <hr />
+            <div class="position-relative">
+              <% if(usercart.couponApplied){ %>
+                <select id="couponSelect" data-cart-id="<%= usercart._id %>" name="coupon">
+
+                  <option value="<%= usercart.coupon %>">
+                    <%= usercart.couponCode %>
+                  </option>
+                </select>
+                <div id="couponAppliedMessage" class="mt-2 text-success">Coupon applied!</div>
+                <% } else { %>
+                  <select id="couponSelect" data-cart-id="<%= usercart._id %>" name="coupon">
+                    <option value="">None</option>
+                    <% coupons.forEach(coupon=> { %>
+                      <option value="<%= coupon._id %>">
+                        <%= coupon.code %> : <span class="text-sm text-green">-$<%= coupon.discountAmount %></span>
+                      </option>
+                      <% }) %>
+                  </select>
+                  <% } %>
+                    <button type="button" id="removeButton" class="btn btn-danger mt-2 ms-2">Remove</button>
+                    <button type="button" id="applyButton" class="btn btn-success mt-2 ms-2">Apply</button>
+            </div>
+          </div>
+
+          <script>
+            document.addEventListener('DOMContentLoaded', function () {
+              const removeButton = document.getElementById('removeButton');
+              const applyButton = document.getElementById('applyButton');
+              const couponApplied = <%= usercart.couponApplied %>; // Assuming usercart.couponApplied is a boolean value
+              const couponSelect = document.getElementById('couponSelect');
+              const cartId = couponSelect.getAttribute('data-cart-id');
+
+              if (!couponApplied) {
+                removeButton.style.display = 'none'; // Hide the removeButton initially if couponApplied is false
+              } else {
+                applyButton.style.display = 'none';
+              }
+
+              // Handle apply button click
+              applyButton.addEventListener('click', function () {
+                const couponId = couponSelect.value; // Get the updated value of couponId when the button is clicked
+                console.log("Clicked!!", couponId)
+                if (couponId !== '') {
+                  fetch(`/user/couponaction/${cartId}?action=apply&coupon=${couponId}`, {
+                    method: 'get', // Use POST for applying coupon
+                  })
+                    .then(response => { return response.json() })
+                    .then(response => {
+                      if (response.success) {
+                        Swal.fire({
+                          icon: 'success',
+                          title: 'Success',
+                          text: `${response.message}`,
+                          confirmButtonText: 'Ok'
+                        }).then(() => {
+                          // Redirect to landing page
+                          window.location.reload();
+                        });
+                      } else {
+                        Swal.fire({
+                          icon: 'error',
+                          title: 'Oops...',
+                          text: "Coupon couldn't be applied",
+                          confirmButtonText: 'Ok'
+                        })
+                      }
+                    })
+                    .catch(error => {
+                      // Handle error response
+                      console.error('There was a problem with the fetch operation:', error);
+                    });
+                }
+
+              });
+
+              // Handle remove button click
+              removeButton.addEventListener('click', function () {
+                const couponId = couponSelect.value;
+                console.log("Clicked!!")
+                if (couponId !== '') {
+                  fetch(`/user/couponaction/${cartId}?action=remove&coupon=${couponId}`, {
+                    method: 'get', // Use POST for applying coupon
+                  })
+                    .then(response => { return response.json() })
+                    .then(response => {
+                      if (response.success) {
+                        Swal.fire({
+                          icon: 'success',
+                          title: 'Success',
+                          text: `${response.message}`,
+                          confirmButtonText: 'Ok'
+                        }).then(() => {
+                          // Redirect to landing page
+                          window.location.reload();
+                        });
+                      } else {
+                        Swal.fire({
+                          icon: 'error',
+                          title: 'Oops...',
+                          text: "Coupon couldn't be removed",
+                          confirmButtonText: 'Ok'
+                        })
+                      }
+                    })
+                    .catch(error => {
+                      // Handle error response
+                      console.error('There was a problem with the fetch operation:', error);
+                    });
+                }
+              });
+            });
+          </script>
+
+          <!-- Payment Method -->
+          <div class="payment-method mt-2 col-md-6 col-lg-12">
+            <h3>Payment Method</h3>
+            <hr />
+            <div class="form-check">
+              <% if (usercart.subtotal <=1000) { %>
+                <input class="form-check-input" type="radio" name="paymentMethod" value="COD" />
+                <label class="form-check-label" for="COD">
+                  Cash On Delivery
+                </label>
+                <% } else { %>
+                  <label class="form-check-label" style="color: red;">`
+                  </label>
+                  <% } %>
+                    <br>
+                    <input class="form-check-input" type="radio" name="paymentMethod" value="RazorPay"
+                      id="razorPayRadio">
+                    <label class="form-check-label" for="razorPayRadio">
+                      RazorPay
+                    </label>
+                    <br>
+                    <% if (usercart.subtotal <=wallet) { %>
+                      <input class="form-check-input" type="radio" name="paymentMethod" value="Wallet" />
+                      <label class="form-check-label" for="wallet">
+                        Wallet (Remaining: $<%= wallet %>)
+                      </label>
+                      <% } else { %>
+                        <label class="form-check-label" style="color: red;">
+                          Wallet (Insufficient Balance: $<%= wallet %>)
+                        </label>
+                        <% } %>
+            </div>
+          </div>
+          <!-- Place Order Button -->
+        </div>
+        <button type="submit" class="btn btn-primary btn-place-order" id="placeOrderBtn">Place
+          Order</button>
+
+    </form>
+  </div>
+
+  <!-- Razorpay checkout form -->
+  <div class="col-md-12 mt-3 bg-white" id="razorpayFormContainer"
+    style="display: none;box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); border-radius: 2%;">
+    <form id="razorpay-form" action="/user/razorpay/<%= usercart._id %>" method="POST">
+      <div class="container">
+        <div class="col">
+          <% address.forEach(addressItem=> { %>
+            <div class="col-md-1 rounded">
+              <input class="m-1" type="radio" name="addressId" value="<%= addressItem._id %>" required>
+            </div>
+            <div class="address-container mb-3 border rounded p-3 mt-2 position-relative">
+              <div class="address-type">
+                <span class="address-type-badge bg-warning text-dark px-2 py-1 rounded">
+                  <%= addressItem.addressType %>
+                </span>
+              </div>
+              <div class="address-details">
+                <div class=" row name-phone mt-2">
+                  <strong class="ml-3">
+                    <%= addressItem.name %>
+                  </strong>
+                  <strong class="ml-3">
+                    <%= addressItem.mobileNumber %>
+                  </strong>
+                </div>
+                <div class="full-address">
+                  <%= addressItem.address %>, <%= addressItem.locality %>, <%= addressItem.city %>, <%=
+                          addressItem.state %>, <%= addressItem.pincode %>
+                </div>
+              </div>
+            </div>
+            <% }); %>
+        </div>
+      </div>
+      <input type="hidden" name="cartId" value="<%= usercart._id %>">
+
+        <script src="https://checkout.razorpay.com/v1/checkout.js"
+        data-key="rzp_test_sat2P9V0ocnwA6"
+        data-amount="<%= usercart.subtotal * 100 %>"
+        data-currency="INR"
+        data-buttontext=""
+        data-description="Payment for Order <%= usercart._id %>"
+        data-prefill.name="<%= username.name %>"
+        data-prefill.email="<%= username.email %>">
+</script>
+      <button id="rzp-button" class="btn btn-block btn-primary font-weight-bold py-3" disabled>Place order</button>
+    </form>
+
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var razorPayRadio = document.getElementById('razorPayRadio');
+      var addressSelectionOriginal = document.getElementById('address-selection-original');
+      var razorpayFormContainer = document.getElementById('razorpayFormContainer');
+      var placeOrderBtn = document.getElementById('placeOrderBtn');
+      var razorpayOrder = document.getElementById('rzp-button');
+
+      // Function to show RazorPay form and hide other elements
+      function showRazorPayForm() {
+        addressSelectionOriginal.style.display = 'none';
+        razorpayFormContainer.style.display = 'block';
+        placeOrderBtn.style.display = 'none';
+      }
+
+      // Function to revert back to original state
+      function revertToOriginal() {
+        addressSelectionOriginal.style.display = 'block';
+        razorpayFormContainer.style.display = 'none';
+        placeOrderBtn.style.display = 'block';
+      }
+
+      razorPayRadio.addEventListener('change', function () {
+        if (razorPayRadio.checked) {
+          showRazorPayForm();
+        } else {
+          revertToOriginal();
+        }
+      });
+
+      var paymentMethods = document.querySelectorAll('input[name="paymentMethod"]');
+      paymentMethods.forEach(function (radio) {
+        radio.addEventListener('change', function () {
+          if (!razorPayRadio.checked) {
+            revertToOriginal();
+          }
+        });
+      });
+
+      // Validation for address selection
+      var addressRadioButtons = document.querySelectorAll('input[name="addressId"]');
+      addressRadioButtons.forEach(function (radio) {
+        radio.addEventListener('change', function () {
+          console.log("CHanged! address")
+          razorpayOrder.disabled = !document.querySelector('input[name="addressId"]:checked');
+        });
+      });
+    });
+  </script>
+
   <script>
     // Check if the cart is empty on page load
     window.addEventListener('DOMContentLoaded', () => {
@@ -143,328 +544,8 @@
       }
     });
   </script>
-  <!-- NAVIGATION ENDS -->
-  <div class="container mt-4">
-    <h1 class="text-center mb-4">Order Checkout</h1>
-    <form id="checkoutForm" action="/user/placeorder" method="POST" onsubmit="return validateForm()">
-      <div class="row">
-        <div class="col-half">
-          <!-- Product Section -->
-          <div class="order-details">
-            <h3>Your Order</h3>
-            <hr />
-            <div class="cart-items">
-              <% usercart.product.forEach(cartItem=> { %>
-                <div class="card">
-                  <div class="card-body">
-                    <div class="row align-items-center">
-                      <div class="col-md-4">
-                        <img src="/<%= cartItem.productId.images[0] %>" alt="Product Image"
-                          class="img-fluid object-fit-cover" />
-                      </div>
-                      <div class="col-md-8">
-                        <h4 class="card-title">
-                          <%= cartItem.productId.p_name %>
-                        </h4>
-                        <p class="card-text">
-                          <%= cartItem.productId.description %>
-                        </p>
-                        <h5>Price: $<%= cartItem.productId.total_price %>
-                        </h5>
-                        <div class="d-flex align-items-center">
-                          <div class="input-group me-2">
-                            <p>Qty: <%= cartItem.quantity %> || Total Price: <%= (cartItem.productId.total_price *
-                                  cartItem.quantity) %>
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <% }) %>
-            </div>
-          </div>
-          <!-- Address Selection -->
-          <div class="address-selection">
-            <h3>Choose Address</h3>
-            <hr>
-            <div class="form-scroll">
-              <div class="form-check">
-                <% address.forEach(addr=>{ %>
-                  <input class="form-check-input" value="<%= addr._id %>" type="radio" name="address" value="address1">
-                  <label class="form-check-label" for="address1">
-                    <h3>
-                      <%= addr.name %>
-                    </h3>
-                    Address 1: <%= addr.address %>,<%= addr.state %>, <%= addr.pincode %>
-                  </label> <br><br>
-                  <% }) %>
-              </div>
-            </div>
-            <a href="/user/addaddress"><button class="btn btn-warning" onclick="goToAddAddress()">Add
-                Address</button></a>
-          </div>
-        </div>
-        <div class="col-half">
-          <!-- Grand Total -->
-          <div class="total-amount">
-            <h3>Grand Total</h3>
-            <hr />
-            <p><strong>Total Amount: $<%= usercart.subtotal %></strong></p>
-            <p style="display: none;" class="coupon-amount"><strong>Grand Total after applying coupon : $<span
-                  id="grandTotalDisplay"></span></strong></p>
-          </div>
-          <!-- Coupons -->
-          <div class="total-amount">
-            <h3>Coupons</h3>
-            <hr />
-            <div class="position-relative">
-              <input id="couponInput" name="coupon" class=" form-outline-inline" type="text" autocomplete="off">
-              <div id="couponDropdown" class="dropdown-menu position-absolute"
-                style="top: 100%; left: 0; display: none; z-index: 100;"></div>
-            </div>
-            <button type="button" id="applyButton" class="btn btn-warning mt-2 ms-2">Apply</button>
-            <button type="button" id="removeButton" class="btn btn-danger mt-2 ms-2"
-              style="display: none;">Remove</button>
-            <div id="couponAppliedMessage" style="display: none;" class="mt-2 text-success">Coupon applied!</div>
-          </div>
-          <script>
-            document.addEventListener('DOMContentLoaded', function () {
-              const applyButton = document.getElementById('applyButton');
-              const couponInput = document.getElementById('couponInput');
-
-              // Function to enable or disable the apply button based on the input field's value
-              function toggleApplyButton() {
-                if (couponInput.value.trim().length > 0) {
-                  applyButton.disabled = false; // Enable the apply button
-                } else {
-                  applyButton.disabled = true; // Disable the apply button
-                }
-              }
-
-              // Add event listeners for input and change events on the coupon input field
-              couponInput.addEventListener('input', toggleApplyButton);
-              couponInput.addEventListener('change', toggleApplyButton);
-
-              // Call the toggleApplyButton function initially to set the initial state of the apply button
-              toggleApplyButton();
-            });
-
-          </script>
-
-          <!-- Payment Method -->
-          <div class="payment-method">
-            <h3>Payment Method</h3>
-            <hr />
-            <div class="form-check">
-              <% if (usercart.subtotal <=1000) { %>
-                <input class="form-check-input" type="radio" name="paymentMethod" value="COD" />
-                <label class="form-check-label" for="COD">
-                  Cash On Delivery
-                </label>
-                <% } else { %>
-                  <label class="form-check-label" style="color: red;">
-                    Cash on delivery not available
-                  </label>
-                  <% } %>
-                    <br>
-                    <input class="form-check-input" type="radio" name="paymentMethod" value="RazorPay" />
-                    <label class="form-check-label" for="razorPay">
-                      RazorPay
-                    </label>
-                    <br>
-                    <% if (usercart.subtotal <=wallet) { %>
-                      <input class="form-check-input" type="radio" name="paymentMethod" value="Wallet" />
-                      <label class="form-check-label" for="wallet">
-                        Wallet (Remaining: $<%= wallet %>)
-                      </label>
-                      <% } else { %>
-                        <label class="form-check-label" style="color: red;">
-                          Wallet (Insufficient Balance: $<%= wallet %>)
-                        </label>
-                        <% } %>
-            </div>
-          </div>
-          <!-- Place Order Button -->
-          <button type="submit" class="btn btn-primary btn-block btn-place-order" id="placeOrderBtn">Place
-            Order</button>
-        </div>
-      </div>
-    </form>
-  </div>
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-
-      const applyButton = document.getElementById('applyButton');
-      const removeButton = document.getElementById('removeButton');
-
-      applyButton.addEventListener('click', function () {
-        applyCoupon(); // Call the applyCoupon function when the button is clicked
-      });
-
-      removeButton.addEventListener('click', function () {
-        removeCoupon(); // Call the removeCoupon function when the remove button is clicked
-      });
-
-      // Your JavaScript code here
-      const couponInput = document.getElementById('couponInput');
-      const couponDropdown = document.getElementById('couponDropdown');
-      const grandTotalDisplay = document.getElementById('grandTotalDisplay');
-      const totalAmountContainer = document.querySelector('.coupon-amount');
-      const couponAppliedMessage = document.getElementById('couponAppliedMessage');
-
-      let debounceTimeout;
-      let couponApplied = false; // Flag to track if coupon is applied
-
-      function applyCoupon() {
-        const appliedCoupon = couponInput.value.trim();
-        console.log(appliedCoupon, "hellooo")
-        fetch(`/user/checkcoupon?code=${appliedCoupon}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        })
-          .then(response => response.json())
-          .then(data => {
-            console.log('Coupon Check Response:', data);
-            if (data.valid && data.codes.length > 0) {
-              // Check if the coupon meets the minimum purchase amount criteria
-              applyCouponDiscount(data.codes[0]); // Apply coupon discount immediately
-            } else {
-              // Coupon does not exist or is not valid
-              couponInput.value = '';
-              Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'Invalid coupon or no coupon exists!',
-              });
-              couponApplied = false; // Reset flag
-            }
-          })
-          .catch(error => console.error('Error:', error));
-      }
-
-      // Listen for changes in coupon input value to re-enable input and apply button if couponApplied flag is true
-      couponInput.addEventListener('input', function () {
-        if (couponApplied) {
-          couponAppliedMessage.style.display = 'none';
-          totalAmountContainer.style.display = 'none';
-          couponApplied = false; // Reset flag
-          couponInput.disabled = false; // Re-enable input
-          applyButton.disabled = false; // Re-enable apply button
-        }
-      });
-
-      couponInput.addEventListener('input', function (event) {
-        clearTimeout(debounceTimeout);
-        debounceTimeout = setTimeout(() => {
-          const inputValue = event.target.value.trim();
-          if (inputValue.length > 0) {
-            fetch(`/user/checkcoupon?code=${inputValue}`, {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json'
-              }
-            })
-              .then(response => response.json())
-              .then(data => {
-                console.log('Response from backend:', data);
-                if (data.valid && data.codes.length > 0) {
-                  displayDropdownItems(data.codes);
-                } else {
-                  displayNoMatchingCoupons(); // Display "No matching coupons" message
-                }
-              })
-              .catch(error => console.error('Error:', error));
-          } else {
-            hideCouponDropdown(); // Hide dropdown when input is empty
-          }
-        }, 300);
-      });
-
-      function displayDropdownItems(coupons) {
-        couponDropdown.innerHTML = '';
-        coupons.forEach(coupon => {
-          const couponItem = document.createElement('div');
-          couponItem.classList.add('dropdown-item');
-          couponItem.textContent = `${coupon.code} - Discount: ${coupon.discountAmount}, Min Amount: ${coupon.minimumPurchaseAmount}`;
-          couponItem.addEventListener('click', () => {
-            couponInput.value = coupon.code;
-            hideCouponDropdown();
-          });
-          couponDropdown.appendChild(couponItem);
-        });
-        couponDropdown.style.display = 'block'; // Show dropdown
-      }
-
-      function displayNoMatchingCoupons() {
-        couponDropdown.innerHTML = '';
-        const noMatchItem = document.createElement('div');
-        noMatchItem.classList.add('dropdown-item', 'text-muted');
-        noMatchItem.textContent = 'No matching coupons';
-        couponDropdown.appendChild(noMatchItem);
-        couponDropdown.style.display = 'block'; // Show dropdown with message
-      }
-
-      function hideCouponDropdown() {
-        couponDropdown.innerHTML = '';
-        couponDropdown.style.display = 'none'; // Hide dropdown
-      }
-
-      function applyCouponDiscount(coupon) {
-        // Apply coupon discount to grand total if conditions are met
-        const grandTotal = parseFloat('<%= usercart.subtotal %>'); // Get grand total from EJS as a string
-        const minAmount = parseFloat(coupon.minimumPurchaseAmount);
-        const discountAmount = parseFloat(coupon.discountAmount);
-        // console.log(grandTotal, minAmount, discountAmount);
-
-        if (grandTotal >= minAmount) {
-          const discountedTotal = grandTotal - discountAmount;
-          console.log(discountedTotal);
-          // Update the displayed total on the frontend
-          grandTotalDisplay.innerHTML = `${discountedTotal.toFixed(2)}`;
-          totalAmountContainer.style.display = 'block'; // Show total amount container
-          couponAppliedMessage.style.display = 'block'; // Show coupon applied message
-          couponApplied = true; // Set flag to true
-
-          // Disable input and apply button
-          couponInput.readOnly = true;
-          applyButton.style.display = 'none'; // Hide apply button
-          removeButton.style.display = 'block'; // Show remove button
-        } else {
-          // Display error message if minimum purchase amount condition is not met
-          Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: `Minimum purchase amount of $${minAmount} is required to apply this coupon!`,
-          });
-          couponApplied = false; // Reset flag
-        }
-      }
-
-      function removeCoupon() {
-        couponInput.value = ''; // Clear coupon input field
-        applyButton.style.display = 'block'; // Show apply button
-        removeButton.style.display = 'none'; // Hide remove button
-        couponAppliedMessage.style.display = 'none'; // Hide coupon applied message
-        totalAmountContainer.style.display = 'none'; // Hide total amount container
-        couponApplied = false; // Reset flag
-        couponInput.readOnly = false;
-      }
-
-
-    });
-  </script>
 
   <script>
-    // Function to navigate to the Add Address page
-    function goToAddAddress() {
-      // Navigate to the specified URL
-      window.location.href = "/user/addaddress";
-    }
-
     function validateForm() {
       const checkoutForm = document.getElementById('checkoutForm');
       // Check if all required fields are filled
@@ -502,6 +583,7 @@
       return true;
     }
   </script>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 </body>
 
 </html>

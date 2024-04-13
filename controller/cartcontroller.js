@@ -1,4 +1,5 @@
 const CartDb = require("../model/cartmodel");
+const CouponDb = require("../model/couponmodel");
 const ProductDb = require("../model/productmodel");
 const Userdb = require("../model/usermodel");
 const WishDb = require("../model/wishlistmodel")
@@ -13,7 +14,7 @@ exports.showCart = async (req, res) => {
     );
     // console.log(usercart)
 
-    if (!usercart ||usercart.product.length === 0) {
+    if (!usercart || usercart.product.length === 0) {
       // Cart is empty, redirect to /user/products/All
       return res.redirect('/user/landing?msg=nocart');
     }
@@ -44,6 +45,10 @@ exports.showCart = async (req, res) => {
         }
       }
 
+      if(usercart.couponApplied){
+        subtotalFromCart -= usercart.discount;
+      }
+
       // Update subtotal for the cart
       usercart.subtotal = subtotalFromCart;
 
@@ -66,12 +71,12 @@ exports.addToCart = async (req, res) => {
     // console.log(quantity);
 
     // Fetch the product and check stock availability
-    const [product, isInWishlist, cart] = await Promise.all([
+    let [product, isInWishlist, cart] = await Promise.all([
       ProductDb.findById(id),
       WishDb.find({ user: userId, product: id }),
       CartDb.findOne({ user: userId })
     ]);
-    
+
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
@@ -86,7 +91,7 @@ exports.addToCart = async (req, res) => {
         { user: userId, product: id }
       );
     }
-    
+
     if (!cart) {
       cart = new CartDb({ user: userId, product: [], subtotal: 0 });
     }
@@ -104,6 +109,13 @@ exports.addToCart = async (req, res) => {
         productId: product._id,
         quantity: quantity,
       });
+      // Check if couponApplied is true, then reset the discount and remove coupon-related fields
+    if (cart.couponApplied) {
+      cart.couponApplied = false;
+      cart.discount = 0;
+      cart.couponCode = undefined;
+      cart.coupon = undefined;
+    }
       await cart.save();
     } else {
       return res.status(400).json({ message: "Product out of stock" });
@@ -119,21 +131,34 @@ exports.removeCart = async (req, res) => {
   try {
     const productId = req.params.id;
     const userId = req.session.user._id;
-    // console.log(productId, userId)
 
-    // Remove the product from the cart
-    const cart = await CartDb.findOneAndUpdate(
+    // Create promises for each operation
+    const pullOperation = CartDb.findOneAndUpdate(
       { user: userId },
       { $pull: { product: { productId: productId } } },
-      { new: true }
+      { new: true } // Return the updated document
     );
-    // console.log(cart)
 
-    if (cart) {
+    const unsetOperation = CartDb.findOneAndUpdate(
+      { user: userId },
+      { $unset: { coupon: "", couponCode: "" , discount: null } },
+      { new: true } // Return the updated document
+    );
+
+    // Combine the promises and wait for all to complete
+    const [cartAfterPull, cartAfterUnset] = await Promise.all([
+      pullOperation,
+      unsetOperation,
+    ]);
+
+    if (cartAfterPull) {
+      // Update couponApplied to false
+      cartAfterPull.couponApplied = false;
+
       // Recalculate the subtotal if the cart still contains products
       let subtotal = 0;
-      if (cart.product.length > 0) {
-        for (const product of cart.product) {
+      if (cartAfterPull.product.length > 0) {
+        for (const product of cartAfterPull.product) {
           const updatedProduct = await ProductDb.findById(product.productId);
           if (
             updatedProduct &&
@@ -147,12 +172,12 @@ exports.removeCart = async (req, res) => {
       }
 
       // Update the subtotal in the cart
-      cart.subtotal = subtotal;
+      cartAfterPull.subtotal = subtotal;
 
       // Save the updated cart
-      await cart.save();
+      await cartAfterPull.save();
 
-      res.status(204).end();
+      res.status(204).end(); // Successfully removed from cart
     } else {
       res.status(404).json({ message: "Cart not found" });
     }
@@ -204,6 +229,14 @@ exports.updateQuantity = async (req, res) => {
 
     // console.log(subtotal);
 
+    // Check if couponApplied is true, then reset the discount and remove coupon-related fields
+    if (updatedCartItem.couponApplied) {
+      updatedCartItem.couponApplied = false;
+      updatedCartItem.discount = 0;
+      updatedCartItem.couponCode = undefined;
+      updatedCartItem.coupon = undefined;
+    }
+
     // Save the updated cart item to the database
     await updatedCartItem.save();
 
@@ -214,5 +247,60 @@ exports.updateQuantity = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+exports.couponAction = async (req, res) => {
+  try {
+    const cartId = req.params.cid;
+    const action = req.query.action;
+    const couponId = req.query.coupon;
+
+    const [cart, coupon] = await Promise.all([
+      CartDb.findById(cartId),
+      CouponDb.findById(couponId)
+    ]);
+
+    if (!cart || !coupon) {
+      return res.status(404).json({ error: 'Cart or coupon not found' });
+    }
+
+    let discount;
+    if (action === "apply") {
+      const subtotal = cart.subtotal;
+      discount = coupon.discountAmount;
+      const minAmount = coupon.minimumPurchaseAmount;
+
+      if (subtotal < minAmount) {
+        return res.json({ valid: false, message: 'Subtotal does not meet minimum amount required for the coupon' });
+      }
+
+      const newSubtotal = subtotal - discount;
+      await CartDb.findByIdAndUpdate(cartId, {
+        subtotal: newSubtotal,
+        couponApplied: true,
+        coupon: coupon._id,
+        discount: discount,
+        couponCode: coupon.code,
+      });
+
+      return res.status(200).json({ success: true, message: `Coupon '${coupon.code}' applied successfully. Subtotal updated.` });
+    } else {
+      const subtotal = cart.subtotal;
+      const discount = coupon.discountAmount;
+
+      const newSubtotal = subtotal + discount;
+      await CartDb.findByIdAndUpdate(cartId, {
+        subtotal: newSubtotal,
+        couponApplied: false,
+        $unset: { coupon: "", couponCode: "", discount: null }
+      });
+
+      return res.status(200).json({ success: true, message: `Coupon '${coupon.code}' removed successfully. Subtotal updated.` });
+    }
+    return res.status(404).send("Error!")
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
   }
 };

@@ -6,6 +6,10 @@ const schema = new mongoose.Schema({
         ref: "User",
         required: true
     },
+    name: {
+        type: String,
+        required: true,
+    },
     orderedItems: [{
         productId: {
             type: mongoose.Schema.Types.ObjectId,
@@ -44,7 +48,7 @@ const schema = new mongoose.Schema({
     },
     paymentStatus: {
         type: String,
-        enum: ['Pending', 'Processing', 'Completed', 'Failed', 'Cancelled', 'Refunded'],
+        enum: ['Pending', 'Processing', 'Completed', 'Cancelled', 'Refunded'],
         default: 'Pending',
     },
     paymentMethod: {
@@ -54,7 +58,7 @@ const schema = new mongoose.Schema({
     },
     shippingAddress: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Address',
+        ref: 'address',
         required: true
     },
     orderDate: {

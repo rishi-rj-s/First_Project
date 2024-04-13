@@ -101,6 +101,9 @@
                             Orders</a></li>
                     <li class="nav-item"><a class="nav-link" href="/user/address"><i class="fas fa-map-marker-alt"></i>
                             Addresses</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/changepass"><i class="fas fa-lock"></i> Change Pass</a>
+                    </li>
                     <li class="nav-item"><a class="nav-link" href="/user/logout"><i class="fas fa-power-off"></i>
                             Logout</a></li>
                 </ul>
@@ -113,20 +116,22 @@
                         <% order.orderedItems.forEach((pdt)=> { %>
                             <div class="col-md-4">
                                 <div class="address-card card">
-                                    <div class="card-body" style="display: flex; gap: 10px; font-size: 18px; font-weight: 500; ">
+                                    <div class="card-body"
+                                        style="display: flex; gap: 10px; font-size: 18px; font-weight: 500; ">
                                         <div>
-                                                <img src="/<%= pdt.pimages[0] %>" style="height: 100px; width: 100px;" alt="">
+                                            <img src="/<%= pdt.pimages[0] %>" style="height: 100px; width: 100px;"
+                                                alt="">
                                         </div>
                                         <div>
-                                             <p class="h6 mb-0">
-                                                  <%= pdt.pname %>
-                                              </p>
-                                              <p class="card-text mb-0">
-                                                  Price: <%= pdt.price %>
-                                              </p>
-                                              <p class="card-text mb-0">
-                                                  Qty: <%= pdt.quantity %>
-                                              </p>
+                                            <p class="h6 mb-0">
+                                                <%= pdt.pname %>
+                                            </p>
+                                            <p class="card-text mb-0">
+                                                Price: <%= pdt.price %>
+                                            </p>
+                                            <p class="card-text mb-0">
+                                                Qty: <%= pdt.quantity %>
+                                            </p>
                                         </div>
                                     </div>
                                 </div>

@@ -73,6 +73,11 @@ route.delete('/deletecoupon/:cid', cookieJwtAuth, couponcontroller.deleteCoupon)
 route.get('/editcoupon/:cid', cookieJwtAuth, couponcontroller.renderEdit);
 route.post('/editcoupon/:cid', cookieJwtAuth, couponcontroller.editCoupon);
 
+route.get('/offers', cookieJwtAuth, admincontroller.renderOffers);
+route.get('/addpoffer', cookieJwtAuth, admincontroller.renderAddPoffer);
+route.post('/addpoffer', cookieJwtAuth, admincontroller.addPOffer);
+route.get('/addcoffer', cookieJwtAuth, admincontroller.renderAddCoffer);
+
 
 route.get("**", (req, res) => {
   res.render("pagenotfound");

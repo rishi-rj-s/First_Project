@@ -4,6 +4,8 @@ const CatDb = require("../model/categorymodel");
 const AdminDb = require("../model/adminmodel");
 const AddressDb = require("../model/addressmodel");
 const OrderDb = require("../model/ordermodel");
+const OfferDb = require('../model/offermodel');
+const WalletHistory = require("../model/wallethistory");
 const jwt = require("jsonwebtoken");
 const multer = require("multer");
 const path = require("path");
@@ -513,6 +515,14 @@ exports.acceptReturn = async (req, res) => {
 
     // Update the user's wallet with the returnedItemPrice
     await Userdb.findByIdAndUpdate(userId, { $inc: { wallet: returnedItemPrice } });
+    
+    const history = new WalletHistory({
+      userId: updatedOrder.user_id,
+      transactionType: "Credit",
+      amount: returnedItemPrice,
+      order: updatedOrder._id
+    })
+    await history.save();
 
     // Handle the case where the order is updated successfully and wallet is updated
     return res.status(200).json({ success: true, message: "Return accepted and wallet updated." });
@@ -594,3 +604,70 @@ exports.statusDelivered = async (req, res) => {
     return res.status(500).json({ msg: "Internal server error" });
   }
 };
+
+exports.renderOffers = async (req, res) => {
+  try{
+    const offers = await OfferDb.find();
+    if(!offers){
+      res.status(404).send("No offers");
+    }
+    res.render('admin/offers',{offers});
+  }catch(e){
+    console.log(e);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
+exports.renderAddPoffer = async (req, res) => {
+  try{
+    const product = await ProductDb.find({listing: "Listed"});
+    // console.log(product)
+    res.render('admin/addpoffer',{product});
+  }catch(e){
+    console.log(e.toString());
+    res.status(500).send("Internal Server Error!");
+  }
+}
+
+exports.addPOffer = async (req, res) => {
+  try{
+    const {product, discount} = req.body;
+    console.log(product, discount)
+    if(!product || !discount){
+      return res.status(401).send('All fields are necessary')
+    } else if(discount > 30 || discount < 10){
+      return res.status(401).send('Inappropriate Discount')
+    }
+    const newOffer = new OfferDb({
+      type: 'Product', // Assuming it's a product offer
+      pdtName: product, // Assuming product is the name of the product
+      discount: discount,
+    });
+
+    // Save the new offer to the database
+    await newOffer.save();
+
+    const pdt = await ProductDb.findOne({p_name: product});
+    pdt.offerApplied = true;
+    pdt.offerDiscount = discount;
+
+    await pdt.save();
+    res.redirect('/admin/offers?msg=pofs');
+  }catch(e){
+    console.log(e.toString());
+    res.redirect('/admin/offers?msg=offfail');
+  }
+}
+
+// exports.addCOffer =
+
+exports.renderAddCoffer = async (req, res) => {
+  try{
+    const category = await CatDb.find({listing: true, offerId: null});
+    // console.log(product)
+    res.render('admin/addcoffer',{category});
+  }catch(e){
+    console.log(e.toString());
+    res.status(500).send("Internal Server Error!");
+  }
+}

@@ -40,8 +40,8 @@
 
     .object-fit-cover {
       object-fit: cover;
-      height: 200px;
-      width: 150px;
+      height: 100px;
+      width: 100px;
     }
 
     .banner-wrapper {
@@ -105,6 +105,32 @@
     .icons i {
       font-size: 30px;
     }
+
+    /* Target the card-body class inside the .card element */
+    .card .card-body {
+      font-size: 14px;
+      padding: 1rem !important;
+      /* Set the desired font size */
+    }
+
+    /* Target the h4 and h5 elements inside the .card-body */
+    .card .card-body h4,
+    .card .card-body h5 {
+      font-size: 15px;
+      /* Set the desired font size */
+    }
+
+    /* Target the input elements inside the .input-group */
+    .input-group input {
+      font-size: 15px;
+      /* Set the desired font size */
+    }
+
+    /* Target the button elements inside the .input-group */
+    .input-group button {
+      font-size: 15px;
+      /* Set the desired font size */
+    }
   </style>
 </head>
 
@@ -167,8 +193,7 @@
                                 <button class="btn btn-outline-secondary increment-btn" type="button"
                                   onclick="updateQuantity('<%= cartItem.productId._id %>', 'add')">+</button>
                               </div>
-                              <h5>
-                                $<%= (cartItem.productId.total_price)*(cartItem.quantity) %>
+                              <h5>$<%= (cartItem.productId.total_price)*(cartItem.quantity) %>
                               </h5>
 
                               <script>
@@ -229,7 +254,6 @@
                                   ).disabled = true;
                                 </script>
                                 <% } %>
-                                  <br />
                                   <button class="btn btn-danger delete" data-id="<%= cartItem.productId._id %>">
                                     <i class="fas fa-trash"></i> Remove
                                   </button>
@@ -308,6 +332,17 @@
                 });
               </script>
             </div>
+
+            <% if(usercart.couponApplied){ %>
+            <!-- Coupon Applied? -->
+            <div class="total-amount">
+              <h3 class="text-success">Coupon Applied</h3>
+              <hr />
+              <p><strong >Coupon : <%= usercart.couponCode %></strong></p>
+              <p><strong >Discount : $<%= usercart.discount %></strong></p>
+            </div>
+            <%}%>
+
             <!-- Total Amount -->
             <div class="total-amount">
               <h3>Grand Total</h3>

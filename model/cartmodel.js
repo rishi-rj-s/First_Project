@@ -18,6 +18,22 @@ const schema = new mongoose.Schema({
             max: 5,   // Maximum quantity allowed
         }
     }],
+    couponApplied:{
+        type: Boolean,
+        default: false,
+        required: true
+    },
+    coupon:{
+        type: mongoose.Types.ObjectId,
+        ref: "coupon",
+    },
+    couponCode:{
+        type: String,
+    },
+    discount: {
+        type: Number,
+        default: 0
+    },
     subtotal: {
         type: Number,
         default: 0

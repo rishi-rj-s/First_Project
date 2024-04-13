@@ -5,10 +5,12 @@ const CatDb = require("../model/categorymodel");
 const AdminDb = require("../model/adminmodel");
 const AddressDb = require("../model/addressmodel");
 const CartDb = require("../model/cartmodel");
+const WalletHistory = require("../model/wallethistory");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const path = require("path");
 const otpGenerator = require("otp-generator");
+const OrderDb = require("../model/ordermodel");
 
 let uid = "";
 exports.login = async (req, res) => {
@@ -140,86 +142,6 @@ exports.products = async (req, res) => {
   }
 };
 
-exports.fetchProducts = async (req, res) => {
-  try {
-    const perPage = 3; // Number of products per page
-    const page = parseInt(req.query.page) || 1; // Current page number, default is 1
-    const skip = (page - 1) * perPage; // Calculate the number of documents to skip
-
-    // Find categories with listing: true to include in products query
-    const categoriesToInclude = await CatDb.find({ listing: true }).select(
-      "category"
-    );
-    const categoryNames = categoriesToInclude.map((cat) => cat.category);
-
-    // Find products including categories with listing: true, paginated
-    const products = await ProductDb.find({ category: { $in: categoryNames } })
-      .skip(skip)
-      .limit(perPage);
-
-    if (!products || products.length === 0) {
-      return res.status(404).json({ message: "No products found." });
-    }
-
-    res.status(200).json({
-      products,
-      currentPage: page
-    });
-  } catch (e) {
-    console.log(e);
-    return res.status(500).json({ message: "Internal Server Error!" });
-  }
-};
-
-exports.sortBy = async (req, res) => {
-  try {
-    const categoriesToInclude = await CatDb.find({ listing: true }).select(
-      "category"
-    );
-    const category = categoriesToInclude.map((cat) => cat.category);
-    const sortBy = req.query.sortBy;
-    // console.log(sortBy);
-    let sortedProducts;
-
-    switch (sortBy) {
-      case "nameAsc":
-        sortedProducts = await ProductDb.find({ category: { $in: category } }).sort({ p_name: 1 });
-        break;
-      case "nameDesc":
-        sortedProducts = await ProductDb.find({ category: { $in: category } }).sort({ p_name: -1 });
-        break;
-      case "priceAsc":
-        sortedProducts = await ProductDb.find({ category: { $in: category } }).sort({ total_price: 1 });
-        break;
-      case "priceDesc":
-        sortedProducts = await ProductDb.find({ category: { $in: category } }).sort({ total_price: -1 });
-        break;
-      case "available":
-        sortedProducts = await ProductDb.find({ category: { $in: category }, stock: { $gt: 0 } });
-        break;
-      case "newest":
-        sortedProducts = await ProductDb.find({ category: { $in: category } }).sort({ _id: -1 });
-        break;
-      default:
-        // Default case can be handled as per your requirement, such as sorting by default field or showing all products
-        sortedProducts = await ProductDb.find();
-        break;
-    }
-
-    if (sortedProducts.length === 0) {
-      return res.redirect("/user/landing?msg=nodata");
-    }
-
-    res.render("user/products", {
-      products: sortedProducts,
-      category: categoriesToInclude
-    });
-  } catch (error) {
-    console.error("Error fetching products:", error);
-    res.redirect("/user/landing?msg=errdata");
-  }
-};
-
 exports.checkSearch = async (req, res) => {
   try {
     const searchQuery = req.query.check;
@@ -263,31 +185,6 @@ exports.searchProduct = async(req, res) => {
     return res.status(500).send("Internal Server Error!");
   }
 }
-
-exports.filterProducts = async (req, res) => {
-  try {
-    const filterQuery = req.query.categories;
-
-    if (!filterQuery) {
-      return res.status(400).json({ message: 'Missing filter query.' });
-    }
-
-    const selectedCategories = filterQuery.split(',');
-    const filteredResults = await ProductDb.find({
-      category: { $in: selectedCategories }
-    });
-
-    if (!filteredResults || filteredResults.length === 0) {
-      return res.status(404).json({ message: 'No products found based on the filter criteria.' });
-    }
-
-    return res.json(filteredResults);
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: 'Internal server error' });
-  }
-};
-
 
 exports.productview = async (req, res) => {
   const p_id = req.params.id;
@@ -526,9 +423,11 @@ exports.showWallet = async (req, res) => {
   const userId = req.session.user;
   try {
     const user = await Userdb.findById(userId);
+    const walletHistory = await WalletHistory.find({userId: userId._id}).sort({ timestamp: -1 });
+    // console.log(walletHistory);
     const wallet = user.wallet;
     const name = user.name;
-    res.render('user/wallet', { wallet, name });
+    res.render('user/wallet', { wallet, name, history: walletHistory });
   } catch (e) {
     console.log(e);
     res.status(500).send("Internal Error!");
