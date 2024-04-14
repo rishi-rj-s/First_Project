@@ -14,12 +14,15 @@ let schema = new mongoose.Schema({
    offerDiscount: {
     type: Number,
     default: 0,
-    required: true
    },
-   offerApplied: {
+   offerId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'offer'
+   },
+   offerActive: {
     type: Boolean,
-    required: true,
-    default: false
+    default: false,
+    required: true
    },
 });
 

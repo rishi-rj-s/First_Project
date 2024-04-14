@@ -181,7 +181,7 @@
                             <h4 class="card-title">
                               <%= cartItem.productId.p_name %>
                             </h4>
-                            <h5>Price - $<%=cartItem.productId.total_price%>
+                            <h5>Price - $<%=(cartItem.productId.total_price - cartItem.productId.offerDiscount)%>
                             </h5>
                             <% if (cartItem.productId.stock> 0) { %>
                               <div class="input-group me-2 mb-2">
@@ -193,7 +193,7 @@
                                 <button class="btn btn-outline-secondary increment-btn" type="button"
                                   onclick="updateQuantity('<%= cartItem.productId._id %>', 'add')">+</button>
                               </div>
-                              <h5>$<%= (cartItem.productId.total_price)*(cartItem.quantity) %>
+                              <h5>$<%= (cartItem.productId.total_price - cartItem.productId.offerDiscount)*(cartItem.quantity) %>
                               </h5>
 
                               <script>

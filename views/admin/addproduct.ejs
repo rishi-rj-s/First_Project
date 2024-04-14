@@ -260,7 +260,7 @@
                                                        <label for="category">Product Category</label>
                                                        <select name="category" class="form-select">
                                                             <% category.forEach(category=> { %>
-                                                                 <option value="<%= category.category %>">
+                                                                 <option value="<%= category._id %>">
                                                                       <%= category.category %>
                                                                  </option>
                                                                  <% }); %>

@@ -6,6 +6,7 @@ const admincontroller = require("../controller/admincontroller");
 const ordercontroller = require('../controller/ordercontroller');
 const { cookieJwtAuth } = require("../controller/admincontroller");
 const couponcontroller = require('../controller/couponcontroller');
+const offercontroller = require('../controller/offercontroller');
 const CatDb = require("../model/categorymodel");
 const ProductDb = require("../model/productmodel");
 const AddressDb = require('../model/addressmodel');
@@ -74,10 +75,14 @@ route.delete('/deletecoupon/:cid', cookieJwtAuth, couponcontroller.deleteCoupon)
 route.get('/editcoupon/:cid', cookieJwtAuth, couponcontroller.renderEdit);
 route.post('/editcoupon/:cid', cookieJwtAuth, couponcontroller.editCoupon);
 
-route.get('/offers', cookieJwtAuth, admincontroller.renderOffers);
-route.get('/addpoffer', cookieJwtAuth, admincontroller.renderAddPoffer);
-route.post('/addpoffer', cookieJwtAuth, admincontroller.addPOffer);
-route.get('/addcoffer', cookieJwtAuth, admincontroller.renderAddCoffer);
+route.get('/offers', cookieJwtAuth, offercontroller.renderOffers);
+route.get('/addpoffer', cookieJwtAuth, offercontroller.renderAddPoffer);
+route.post('/addpoffer', cookieJwtAuth, offercontroller.addPOffer);
+route.get('/addcoffer', cookieJwtAuth, offercontroller.renderAddCoffer);
+route.post('/addcoffer', cookieJwtAuth, offercontroller.addCOffer);
+route.get('/showedit/:offId', cookieJwtAuth, offercontroller.renderEditOffer);
+route.post('/editoffer', cookieJwtAuth, offercontroller.editOffer)
+route.get('/deleteoffer/:offId', cookieJwtAuth, offercontroller.deleteOffer);
 
 route.get('/viewreports', cookieJwtAuth, reportcontroller.renderReportPage);
 route.get('/sales-report', cookieJwtAuth, reportcontroller.generateReport)

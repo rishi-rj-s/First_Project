@@ -247,26 +247,23 @@
                               <div class="container-fluid">
                                    <div class="row">
                                         <div class="col-md-8">
-                                             <form action="/admin/addpoffer" method="post"
+                                             <form action="/admin/addcoffer" method="post"
                                                   onsubmit="return validateForm()">
                                                   <div class="form-group">
-                                                       <label for="category">Choose Category</label>
-                                                       <select class="form-control" name="category" required>
-                                                            <option value="">Select a category</option>
-                                                            <% category.forEach((cat)=>{ %>
-                                                            <option value="<%= cat._id %>"><%= cat.category %></option>
-                                                            <% }) %>
+                                                       <label for="product">Choose Category</label>
+                                                       <select class="form-control" name="categoryId" required>
+                                                            <option value="">Select a product</option>
+                                                            <% category.forEach((cat)=> { %>
+                                                                 <option value="<%= cat._id %>">
+                                                                      <%= cat.category %>
+                                                                 </option>
+                                                                 <% }) %>
                                                        </select>
                                                   </div>
                                                   <div class="form-group">
-                                                       <label for="category">Discount</label>
-                                                       <input type="text" class="form-control" name="discount"
-                                                            placeholder="Enter discount" required>
-                                                  </div>
-                                                  <div class="form-group">
-                                                       <label for="category">Max Amount</label>
-                                                       <input type="text" class="form-control" name="maxAmount"
-                                                            placeholder="Enter discount" required>
+                                                       <label for="discount">Discount (Between 10-30%)</label>
+                                                       <input type="number" class="form-control" name="discount"
+                                                            placeholder="Enter discount" min="10" max="30" required>
                                                   </div>
                                                   <input type="submit" class="btn btn-primary" value="Add">
                                              </form>
@@ -274,10 +271,9 @@
                                                   function validateForm() {
                                                        const product = document.querySelector('[name="product"]');
                                                        const discount = document.querySelector('[name="discount"]');
-                                                       const maxAmount = document.querySelector('[name="maxAmount"]');
 
                                                        // Check if any field is empty or contains only whitespace
-                                                       if (!product.value.trim() || !discount.value.trim() || !maxAmount.value.trim()) {
+                                                       if (!product.value.trim() || !discount.value.trim()) {
                                                             Swal.fire({
                                                                  title: 'Error!',
                                                                  text: 'All fields are necessary',

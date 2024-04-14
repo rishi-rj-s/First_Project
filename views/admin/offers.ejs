@@ -94,12 +94,12 @@
                     </li>
                     <li class="nav-item">
                          <a class="nav-link text-white " href="/admin/viewreports">
-                           <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                             <i class="material-icons opacity-10">bar_chart</i>
-                           </div>
-                           <span class="nav-link-text ms-1">Sales Report</span>
+                              <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                                   <i class="material-icons opacity-10">bar_chart</i>
+                              </div>
+                              <span class="nav-link-text ms-1">Sales Report</span>
                          </a>
-                       </li>
+                    </li>
                     <li class="nav-item">
                          <a class="nav-link text-white" href="/admin/viewcoupons">
                               <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
@@ -142,7 +142,7 @@
                </div>
           </nav>
           <!-- End Navbar -->
-          
+
           <div class="container-fluid py-4">
                <div class="row">
                     <div class="col-12">
@@ -162,90 +162,111 @@
                                         </div>
                                    </div>
                               </div>
-                         <div class="card-body px-0 pb-2">
-                              <table class="table mb-0">
-                                   <thead>
-                                        <tr>
-                                             <th
-                                                  class="text-uppercase text-secondary text-xs font-weight-bolder opacity-8">
-                                                  Name</th>
-                                             <th
-                                                  class="text-uppercase text-secondary text-xs font-weight-bolder opacity-8">
-                                                  Type</th>
-                                             <th
-                                                  class="text-uppercase text-secondary text-xs font-weight-bolder opacity-8">
-                                                  Discount</th>
-                                             <th
-                                                  class="text-uppercase text-secondary text-xs font-weight-bolder opacity-8">
-                                                  Listing</th>
-                                             <th></th>
-                                        </tr>
-                                   </thead>
-                                   <tbody id="categoryTableBody">
-                                        <% offers.forEach(offer=> { %>
+                              <div class="card-body px-0 pb-2">
+                                   <table class="table mb-0">
+                                        <thead>
                                              <tr>
-                                                  <td>
-                                                       <div class="d-flex px-2 py-1">
-                                                            <div class="d-flex flex-column justify-content-center">
-                                                                 <h6 class="mb-0 text-sm">
-                                                                      <%if(offer.catName){%>
-                                                                           <%= offer.catName %>
-                                                                                <%}else{%>
-                                                                                     <%= offer.pdtName %>
-                                                                                          <%}%>
-                                                                 </h6>
-                                                            </div>
-                                                       </div>
-                                                  </td>
-                                                  <td>
-                                                       <div class="d-flex px-2 py-1">
-                                                            <div class="d-flex flex-column justify-content-center">
-                                                                 <h6 class="mb-0 text-sm">
-                                                                      <%= offer.type %>
-                                                                 </h6>
-                                                            </div>
-                                                       </div>
-                                                  </td>
-                                                  <td>
-                                                       <div class="d-flex px-2 py-1">
-                                                            <div class="d-flex flex-column justify-content-center">
-                                                                 <h6 class="mb-0 text-sm">
-                                                                      <%= offer.discount %>%
-                                                                 </h6>
-                                                            </div>
-                                                       </div>
-                                                  </td>
-                                                  <td>
-                                                       <div class="d-flex px-2 py-1">
-                                                            <div class="d-flex flex-column justify-content-center">
-                                                                 <button class="btn btn-info"
-                                                                      data-offer-id="<%= offer._id %>">
-                                                                      <%= offer.isActive %>
-                                                                 </button>
-                                                            </div>
-                                                       </div>
-                                                  </td>
-                                                  <td>
-                                                       <div class="d-flex flex-row">
-                                                            <button class="btn btn-warning"
-                                                                 data-offer-id="<%= offer._id %>"><i
-                                                                      class="fas fa-pencil-alt"></i></button>
-                                                            <button class="btn btn-warning ms-2"
-                                                                 data-offer-id="<%= offer._id %>"><i
-                                                                      class="fas fa-trash-alt"></i></button>
-                                                       </div>
-                                                  </td>
-
+                                                  <th
+                                                       class="text-uppercase text-secondary text-xs font-weight-bolder opacity-8">
+                                                       Type</th>
+                                                  <th
+                                                       class="text-uppercase text-secondary text-xs font-weight-bolder opacity-8">
+                                                       Name</th>
+                                                  <th
+                                                       class="text-uppercase text-secondary text-xs font-weight-bolder opacity-8">
+                                                       Discount</th>
+                                                  <th></th>
                                              </tr>
-                                             <% }); %>
-                                   </tbody>
-                              </table>
+                                        </thead>
+                                        <tbody id="categoryTableBody">
+                                             <% offers.forEach(offer=> { %>
+                                                  <tr>
+                                                       <td>
+                                                            <div class="d-flex px-2 py-1">
+                                                                 <div class="d-flex flex-column justify-content-center">
+                                                                      <h6 class="mb-0 text-sm">
+                                                                           <%= offer.type %>
+                                                                      </h6>
+                                                                 </div>
+                                                            </div>
+                                                       </td>
+                                                       <td>
+                                                            <div class="d-flex px-2 py-1">
+                                                                 <div class="d-flex flex-column justify-content-center">
+                                                                      <h6 class="mb-0 text-sm">
+                                                                           <%if(offer.catId ){%>
+                                                                                <%= offer.catId.category %>
+                                                                                     <%}else if(offer.pdtId){%>
+                                                                                          <%= offer.pdtId.p_name %>
+                                                                                               <%}%>
+                                                                      </h6>
+                                                                 </div>
+                                                            </div>
+                                                       </td>
+                                                       <td>
+                                                            <div class="d-flex px-2 py-1">
+                                                                 <div class="d-flex flex-column justify-content-center">
+                                                                      <h6 class="mb-0 text-sm">
+                                                                           <%= offer.discount %>%
+                                                                      </h6>
+                                                                 </div>
+                                                            </div>
+                                                       </td>
+                                                       <td>
+                                                            <div class="d-flex flex-row">
+                                                                 <a href="/admin/showedit/<%= offer._id %>">
+                                                                      <button class="btn btn-warning">
+                                                                           <i class="fas fa-pencil-alt"></i>
+                                                                      </button>
+                                                                 </a>
+                                                                 <a href="/admin/deleteoffer/<%= offer._id %>"><button class="btn btn-warning ms-2"
+                                                                      id="deleteOfferBtn" data-id="<%= offer._id %>">
+                                                                      <i class="fas fa-trash-alt"></i>
+                                                                 </button></a>
+                                                            </div>
+                                                       </td>
+                                                  </tr>
+                                                  <% }); %>
+                                        </tbody>
+                                   </table>
+                              </div>
                          </div>
                     </div>
                </div>
-          </div>
      </main>
-     
+
+     <!-- <script>
+          document.addEventListener('DOMContentLoaded', function () {
+               const deleteButtons = document.getElementById('.deleteOfferBtn');
+
+               deleteButtons.forEach(button => {
+                    button.addEventListener('click', async function () {
+                         const offerId = button.dataset.id; // Accessing data-id attribute
+
+                         try {
+                              const response = await fetch(`/user/deleteoffer/${offerId}`, {
+                                   method: 'DELETE',
+                              });
+
+                              if (response.ok) {
+                                   // Offer deleted successfully
+                                   alert('Offer deleted successfully.');
+                                   window.location.reload(); // Reload the page
+                              } else {
+                                   // Failed to delete offer
+                                   alert('Failed to delete offer.');
+                              }
+                         } catch (error) {
+                              console.error('Error:', error);
+                              alert('An error occurred while deleting the offer.');
+                         }
+                    });
+               });
+          });
+
+     </script> -->
+
+
      <script>
           const urlParams = new URLSearchParams(window.location.search);
           const message = urlParams.get('msg');
@@ -274,7 +295,23 @@
                          confirmButtonText: 'Ok'
                     })
                     window.history.replaceState({}, document.title, window.location.pathname);
-               } 
+               } else if (message.includes('delsu')) {
+                    Swal.fire({
+                         title: 'Success!',
+                         text: 'Offer Deleted!',
+                         icon: 'success',
+                         confirmButtonText: 'Cool'
+                    })
+                    window.history.replaceState({}, document.title, window.location.pathname);
+               } else if (message.includes('edits')) {
+                    Swal.fire({
+                         title: 'Success!',
+                         text: 'Edit Successful!',
+                         icon: 'success',
+                         confirmButtonText: 'Cool'
+                    })
+                    window.history.replaceState({}, document.title, window.location.pathname);
+               }
           }
      </script>
 

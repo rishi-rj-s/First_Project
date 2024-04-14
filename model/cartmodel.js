@@ -16,7 +16,7 @@ const schema = new mongoose.Schema({
             default: 1,
             min: 1,
             max: 5,   // Maximum quantity allowed
-        }
+        },
     }],
     couponApplied:{
         type: Boolean,
@@ -35,6 +35,10 @@ const schema = new mongoose.Schema({
         default: 0
     },
     subtotal: {
+        type: Number,
+        default: 0
+    },
+    offerDiscount: {
         type: Number,
         default: 0
     }

@@ -34,6 +34,7 @@ exports.showCart = async (req, res) => {
         if (product.quantity >= product.productId.stock) {
           product.quantity = product.productId.stock;
         }
+        let offerDiscount = product.productId.offerDiscount;
 
         // Check if the product is in stock
         if (product.productId.stock >= product.quantity) {
@@ -41,7 +42,7 @@ exports.showCart = async (req, res) => {
           const updatedProduct = await ProductDb.findById(
             product.productId._id
           );
-          subtotalFromCart += updatedProduct.total_price * product.quantity;
+          subtotalFromCart += (updatedProduct.total_price - offerDiscount) * product.quantity;
         }
       }
 

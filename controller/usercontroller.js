@@ -109,7 +109,7 @@ exports.products = async (req, res) => {
     const categoriesToInclude = await CatDb.find({ listing: true }).select(
       "category"
     );
-    const categoryNames = categoriesToInclude.map((cat) => cat.category);
+    const categoryNames = categoriesToInclude.map((cat) => cat._id);
 
     // Find products including categories with listing: true, paginated
     const products = await ProductDb.find({ category: { $in: categoryNames } })

@@ -185,7 +185,7 @@ exports.category = async (req, res) => {
 
 exports.viewproducts = async (req, res) => {
   try {
-    const products = await ProductDb.find({});
+    const products = await ProductDb.find().populate('category');
     res.render("admin/viewproducts", { products });
   } catch (error) {
     console.log(error);
@@ -232,7 +232,14 @@ exports.addproduct = async (req, res) => {
     });
 
     // Save the data to the collection
-    await data.save();
+    const newPdt = await data.save();
+    const offer = await OfferDb.findOne({catId: newPdt.category})
+    if(offer){
+      newPdt.offerActive = true;
+      newPdt.offerId = offer._id;
+      newPdt.offerDiscount = Math.round((offer.discount / 100) * newPdt.total_price);
+      await newPdt.save();
+    }
     res.redirect("/admin/viewproducts?msg=success");
   } catch (e) {
     console.log(e);
@@ -309,15 +316,16 @@ exports.editproductpage = async (req, res) => {
 exports.viewSingleProduct = async (req, res) => {
   const p_id = req.params.pid;
   const product = await ProductDb.findById(p_id);
-  const relatedProduct = await ProductDb.find({
-    category: product.category,
-  }).limit(4);
+
+  if (!product) {
+    return res.status(404).send('Product not found');
+  }
+  
   if (!product) {
     res.status(404).send("No such product found!");
   }
   res.render("admin/productview", {
     product: product,
-    similar: relatedProduct,
   });
 }
 
@@ -385,9 +393,11 @@ exports.deletecategory = async (req, res) => {
 
     await Promise.all([
       // Delete products with the same category as the deleted category
-      ProductDb.deleteMany({ category: deletedCategory.category }),
+      ProductDb.deleteMany({ category: deletedCategory._id }),
       // Delete the category itself
-      CatDb.findByIdAndDelete(id)
+      CatDb.findByIdAndDelete(id),
+      // Delete offers in the category
+      OfferDb.findOneAndDelete({catId: id})
     ]);
 
     res.status(200).redirect("/admin/category");
@@ -604,70 +614,3 @@ exports.statusDelivered = async (req, res) => {
     return res.status(500).json({ msg: "Internal server error" });
   }
 };
-
-exports.renderOffers = async (req, res) => {
-  try{
-    const offers = await OfferDb.find();
-    if(!offers){
-      res.status(404).send("No offers");
-    }
-    res.render('admin/offers',{offers});
-  }catch(e){
-    console.log(e);
-    res.status(500).send("Internal Server Error");
-  }
-}
-
-exports.renderAddPoffer = async (req, res) => {
-  try{
-    const product = await ProductDb.find({listing: "Listed"});
-    // console.log(product)
-    res.render('admin/addpoffer',{product});
-  }catch(e){
-    console.log(e.toString());
-    res.status(500).send("Internal Server Error!");
-  }
-}
-
-exports.addPOffer = async (req, res) => {
-  try{
-    const {product, discount} = req.body;
-    console.log(product, discount)
-    if(!product || !discount){
-      return res.status(401).send('All fields are necessary')
-    } else if(discount > 30 || discount < 10){
-      return res.status(401).send('Inappropriate Discount')
-    }
-    const newOffer = new OfferDb({
-      type: 'Product', // Assuming it's a product offer
-      pdtName: product, // Assuming product is the name of the product
-      discount: discount,
-    });
-
-    // Save the new offer to the database
-    await newOffer.save();
-
-    const pdt = await ProductDb.findOne({p_name: product});
-    pdt.offerApplied = true;
-    pdt.offerDiscount = discount;
-
-    await pdt.save();
-    res.redirect('/admin/offers?msg=pofs');
-  }catch(e){
-    console.log(e.toString());
-    res.redirect('/admin/offers?msg=offfail');
-  }
-}
-
-// exports.addCOffer =
-
-exports.renderAddCoffer = async (req, res) => {
-  try{
-    const category = await CatDb.find({listing: true, offerId: null});
-    // console.log(product)
-    res.render('admin/addcoffer',{category});
-  }catch(e){
-    console.log(e.toString());
-    res.status(500).send("Internal Server Error!");
-  }
-}

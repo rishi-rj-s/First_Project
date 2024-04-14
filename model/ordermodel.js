@@ -35,6 +35,10 @@ const schema = new mongoose.Schema({
         quantity: {
             type: Number,
             required: true
+        },
+        offerDiscount: {
+            type: Number,
+            default: 0
         }
     }],
     status: {

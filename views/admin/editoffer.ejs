@@ -229,9 +229,9 @@
                          <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
                               <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark"
                                         href="/admin/offers">Offers</a></li>
-                              <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Add Offer</li>
+                              <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Edit Offer</li>
                          </ol>
-                         <h6 class="font-weight-bolder mb-0">Add Offer</h6>
+                         <h6 class="font-weight-bolder mb-0">Edit Offer</h6>
                     </nav>
           </nav>
           <!-- End Navbar -->
@@ -241,29 +241,24 @@
                          <div class="card my-4">
                               <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
                                    <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
-                                        <h6 class="text-white text-capitalize ps-3">Add Product Offer</h6>
+                                        <h6 class="text-white text-capitalize ps-3">Edit Offer</h6>
                                    </div>
                               </div>
                               <div class="container-fluid">
                                    <div class="row">
                                         <div class="col-md-8">
-                                             <form action="/admin/addpoffer" method="post"
+                                             <form action="/admin/editoffer" method="post"
                                                   onsubmit="return validateForm()">
                                                   <div class="form-group">
-                                                       <label for="product">Choose Product</label>
-                                                       <select class="form-control" name="productId" required>
-                                                            <option value="">Select a product</option>
-                                                            <% product.forEach((pdt)=> { %>
-                                                                 <option value="<%= pdt._id %>">
-                                                                      <%= pdt.p_name %>
-                                                                 </option>
-                                                                 <% }) %>
+                                                       <label for="product">Edit Offer</label>
+                                                       <select class="form-control" name="offId" required>
+                                                            <option value="<%=offer._id%>"><%=offer.type%></option>
                                                        </select>
                                                   </div>
                                                   <div class="form-group">
                                                        <label for="discount">Discount (Between 10-30%)</label>
                                                        <input type="number" class="form-control" name="discount"
-                                                            placeholder="Enter discount" min="10" max="30" required>
+                                                            placeholder="Enter discount" min="10" max="30" value="<%=offer.discount%>" required>
                                                   </div>
                                                   <input type="submit" class="btn btn-primary" value="Add">
                                              </form>

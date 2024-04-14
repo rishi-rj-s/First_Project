@@ -51,24 +51,24 @@
           }
 
           .banner i {
-      color: white !important;
-    }
+               color: white !important;
+          }
 
-    .banner .fa-shopping-cart:hover {
-      color: yellowgreen !important;
-    }
+          .banner .fa-shopping-cart:hover {
+               color: yellowgreen !important;
+          }
 
-    .banner .fa-heart:hover {
-      color: red !important;
-    }
+          .banner .fa-heart:hover {
+               color: red !important;
+          }
 
-    .banner .fa-user:hover {
-      color: blue !important;
-    }
+          .banner .fa-user:hover {
+               color: blue !important;
+          }
 
-    .banner .fa-power-off:hover {
-      color: gray !important;
-    }
+          .banner .fa-power-off:hover {
+               color: gray !important;
+          }
 
           .social-icons i {
                padding-right: 10px;
@@ -114,8 +114,21 @@
                font-size: smaller;
                /* Adjust font size of buttons as needed */
           }
+
           .icons i {
                font-size: 30px;
+          }
+
+          .custom-container {
+               display: flex;
+               justify-content: center;
+               align-items: center;
+               min-height: 50vh;
+               /* Adjust as needed */
+          }
+
+          .centered-message {
+               text-align: center;
           }
      </style>
 </head>
@@ -123,7 +136,9 @@
 <body>
      <div class="banner-wrapper fixed-top">
           <div class="banner">
-               <a href="/"><h1>RISHI STUDIO</h1></a>
+               <a href="/">
+                    <h1>RISHI STUDIO</h1>
+               </a>
                <!-- <form class="form-outline-inline" action="/product/search" method="get" required>
                   <input type="search" id="form1" class="form-control" placeholder="Search" />
                   <button type="submit" class="btn btn-primary shadow-0">
@@ -156,7 +171,7 @@
      </div>
 
      <!--  NAVIGATION ENDS  -->
-     <div class="container-fluid mt-5 mb-3">
+     <div class="container-fluid mt-5 mb-3" style="height: 70%;">
           <div class="row">
                <main role="main" class="col-md-9 ml-sm-auto col-lg-12 px-md-4 mb-4">
                     <div class="container mt-4 mb-4">
@@ -164,7 +179,7 @@
                               <div class="col-md-8 offset-md-2 col-lg-8 offset-lg-2">
                                    <h1 class="text-center mb-4">My Wish List</h1>
                                    <div class="wishlist-items">
-                                        <% items.forEach((item)=> { %>
+                                        <% if(items.length>0){items.forEach((item)=> { %>
                                              <div class="card">
                                                   <div class="card-body">
                                                        <div class="row align-items-center">
@@ -189,27 +204,38 @@
                                                                       <%= item.product.discount %>% Discount
                                                                  </h7>
                                                                  <div class="d-flex mt-1" style="gap: 10px;">
-                                                                      <% if(item.product.stock > 0) { %>
-                                                                           <a href="/user/addtocart/<%= item.product._id%>" class="btn btn-primary me-2">
-                                                                                <i class="fas fa-shopping-cart"></i> Add to
+                                                                      <% if(item.product.stock> 0) { %>
+                                                                           <a href="/user/addtocart/<%= item.product._id%>"
+                                                                                class="btn btn-primary me-2">
+                                                                                <i class="fas fa-shopping-cart"></i> Add
+                                                                                to
                                                                                 Cart
                                                                            </a>
-                                                                      <% } else { %>
-                                                                           <p class="card-text text-danger mt-1">
-                                                                                Item out of Stock 
-                                                                           </p>
-                                                                      <% } %>
-                                                                      <a
-                                                                           href="/user/removeWish/<%= item.product._id %>"><button
-                                                                                type="button" class="btn btn-danger">
-                                                                                <i class="fas fa-trash"></i> Remove
-                                                                           </button></a>
+                                                                           <% } else { %>
+                                                                                <p class="card-text text-danger mt-1">
+                                                                                     Item out of Stock
+                                                                                </p>
+                                                                                <% } %>
+                                                                                     <a
+                                                                                          href="/user/removeWish/<%= item.product._id %>"><button
+                                                                                               type="button"
+                                                                                               class="btn btn-danger">
+                                                                                               <i
+                                                                                                    class="fas fa-trash"></i>
+                                                                                               Remove
+                                                                                          </button></a>
                                                                  </div>
                                                             </div>
                                                        </div>
                                                   </div>
                                              </div>
-                                             <%})%>
+                                             <%})} else{%>
+                                                  <div class="container custom-container">
+                                                       <div class="centered-message">
+                                                            <h1 class="bg-dark p-4 rounded text-white">Nothing Here!</h1>
+                                                       </div>
+                                                  </div>
+                                                  <%}%>
 
                                    </div>
                                    <div class="pagination justify-content-center">
@@ -306,33 +332,33 @@
 
      <!--  FOOTER MARKUP STARTS  -->
 
-<footer class="bg-dark text-light py-5">
-     <div class="container">
-       <div class="row">
-         <div class="col-md-6 mb-4 mb-md-0">
-           <h5>Connect with Us</h5>
-           <p>Follow us on social media for updates:</p>
-           <div class="social-icons">
-             <a href="#" class="me-2"><i class="fa fa-facebook text-primary"></i></a>
-             <a href="#" class="me-2"><i class="fa fa-twitter text-info"></i></a>
-             <a href="#" class="me-2"><i class="fa fa-instagram text-danger"></i></a>
-             <a href="#" class="me-2"><i class="fa fa-linkedin text-info"></i></a>
-           </div>
-         </div>
-         <div class="col-md-6">
-           <h5>Contact Us</h5> 
-           <p>Email: info@example.com</p>
-           <p>Phone: +1 234 567 890</p>
-         </div>
-       </div>
-     </div>
-   </footer>
-   
-   
-   <!--  FOOTER MARKUP ENDS  -->
-   
+     <footer class="bg-dark text-light py-5">
+          <div class="container">
+               <div class="row">
+                    <div class="col-md-6 mb-4 mb-md-0">
+                         <h5>Connect with Us</h5>
+                         <p>Follow us on social media for updates:</p>
+                         <div class="social-icons">
+                              <a href="#" class="me-2"><i class="fa fa-facebook text-primary"></i></a>
+                              <a href="#" class="me-2"><i class="fa fa-twitter text-info"></i></a>
+                              <a href="#" class="me-2"><i class="fa fa-instagram text-danger"></i></a>
+                              <a href="#" class="me-2"><i class="fa fa-linkedin text-info"></i></a>
+                         </div>
+                    </div>
+                    <div class="col-md-6">
+                         <h5>Contact Us</h5>
+                         <p>Email: info@example.com</p>
+                         <p>Phone: +1 234 567 890</p>
+                    </div>
+               </div>
+          </div>
+     </footer>
 
-     
+
+     <!--  FOOTER MARKUP ENDS  -->
+
+
+
 
      <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
      <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
