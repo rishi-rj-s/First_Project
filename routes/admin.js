@@ -10,6 +10,7 @@ const CatDb = require("../model/categorymodel");
 const ProductDb = require("../model/productmodel");
 const AddressDb = require('../model/addressmodel');
 const OrderDb = require('../model/ordermodel');
+const reportcontroller = require("../controller/reportcontroller");
 const upload = require("../multer/multer");
 
 const axios = require("axios");
@@ -77,6 +78,9 @@ route.get('/offers', cookieJwtAuth, admincontroller.renderOffers);
 route.get('/addpoffer', cookieJwtAuth, admincontroller.renderAddPoffer);
 route.post('/addpoffer', cookieJwtAuth, admincontroller.addPOffer);
 route.get('/addcoffer', cookieJwtAuth, admincontroller.renderAddCoffer);
+
+route.get('/viewreports', cookieJwtAuth, reportcontroller.renderReportPage);
+route.get('/sales-report', cookieJwtAuth, reportcontroller.generateReport)
 
 
 route.get("**", (req, res) => {
