@@ -191,18 +191,23 @@
 
     .form-control {
       display: inline-block !important;
-      /* Change display property to inline-block */
     }
 
     .small-label {
       font-size: 15px;
-      /* Adjust the font size as needed */
       white-space: nowrap;
-      /* Prevent text from wrapping to the next line */
       overflow: hidden;
-      /* Hide any overflow beyond the container */
       text-overflow: ellipsis;
-      /* Display ellipsis (...) for truncated text */
+    }
+
+    .custom-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    footer {
+      margin-top: auto; 
     }
   </style>
 </head>
@@ -215,81 +220,81 @@
 
       <!-- Search -->
       <div class="form-outline-inline" required>
-          <form id="searchForm" action="/user/search" method="GET">
-            <input type="search" id="form1" name="search" class="form-control" placeholder="Search" />
-            <button type="submit" class="btn btn-primary shadow-0">
-              <i class="fa fa-search"></i>
-            </button>
-          </form>
-        </div>
-        <div id="searchDropdown" class="dropdown-menu position-absolute"
-          style="top: 100%; left: 0; display: none; z-index: 100;"></div>
+        <form id="searchForm" action="/user/search" method="GET">
+          <input type="search" id="form1" name="search" class="form-control" placeholder="Search" />
+          <button type="submit" class="btn btn-primary shadow-0">
+            <i class="fa fa-search"></i>
+          </button>
+        </form>
+      </div>
+      <div id="searchDropdown" class="dropdown-menu position-absolute"
+        style="top: 100%; left: 0; display: none; z-index: 100;"></div>
 
-        <script>
-          document.addEventListener('DOMContentLoaded', function () {
-            const searchInput = document.getElementById('form1');
-            const searchDropdown = document.getElementById('searchDropdown');
-        
-            let debounceTimeout;
-        
-            searchInput.addEventListener('input', function (event) {
-              clearTimeout(debounceTimeout);
-              debounceTimeout = setTimeout(() => {
-                const inputValue = event.target.value.trim();
-                if (inputValue.length > 0) {
-                  fetch(`/user/check?check=${inputValue}`, {
-                    method: 'GET',
-                    headers: {
-                      'Content-Type': 'application/json'
+      <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          const searchInput = document.getElementById('form1');
+          const searchDropdown = document.getElementById('searchDropdown');
+
+          let debounceTimeout;
+
+          searchInput.addEventListener('input', function (event) {
+            clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(() => {
+              const inputValue = event.target.value.trim();
+              if (inputValue.length > 0) {
+                fetch(`/user/check?check=${inputValue}`, {
+                  method: 'GET',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  }
+                })
+                  .then(response => response.json())
+                  .then(data => {
+                    console.log('Response from backend:', data);
+                    if (data.length > 0) {
+                      displayDropdownItems(data);
+                    } else {
+                      displayNoMatchingProducts();
                     }
                   })
-                    .then(response => response.json())
-                    .then(data => {
-                      console.log('Response from backend:', data);
-                      if (data.length > 0) {
-                        displayDropdownItems(data);
-                      } else {
-                        displayNoMatchingProducts();
-                      }
-                    })
-                    .catch(error => console.error('Error:', error));
-                } else {
-                  hideSearchDropdown();
-                }
-              }, 300);
-            });
-        
-            function displayDropdownItems(products) {
-              searchDropdown.innerHTML = '';
-              products.forEach(product => {
-                const productItem = document.createElement('div');
-                productItem.classList.add('dropdown-item');
-                productItem.textContent = product.p_name; // Corrected property name
-                productItem.addEventListener('click', () => {
-                  searchInput.value = product.p_name;
-                  hideSearchDropdown();
-                });
-                searchDropdown.appendChild(productItem);
-              });
-              searchDropdown.style.display = 'block';
-            }
-        
-            function displayNoMatchingProducts() {
-              searchDropdown.innerHTML = '';
-              const noMatchItem = document.createElement('div');
-              noMatchItem.classList.add('dropdown-item', 'text-muted');
-              noMatchItem.textContent = 'No matching products';
-              searchDropdown.appendChild(noMatchItem);
-              searchDropdown.style.display = 'block';
-            }
-        
-            function hideSearchDropdown() {
-              searchDropdown.innerHTML = '';
-              searchDropdown.style.display = 'none';
-            }
+                  .catch(error => console.error('Error:', error));
+              } else {
+                hideSearchDropdown();
+              }
+            }, 300);
           });
-        </script>
-        
+
+          function displayDropdownItems(products) {
+            searchDropdown.innerHTML = '';
+            products.forEach(product => {
+              const productItem = document.createElement('div');
+              productItem.classList.add('dropdown-item');
+              productItem.textContent = product.p_name; // Corrected property name
+              productItem.addEventListener('click', () => {
+                searchInput.value = product.p_name;
+                hideSearchDropdown();
+              });
+              searchDropdown.appendChild(productItem);
+            });
+            searchDropdown.style.display = 'block';
+          }
+
+          function displayNoMatchingProducts() {
+            searchDropdown.innerHTML = '';
+            const noMatchItem = document.createElement('div');
+            noMatchItem.classList.add('dropdown-item', 'text-muted');
+            noMatchItem.textContent = 'No matching products';
+            searchDropdown.appendChild(noMatchItem);
+            searchDropdown.style.display = 'block';
+          }
+
+          function hideSearchDropdown() {
+            searchDropdown.innerHTML = '';
+            searchDropdown.style.display = 'none';
+          }
+        });
+      </script>
+
 
 
       <div class="icons">
@@ -325,7 +330,7 @@
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/user/landing">Home</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Products</li>
+            <li class="breadcrumb-item active" aria-current="page"><a href="/user/products">All Products</a></li>
           </ol>
         </nav>
       </div>
@@ -345,36 +350,43 @@
       </div>
 
       <div class="row" id="productGrid">
-        <% products.forEach((pdt)=> { %>
-          <div class="col-md-4">
-            <div id="product-<%= pdt._id %>" class="single-product">
-              <div class="part-1">
-                <img src="/<%= pdt.images[0] %>" alt="Product Image"
-                  style="height: 100%; width: 100%; background-repeat: no-repeat; background-size: cover; background-position: center;">
-                <ul>
-                  <% if(pdt.stock> 0) { %>
-                    <li><a href="/user/addtocart/<%= pdt._id %>"><i class="fa fa-shopping-cart"></i></a></li>
-                    <% } %>
-                      <li><a href="/user/addwishlist/<%= pdt._id %>"><i class="fa fa-heart"></i></a></li>
-                      <li><a href="/user/productview/<%= pdt._id %>"><i class="fa fa-expand"></i></a></li>
-                </ul>
-              </div>
-              <div class="part-2">
-                <h3 class="product-title">
-                  <%= pdt.p_name %>
-                </h3>
-                <% if(pdt.stock <=0) { %>
-                  <p class="text-danger">Out of Stock</p>
-                  <% } else { %>
-                    <h4 class="product-old-price">$<%= pdt.price %>
-                    </h4>
-                    <h4 class="product-price text-lg">$<%= pdt.total_price %>
-                    </h4>
-                    <% } %>
-              </div>
+        <%if(products.length < 1){%>
+          <div class="container custom-container">
+            <div class="centered-message">
+              <h1 class="bg-dark p-4 rounded text-white">No Products Found!</h1>
             </div>
           </div>
-          <% }); %>
+          <%}else{%>
+            <% products.forEach((pdt)=> { %>
+              <div class="col-md-4">
+                <div id="product-<%= pdt._id %>" class="single-product">
+                  <div class="part-1">
+                    <img src="/<%= pdt.images[0] %>" alt="Product Image"
+                      style="height: 100%; width: 100%; background-repeat: no-repeat; background-size: cover; background-position: center;">
+                    <ul>
+                      <% if(pdt.stock> 0) { %>
+                        <li><a href="/user/addtocart/<%= pdt._id %>"><i class="fa fa-shopping-cart"></i></a></li>
+                        <% } %>
+                          <li><a href="/user/addwishlist/<%= pdt._id %>"><i class="fa fa-heart"></i></a></li>
+                          <li><a href="/user/productview/<%= pdt._id %>"><i class="fa fa-expand"></i></a></li>
+                    </ul>
+                  </div>
+                  <div class="part-2">
+                    <h3 class="product-title">
+                      <%= pdt.p_name %>
+                    </h3>
+                    <% if(pdt.stock <=0) { %>
+                      <p class="text-danger">Out of Stock</p>
+                      <% } else { %>
+                        <h4 class="product-old-price">$<%= pdt.price %>
+                        </h4>
+                        <h4 class="product-price text-lg">$<%= pdt.total_price %>
+                        </h4>
+                        <% } %>
+                  </div>
+                </div>
+              </div>
+              <% })}; %>
       </div>
     </div>
   </section>

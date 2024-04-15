@@ -101,10 +101,6 @@ exports.showLanding = async (req, res) => {
 
 exports.products = async (req, res) => {
   try {
-    const perPage = 3; // Number of products per page
-    const page = parseInt(req.query.page) || 1; // Current page number, default is 1
-    const skip = (page - 1) * perPage; // Calculate the number of documents to skip
-
     // Find categories with listing: true to include in products query
     const categoriesToInclude = await CatDb.find({ listing: true }).select(
       "category"
@@ -112,7 +108,7 @@ exports.products = async (req, res) => {
     const categoryNames = categoriesToInclude.map((cat) => cat._id);
 
     // Find products including categories with listing: true, paginated
-    const products = await ProductDb.find({ category: { $in: categoryNames } })
+    const products = await ProductDb.find({ category: { $in: categoryNames } }).limit(3)
 
     if (!products || products.length === 0) {
       return res.render("user/products", {
@@ -122,15 +118,9 @@ exports.products = async (req, res) => {
       });
     }
 
-    // Calculate total pages for pagination
-    const totalProducts = await ProductDb.countDocuments({ category: { $in: categoryNames } });
-    const totalPages = Math.ceil(totalProducts / perPage);
-
     res.render("user/products", {
       products,
       category: categoriesToInclude,
-      currentPage: page,
-      totalPages
     });
   } catch (e) {
     console.log(e);
@@ -162,20 +152,20 @@ exports.checkSearch = async (req, res) => {
   }
 };
 
-exports.searchProduct = async(req, res) => {
+exports.searchProduct = async (req, res) => {
   try {
     const search = req.query.search;
-    console.log(search);
+    // console.log(search);
     const categoriesToExclude = await CatDb.find({ listing: false }).select(
       "category"
     );
     const categoryNames = categoriesToExclude.map((cat) => cat.category);
-    const products = await ProductDb.find({p_name: search, category: { $nin: categoryNames } }).sort({ p_name: 1 });
+    const products = await ProductDb.find({ p_name: search, category: { $nin: categoryNames } }).sort({ p_name: 1 });
     if (!products) {
       res.status(404).json({ message: "No product found." });
       return;
     }
-    res.render("user/search", {products});
+    res.render("user/search", { products });
   } catch (e) {
     console.log(e);
     return res.status(500).send("Internal Server Error!");
@@ -419,7 +409,7 @@ exports.showWallet = async (req, res) => {
   const userId = req.session.user;
   try {
     const user = await Userdb.findById(userId);
-    const walletHistory = await WalletHistory.find({userId: userId._id}).sort({ timestamp: -1 });
+    const walletHistory = await WalletHistory.find({ userId: userId._id }).sort({ timestamp: -1 });
     // console.log(walletHistory);
     const wallet = user.wallet;
     const name = user.name;
@@ -628,3 +618,37 @@ exports.editUsername = async (req, res) => {
     res.redirect("/user/profile?msg=nameerr");
   }
 };
+
+exports.actions = async (req, res) => {
+  try {
+    const page = req.query.page;
+    const filter = req.query.filter;
+    const sort = req.query.sort;
+    console.log(page, filter, sort);
+    
+    // Find categories with listing: true to include in products query
+    const categoriesToInclude = await CatDb.find({ listing: true }).select(
+      "category"
+    );
+    const categoryNames = categoriesToInclude.map((cat) => cat._id);
+
+    // Find products including categories with listing: true, paginated
+    const products = await ProductDb.find({ category: { $in: categoryNames } }).limit(3)
+
+    if (!products || products.length === 0) {
+      return res.render("user/products", {
+        message: "No products found.",
+        products,
+        category: categoriesToInclude,
+      });
+    }
+
+    res.render("user/products", {
+      products,
+      category: categoriesToInclude,
+    });
+  } catch (e) {
+    console.log(e);
+    return res.status(500).send("Internal Server Error!");
+  }
+}

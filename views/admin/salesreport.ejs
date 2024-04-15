@@ -144,46 +144,47 @@
           <!-- design here -->
           <div class="container-fluid py-4">
                <div class="row">
-                   <div class="col-md-6 offset-md-3">
-                       <!-- Adding a wrapper div with styling -->
-                       <div class="sales-report-wrapper bg-white rounded p-4 shadow">
-                           <form id="salesReportForm" action="/admin/sales-report" method="GET">
-                               <div class="mb-3">
-                                   <label for="filterType" class="form-label">Select Filter Type:</label>
-                                   <select class="form-select" id="filterType" name="filterType">
-                                       <option value="daily">Daily</option>
-                                       <option value="weekly">Weekly</option>
-                                       <option value="monthly">Monthly</option>
-                                       <option value="yearly">Yearly</option>
-                                       <option value="custom">Custom</option>
-                                   </select>
-                               </div>
-                               <div id="customDateInputs" style="display: none;">
+                    <div class="col-md-6 offset-md-3">
+                         <!-- Adding a wrapper div with styling -->
+                         <div class="sales-report-wrapper bg-white rounded p-4 shadow">
+                              <form id="salesReportForm" action="/admin/sales-report" method="GET">
                                    <div class="mb-3">
-                                       <label for="startDate" class="form-label">Start Date:</label>
-                                       <input type="date" class="form-control" id="startDate" name="startDate">
+                                        <label for="filterType" class="form-label">Select Filter Type:</label>
+                                        <select class="form-select" id="filterType" name="filterType">
+                                             <option value="daily">Daily</option>
+                                             <option value="weekly">Weekly</option>
+                                             <option value="monthly">Monthly</option>
+                                             <option value="yearly">Yearly</option>
+                                             <option value="custom">Custom</option>
+                                        </select>
                                    </div>
-                                   <div class="mb-3">
-                                       <label for="endDate" class="form-label">End Date:</label>
-                                       <input type="date" class="form-control" id="endDate" name="endDate">
+                                   <div id="customDateInputs" style="display: none;">
+                                        <div class="mb-3">
+                                             <label for="startDate" class="form-label">Start Date:</label>
+                                             <input type="date" class="form-control" id="startDate" name="startDate">
+                                        </div>
+                                        <div class="mb-3">
+                                             <label for="endDate" class="form-label">End Date:</label>
+                                             <input type="datetime-local" class="form-control" id="endDate" name="endDate">
+                                        </div>
                                    </div>
-                               </div>
-                               <button type="submit" class="btn btn-primary" name="reportType" value="pdf">Generate PDF
-                                   Report</button>
-                           </form>
-                       </div>
-                       <!-- End of wrapper div -->
-                   </div>
+                                   <button type="submit" class="btn btn-primary" name="reportType" value="pdf">Generate
+                                        PDF
+                                        Report</button>
+                              </form>
+                         </div>
+                         <!-- End of wrapper div -->
+                    </div>
                </div>
-           </div>
-           
+          </div>
+
      </main>
 
      <script src="/js/admin/plugins/perfect-scrollbar.min.js"></script>
      <script src="/js/admin/plugins/smooth-scrollbar.min.js"></script>
      <script src="/js/admin/core/popper.min.js"></script>
      <script src="/js/admin/core/bootstrap.min.js"></script>
-      
+
      <script>
           document.addEventListener('DOMContentLoaded', function () {
                const filterTypeSelect = document.getElementById('filterType');
@@ -198,6 +199,29 @@
                });
           });
      </script>
+     <script>
+          var win = navigator.platform.indexOf('Win') > -1;
+          if (win && document.querySelector('#sidenav-scrollbar')) {
+               var options = {
+                    damping: '0.5'
+               }
+               Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+          }
+     </script>
+     <!-- Github buttons -->
+     <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+          integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+          crossorigin="anonymous"></script>
+
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
      <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
      <script src="/js/admin/material-dashboard.min.js?v=3.1.0"></script>
 </body>

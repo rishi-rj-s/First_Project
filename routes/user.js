@@ -30,6 +30,7 @@ route.get('/logout',cookieJwtAuth, usercontroller.logout)
 route.get('/products',checkBlocked ,cookieJwtAuth, usercontroller.products)
 route.get('/check',checkBlocked, cookieJwtAuth, usercontroller.checkSearch)
 route.get('/search',checkBlocked, cookieJwtAuth, usercontroller.searchProduct)
+route.get('/actions',checkBlocked, cookieJwtAuth, usercontroller.actions)
 route.get('/productview/:id',checkBlocked , cookieJwtAuth, usercontroller.productview)
 
 route.post("/login",usercontroller.login)

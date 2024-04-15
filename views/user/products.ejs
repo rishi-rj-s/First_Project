@@ -190,13 +190,13 @@
 
     .small-label {
       font-size: 15px;
-      /* Adjust the font size as needed */
       white-space: nowrap;
-      /* Prevent text from wrapping to the next line */
       overflow: hidden;
-      /* Hide any overflow beyond the container */
       text-overflow: ellipsis;
-      /* Display ellipsis (...) for truncated text */
+    }
+
+    footer {
+      margin-top: auto;
     }
   </style>
 </head>
@@ -378,33 +378,7 @@
     </div>
   </div>
 
-
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const sortSelect = document.getElementById('sortSelect');
-      // Retrieve the selected option from local storage
-      const selectedOption = localStorage.getItem('selectedSortOption');
-      if (selectedOption) {
-        sortSelect.value = selectedOption;
-      }
-
-      // Add change event listener to store selected option in local storage
-      sortSelect.addEventListener('change', function () {
-        const selectedUrl = this.value;
-        console.log(selectedUrl);
-        // Store the selected option in local storage, or remove it for "No Filter"
-        if (selectedUrl) {
-          localStorage.setItem('selectedSortOption', selectedUrl);
-        } else {
-          localStorage.removeItem('selectedSortOption');
-        }
-        // Redirect to the selected URL
-        window.location.href = selectedUrl.toString();
-      });
-    });
-  </script>
-
-  <!-- partial:index.partial.html -->
+  <!-- CONTENT STARTS -->
   <section class="section-products">
     <div class="container">
       <div class="row justify-content-center text-center">
@@ -447,7 +421,10 @@
           </div>
           <% }); %>
       </div>
-      </div></section>
+    </div>
+  </section>
+
+  <!-- CONTENT ENDS -->
   <!--  FOOTER MARKUP STARTS  -->
 
   <footer class="bg-dark text-light py-5">

@@ -45,8 +45,7 @@
                             <i class="fa fa-child"></i>
                             <h3>KID's</h3>
                         </div>
-                        <a href="/user/products/Kid's"><img src="/img/landing/Kid Model.jpg" alt="Men's"
-                                style="width: 100%; height: auto;"></a>
+                        <img src="/img/landing/Kid Model.jpg" alt="Men's" style="width: 100%; height: auto;">
                     </div>
                 </div>
                 <div class="col-md-4  col-xs-12">
@@ -55,8 +54,7 @@
                             <i class="fa fa-male"></i>
                             <h3>MEN's</h3>
                         </div>
-                        <a href="/user/products/Men's"><img src="/img/landing/Men Model.jpg" alt="Men's"
-                                style="width: 100%; height: auto;"></a>
+                        <img src="/img/landing/Men Model.jpg" alt="Men's" style="width: 100%; height: auto;">
                     </div>
                 </div>
                 <div class="col-md-4  col-xs-12">
@@ -65,8 +63,7 @@
                             <i class="fa fa-female"></i>
                             <h3>WOMEN's</h3>
                         </div>
-                        <a href="/user/products/Women's"><img src="/img/landing/Women Model.jpg" alt="Men's"
-                                style="width: 100%; height: auto;"></a>
+                        <img src="/img/landing/Women Model.jpg" alt="Men's" style="width: 100%; height: auto;">
                     </div>
                 </div>
             </div>
@@ -104,20 +101,6 @@
             </div>
         </div>
     </section>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var carouselImages = document.querySelectorAll('#carousel-testimonials .carousel-inner .item img');
-            var href = "/user/products/Offer's";
-            carouselImages.forEach(function (image) {
-                image.addEventListener('click', function () {
-                    window.location.href = href;
-                });
-            });
-        });
-    </script>
-
-
 
     <!-- OFFER SECTION ENDS -->
 
@@ -286,66 +269,64 @@
 
     <!--  REVIEWS ENDS  -->
 
-
-
-    <%- include('land_footer') -%>
-
-        <script>
-            const urlParams = new URLSearchParams(window.location.search);
-            const message = urlParams.get('msg'); // Change 'message' to 'msg'
-            if (typeof message !== 'undefined') {
-                if (message.includes('loggedin')) {
-                    Swal.fire({
-                        position: "top-end",
-                        icon: "success",
-                        title: "Logged In",
-                        showConfirmButton: false,
-                        timer: 1500
-                    });
-                    window.history.replaceState({}, document.title, window.location.pathname);
-                } else if (message.includes('errdata')) {
-                    Swal.fire({
-                        title: "Error",
-                        text: "Error fetching data",
-                        icon: "error",
-                        confirmButtonText: 'OK'
-                    });
-                    window.history.replaceState({}, document.title, window.location.pathname);
-                }  else if (message.includes('nodata')) {
-                    Swal.fire({
-                        title: "Failure",
-                        text: "No data in database!",
-                        icon: "error",
-                        confirmButtonText: 'OK'
-                    });
-                    window.history.replaceState({}, document.title, window.location.pathname);
-                }  else if (message.includes('cartemp')) {
-                    Swal.fire({
-                        title: "Failure",
-                        text: "Cart Empty!",
-                        icon: "error",
-                        confirmButtonText: 'OK'
-                    });
-                    window.history.replaceState({}, document.title, window.location.pathname);
-                }  else if (message.includes('error')) {
-                    Swal.fire({
-                        title: "Failure",
-                        text: "An Error Occured!",
-                        icon: "error",
-                        confirmButtonText: 'OK'
-                    });
-                    window.history.replaceState({}, document.title, window.location.pathname);
-                }  else if (message.includes('nocart')) {
-                    Swal.fire({
-                        title: "No Items",
-                        text: "Add a products to the cart!",
-                        icon: "warning",
-                        confirmButtonText: 'OK'
-                    });
-                    window.history.replaceState({}, document.title, window.location.pathname);
-                }
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const message = urlParams.get('msg'); // Change 'message' to 'msg'
+        if (typeof message !== 'undefined') {
+            if (message.includes('loggedin')) {
+                Swal.fire({
+                    position: "top-end",
+                    icon: "success",
+                    title: "Logged In",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+                window.history.replaceState({}, document.title, window.location.pathname);
+            } else if (message.includes('errdata')) {
+                Swal.fire({
+                    title: "Error",
+                    text: "Error fetching data",
+                    icon: "error",
+                    confirmButtonText: 'OK'
+                });
+                window.history.replaceState({}, document.title, window.location.pathname);
+            } else if (message.includes('nodata')) {
+                Swal.fire({
+                    title: "Failure",
+                    text: "No data in database!",
+                    icon: "error",
+                    confirmButtonText: 'OK'
+                });
+                window.history.replaceState({}, document.title, window.location.pathname);
+            } else if (message.includes('cartemp')) {
+                Swal.fire({
+                    title: "Failure",
+                    text: "Cart Empty!",
+                    icon: "error",
+                    confirmButtonText: 'OK'
+                });
+                window.history.replaceState({}, document.title, window.location.pathname);
+            } else if (message.includes('error')) {
+                Swal.fire({
+                    title: "Failure",
+                    text: "An Error Occured!",
+                    icon: "error",
+                    confirmButtonText: 'OK'
+                });
+                window.history.replaceState({}, document.title, window.location.pathname);
+            } else if (message.includes('nocart')) {
+                Swal.fire({
+                    title: "No Items",
+                    text: "Add a products to the cart!",
+                    icon: "warning",
+                    confirmButtonText: 'OK'
+                });
+                window.history.replaceState({}, document.title, window.location.pathname);
             }
-        </script>
-        <script src="/js/landing/jquery.waypoints.min.js" type="text/javascript"></script>
-        <script src="/js/landing/main.js" type="text/javascript"></script>
-        <script src="/js/landing/jquery.counterup.min.js" type="text/javascript"></script>
+        }
+    </script>
+    <script src="/js/landing/jquery.waypoints.min.js" type="text/javascript"></script>
+    <script src="/js/landing/main.js" type="text/javascript"></script>
+    <script src="/js/landing/jquery.counterup.min.js" type="text/javascript"></script>
+
+    <%- include('../partials/land_footer') -%>

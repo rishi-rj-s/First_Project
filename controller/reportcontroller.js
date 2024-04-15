@@ -157,7 +157,9 @@ async function getYearlySales() {
   }
   
   async function getOrderData(startDate, endDate) {
-    const orders = await OrderDb.find({ orderDate: { $gte: startDate, $lt: endDate }}).populate('orderedItems.productId').populate('couponApplied');
+    console.log(startDate, endDate);
+    const orders = await OrderDb.find({ orderDate: { $gte: startDate, $lte: endDate }}).populate('orderedItems.productId').populate('couponApplied');
+    // console.log(orders);
     
     let dailySalesData = [];
 
@@ -172,7 +174,7 @@ async function getYearlySales() {
             const productPrice = item.originalPrice * item.quantity;
             const discountedPrice = item.price  * item.quantity;
             const discountAmount = productPrice - discountedPrice;
-            totalDiscount += Math.round(discountAmount);
+            totalDiscount += Math.round(discountAmount + item.offerDiscount);
         });
 
         if (order.couponApplied!==null) {
@@ -184,7 +186,7 @@ async function getYearlySales() {
             totalSales,
             totalOrderAmount,
             totalDiscount,
-            totalCouponDiscount
+            totalCouponDiscount,
         });
     });
 
@@ -235,15 +237,19 @@ exports.generateInvoice = async (req, res) => {
   
       // Order details
       doc.fontSize(12).text(`Order ID: ${order._id}`);
-      doc.fontSize(12).text(`Order Date: ${order.orderDate.toDateString()}`);
+      doc.moveDown();
+      doc.fontSize(13).text(`Order Date: ${order.orderDate.toDateString()}`);
+      doc.moveDown();
       doc.fontSize(12).text(`Payment Status: ${order.paymentStatus}`);
       doc.fontSize(12).text(`Payment Method: ${order.paymentMethod}`);
       doc.moveDown();
   
   
       // User details
-      doc.fontSize(12).text(`User Name: ${order.name}`);
-      doc.fontSize(12).text(`User Address: ${order.shippingAddress.address}, ${order.shippingAddress.city}, ${order.shippingAddress.state}, ${order.shippingAddress.pincode}`);
+      doc.fontSize(13).text(`${order.name}`);
+      doc.fontSize(12).text(`${order.shippingAddress.address},`);
+      doc.fontSize(12).text(`${order.shippingAddress.city}, ${order.shippingAddress.state},`);
+      doc.fontSize(12).text(`${order.shippingAddress.pincode}`);
       doc.moveDown();
   
       // Ordered items
@@ -251,13 +257,14 @@ exports.generateInvoice = async (req, res) => {
       order.orderedItems.forEach(async (item) => {
         doc.fontSize(12).text(`Product: ${item.pname}`);
         doc.fontSize(12).text(`Quantity: ${item.quantity}`);
-        doc.fontSize(12).text(`Price: Rs.${item.price}`);
+        doc.fontSize(12).text(`Price: $${item.price}`);
+        doc.fontSize(12).text(`Offer Discount: $${item.offerDiscount}`)
   
         doc.moveDown();
       });
   
       if(order.couponApplied!=null){
-        doc.fontSize(12).text(`Discount reduction: $${order.couponApplied.discountAmount}`);
+        doc.fontSize(12).text(`Coupon reduction: $${order.couponApplied.discountAmount}`);
       }
   
       // Total amount
