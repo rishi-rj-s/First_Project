@@ -195,12 +195,12 @@
                     </li>
                     <li class="nav-item">
                          <a class="nav-link text-white " href="/admin/viewreports">
-                           <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                             <i class="material-icons opacity-10">bar_chart</i>
-                           </div>
-                           <span class="nav-link-text ms-1">Sales Report</span>
+                              <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                                   <i class="material-icons opacity-10">bar_chart</i>
+                              </div>
+                              <span class="nav-link-text ms-1">Sales Report</span>
                          </a>
-                       </li>
+                    </li>
                     <li class="nav-item">
                          <a class="nav-link text-white " href="/admin/viewcoupons">
                               <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
@@ -261,12 +261,12 @@
                                                        <label for="stock">Category</label>
                                                        <select name="category" class="form-select">
                                                             <% cate.forEach(category=> { %>
-                                                                 <% if (product.category===category.category) { %>
-                                                                      <option value="<%= category.category %>" selected>
+                                                                 <% if (category._id===product.category) { %>
+                                                                      <option value="<%= category._id %>" selected>
                                                                            <%= category.category %>
                                                                       </option>
                                                                       <% } else { %>
-                                                                           <option value="<%= category.category %>">
+                                                                           <option value="<%= category._id %>">
                                                                                 <%= category.category %>
                                                                            </option>
                                                                            <% } %>

@@ -17,6 +17,11 @@ const schema = new mongoose.Schema({
             min: 1,
             max: 5,   // Maximum quantity allowed
         },
+        discount:{
+            type: Number,
+            default: 0,
+            required: true
+        }
     }],
     couponApplied:{
         type: Boolean,

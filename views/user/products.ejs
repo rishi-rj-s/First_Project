@@ -439,7 +439,7 @@
                   <% } else { %>
                     <h4 class="product-old-price">$<%= pdt.price %>
                     </h4>
-                    <h4 class="product-price text-lg">$<%= pdt.total_price %>
+                    <h4 class="product-price text-lg">$<%= (pdt.total_price - pdt.offerDiscount) %>
                     </h4>
                     <% } %>
               </div>
@@ -447,142 +447,7 @@
           </div>
           <% }); %>
       </div>
-
-      <script>
-        document.addEventListener('DOMContentLoaded', function () {
-          console.log('Document loaded'); // Debugging: Check if document is loaded
-
-          const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-
-          checkboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', function () {
-              console.log('Checkbox change event triggered'); // Debugging: Check if checkbox change event is triggered
-
-              const checkedCategories = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
-                .map(input => input.value);
-              console.log('Checked categories:', checkedCategories); // Debugging: Log checked categories
-
-              fetch(`/user/filter?categories=${checkedCategories.join(',')}`, {
-                method: 'GET',
-                headers: {
-                  'Content-Type': 'application/json'
-                }
-              })
-                .then(response => response.json())
-                .then(data => {
-                  console.log('Filtered products:', data); // Debugging: Log filtered products
-                  updateProductGrid(data); // Call function to update the product grid with filtered products
-                })
-                .catch(error => console.error('Error applying filter:', error)); // Debugging: Log any errors
-            });
-          });
-
-          // Function to update the product grid with filtered products
-          function updateProductGrid(products) {
-            const productGrid = document.getElementById('productGrid');
-            productGrid.innerHTML = ''; // Clear the existing products
-
-            if (products && products.length > 0) {
-              products.forEach(product => {
-                const productItem = document.createElement('div');
-                productItem.classList.add('col-md-4');
-                productItem.innerHTML = `
-                  <div id="product-${product._id}" class="single-product">
-                    <div class="part-1">
-                      <img src="/${product.images[0]}" alt="Product Image" style="height: 100%; width: 100%; background-repeat: no-repeat; background-size: cover; background-position: center;">
-                      <ul>
-                        ${product.stock > 0 ? `<li><a href="/user/addtocart/${product._id}"><i class="fa fa-shopping-cart"></i></a></li>` : ''}
-                        <li><a href="/user/addwishlist/${product._id}"><i class="fa fa-heart"></i></a></li>
-                        <li><a href="/user/productview/${product._id}"><i class="fa fa-expand"></i></a></li>
-                      </ul>
-                    </div>
-                    <div class="part-2">
-                      <h3 class="product-title">${product.p_name}</h3>
-                      ${product.stock <= 0 ? `<p class="text-danger">Out of Stock</p>` : `<h4 class="product-old-price">$${product.price}</h4><h4 class="product-price text-lg">$${product.total_price}</h4>`}
-                    </div>
-                  </div>
-                `;
-                productGrid.appendChild(productItem);
-              });
-            } else {
-              // Handle case when no products are found
-              productGrid.innerHTML = '<p>No products found.</p>';
-            }
-          }
-        });
-      </script>
-
-    </div>
-    <div class="col-md-8 text-right">
-      <button id="prevPageBtn" class="btn btn-primary">Previous Page</button>
-      <button id="nextPageBtn" class="btn btn-primary">Next Page</button>
-    </div>
-  </section>
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const productGrid = document.getElementById('productGrid');
-      const nextPageBtn = document.getElementById('nextPageBtn');
-      const prevPageBtn = document.getElementById('prevPageBtn');
-      let currentPage = <%= currentPage %>;
-      const totalPages = <%= totalPages %>;
-
-      nextPageBtn.addEventListener('click', function () {
-        if (currentPage < totalPages) {
-          currentPage++;
-          fetchProducts(`/user/fetchProducts?page=${currentPage}`);
-        }
-      });
-
-      prevPageBtn.addEventListener('click', function () {
-        if (currentPage > 1) {
-          currentPage--;
-          fetchProducts(`/user/fetchProducts?page=${currentPage}`);
-        }
-      });
-
-      function fetchProducts(url) {
-        fetch(url, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        })
-          .then(response => response.json())
-          .then(data => {
-            updateProductGrid(data.products); // Update the product grid with the new products
-            currentPage = data.currentPage; // Update the current page number
-          })
-          .catch(error => console.error('Error fetching products:', error));
-      }
-
-      function updateProductGrid(productsData) {
-        productGrid.innerHTML = ''; // Clear existing products in the grid
-
-        productsData.forEach(product => {
-          // Create product element and append it to the grid
-          const productItem = document.createElement('div');
-          productItem.classList.add('col-md-4');
-          productItem.innerHTML = `
-                  <div id="product-${product._id}" class="single-product">
-                    <div class="part-1">
-                      <img src="/${product.images[0]}" alt="Product Image" style="height: 100%; width: 100%; background-repeat: no-repeat; background-size: cover; background-position: center;">
-                      <ul>
-                        ${product.stock > 0 ? `<li><a href="/user/addtocart/${product._id}"><i class="fa fa-shopping-cart"></i></a></li>` : ''}
-                        <li><a href="/user/addwishlist/${product._id}"><i class="fa fa-heart"></i></a></li>
-                        <li><a href="/user/productview/${product._id}"><i class="fa fa-expand"></i></a></li>
-                      </ul>
-                    </div>
-                    <div class="part-2">
-                      <h3 class="product-title">${product.p_name}</h3>
-                      ${product.stock <= 0 ? `<p class="text-danger">Out of Stock</p>` : `<h4 class="product-old-price">$${product.price}</h4><h4 class="product-price text-lg">$${product.total_price}</h4>`}
-                    </div>
-                  </div>
-                `;
-          productGrid.appendChild(productItem);
-        });
-      }
-    });
-  </script>
+      </div></section>
   <!--  FOOTER MARKUP STARTS  -->
 
   <footer class="bg-dark text-light py-5">

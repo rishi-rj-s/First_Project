@@ -34,11 +34,14 @@ const schema = new mongoose.Schema({
         },
         quantity: {
             type: Number,
+            min: 1,
+            max: 5,
             required: true
         },
         offerDiscount: {
             type: Number,
-            default: 0
+            default: 0,
+            required: true
         }
     }],
     status: {
@@ -59,6 +62,11 @@ const schema = new mongoose.Schema({
         type: String,
         required: true,
         enum: ['COD', 'Wallet', 'RazorPay']
+    },
+    offerDisc:{
+        type: Number,
+        default: 0,
+        required: true
     },
     shippingAddress: {
         type: mongoose.Schema.Types.ObjectId,

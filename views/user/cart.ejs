@@ -258,12 +258,20 @@
                                     <i class="fas fa-trash"></i> Remove
                                   </button>
                                   <% if (cartItem.productId.discount) { %>
-                                    <div class="d-flex">
+                                    <div class="d-flex mt-1">
                                       Discount:
                                       <p class="text-success">
                                         &emsp13; <%= cartItem.productId.discount %>%
                                       </p>
                                     </div>
+                                    <%if(cartItem.productId.offerDiscount>0){%>
+                                      <div class="d-flex">
+                                        Offer Discount:
+                                        <p class="text-success">
+                                          &emsp13; Rs.<%= cartItem.productId.offerDiscount * cartItem.quantity %>
+                                        </p>
+                                      </div>
+                                      <%}%>
                                     <% } %>
                           </div>
                         </div>

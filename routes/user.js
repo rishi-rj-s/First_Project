@@ -7,6 +7,7 @@ const cartcontroller = require('../controller/cartcontroller')
 const ordercontroller = require('../controller/ordercontroller')
 const wishcontroller = require('../controller/wishcontroller')
 const couponcontroller = require('../controller/couponcontroller')
+const reportcontroller = require('../controller/reportcontroller')
 const { cookieJwtAuth, checkBlocked } = require("../controller/usercontroller");
 
 
@@ -35,7 +36,7 @@ route.post("/login",usercontroller.login)
 
 route.get('/profile',checkBlocked, cookieJwtAuth, usercontroller.profile);
 
-route.get('/wallet',checkBlocked, cookieJwtAuth, usercontroller.showWallet)
+route.get('/wallet',checkBlocked, cookieJwtAuth, usercontroller.showWallet);
 
 route.get('/address',checkBlocked, cookieJwtAuth, usercontroller.showAddress);
 route.get('/addaddress',checkBlocked, cookieJwtAuth, usercontroller.showAddAddress);
@@ -69,7 +70,7 @@ route.get('/vieworders',checkBlocked, cookieJwtAuth, ordercontroller.viewOrders)
 route.post('/razorpay/:cid',checkBlocked, cookieJwtAuth, ordercontroller.razorPayOrder)
 route.get('/cancelorder/:oid',checkBlocked, cookieJwtAuth, ordercontroller.cancelOrder);
 route.get('/returnorder/:oid',checkBlocked, cookieJwtAuth, ordercontroller.returnOrder);
-route.get('/generateinvoice/:oid',checkBlocked, cookieJwtAuth, ordercontroller.generateInvoice);
+route.get('/generateinvoice/:oid',checkBlocked, cookieJwtAuth, reportcontroller.generateInvoice);
 
 route.get("**",(req,res)=>{
      res.render('pagenotfound');

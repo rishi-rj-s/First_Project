@@ -228,8 +228,7 @@
                         <h5 class="card-title mr-2">
                           <%= cartItem.productId.p_name %>
                         </h5>
-                        <p>Qty: <%= cartItem.quantity %> || Total Price: <%= (cartItem.productId.total_price *
-                              cartItem.quantity) %>
+                        <p>Qty: <%= cartItem.quantity %> || Total Price: <%= ((cartItem.productId.total_price - cartItem.productId.offerDiscount) * cartItem.quantity) %>
                         </p>
                       </div>
                     </div>
@@ -264,7 +263,7 @@
           <div class="total-amount mb-1 col-md-6 col-lg-12">
             <h3>Grand Total</h3>
             <hr />
-            <p><strong>Total Amount: $<%= (usercart.subtotal - usercart.offerDiscount) %></strong></p>
+            <p><strong>Total Amount: $<%= (usercart.subtotal) %></strong></p>
           </div>
 
           <!-- Coupons -->
@@ -463,7 +462,7 @@
 
         <script src="https://checkout.razorpay.com/v1/checkout.js"
         data-key="rzp_test_sat2P9V0ocnwA6"
-        data-amount="<%= (usercart.subtotal - usercart.offerDiscount) * 100 %>"
+        data-amount="<%= usercart.subtotal * 100 %>"
         data-currency="INR"
         data-buttontext=""
         data-description="Payment for Order <%= usercart._id %>"

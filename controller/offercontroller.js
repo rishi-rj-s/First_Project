@@ -52,7 +52,7 @@ exports.addPOffer = async (req, res) => {
     const offer = await newOffer.save();
 
     pdt.offerActive = true;
-    pdt.offerDiscount = Math.round((discount / 100) * pdt.price);
+    pdt.offerDiscount = Math.round((discount / 100) * pdt.total_price);
     pdt.offerId = offer._id;
 
     await pdt.save();
@@ -112,7 +112,7 @@ exports.addCOffer = async (req, res) => {
       }
 
       product.offerActive = true;
-      product.offerDiscount = Math.round((discount / 100) * product.price);
+      product.offerDiscount = Math.round((discount / 100) * product.total_price);
       product.offerId = offer._id;
 
       await product.save();
@@ -159,13 +159,13 @@ exports.editOffer = async (req, res) => {
       const products = await ProductDb.find({category: offer.catId});
       for (const product of products) {  
         product.offerActive = true;
-        product.offerDiscount = Math.round((discount / 100) * product.price);
+        product.offerDiscount = Math.round((discount / 100) * product.total_price);
         product.offerId = offer._id;
         await product.save();
       }
     } else {
       const product = await ProductDb.findById(offer.pdtId);
-      product.offerDiscount = Math.round((discount / 100) * product.price);
+      product.offerDiscount = Math.round((discount / 100) * product.total_price);
 
       await product.save();
     }

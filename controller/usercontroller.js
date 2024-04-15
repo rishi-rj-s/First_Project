@@ -113,16 +113,12 @@ exports.products = async (req, res) => {
 
     // Find products including categories with listing: true, paginated
     const products = await ProductDb.find({ category: { $in: categoryNames } })
-      .skip(skip)
-      .limit(perPage);
 
     if (!products || products.length === 0) {
       return res.render("user/products", {
         message: "No products found.",
-        products: [],
+        products,
         category: categoriesToInclude,
-        currentPage: page,
-        totalPages: 0
       });
     }
 

@@ -85,14 +85,9 @@
           }
 
           .wishlist-items .card {
-               max-height: 200px;
-               /* Adjust this value to decrease the height */
                overflow: hidden;
                /* Hide any overflow content */
-               padding: 10px;
-               /* Adjust padding as needed */
-               margin-bottom: 10px;
-               /* Adjust margin as needed */
+               height: 100%;
           }
 
           .wishlist-items .card-title {
@@ -177,7 +172,7 @@
                     <div class="container mt-4 mb-4">
                          <div class="row">
                               <div class="col-md-8 offset-md-2 col-lg-8 offset-lg-2">
-                                   <h1 class="text-center mb-4">My Wish List</h1>
+                                   <h1 class="text-center mt-3 mb-4">My Wish List</h1>
                                    <div class="wishlist-items">
                                         <% if(items.length>0){items.forEach((item)=> { %>
                                              <div class="card">
@@ -196,13 +191,18 @@
                                                                       <%= item.product.description %>
                                                                  </p>
                                                                  <h5>
-                                                                      $<%= item.product.total_price %> <strike
+                                                                      $<%= (item.product.total_price - item.product.offerDiscount) %> <strike
                                                                                 style="font-size: medium;">$<%=
                                                                                      item.product.price %></strike>
                                                                  </h5>
-                                                                 <h7 class="text-success">
+                                                                 <h7 style="color: green; font-weight: 700;">
                                                                       <%= item.product.discount %>% Discount
-                                                                 </h7>
+                                                                 </h7><br>
+                                                                 <%if(item.product.offerActive){%>
+                                                                      <h7 style="color: green; font-weight: 600;">
+                                                                        Rs.<%=item.product.offerDiscount%> Offer Discount!!
+                                                                      </h7>
+                                                                      <%}%>
                                                                  <div class="d-flex mt-1" style="gap: 10px;">
                                                                       <% if(item.product.stock> 0) { %>
                                                                            <a href="/user/addtocart/<%= item.product._id%>"

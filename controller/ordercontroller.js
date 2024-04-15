@@ -97,9 +97,18 @@ exports.placeOrder = async (req, res) => {
         originalPrice: item.productId.price * item.quantity,
         price: totalPrice || 0, // Set default value if calculation results in NaN
         quantity: item.quantity,
+        offerDiscount: item.productId.offerDiscount * item.quantity
       };
     });
     // console.log(totalAmountAfterDiscount)
+
+    // Calculate the sum of all offerDiscount values using reduce
+    const offerDiscount = orderedItemsWithPrice.reduce((total, item) => {
+      // Add the offerDiscount of the current item to the total
+      return total + item.offerDiscount;
+    }, 0); // Initialize total with 0
+
+
 
     // Create the order with calculated prices
     const order = new Order({
@@ -110,21 +119,22 @@ exports.placeOrder = async (req, res) => {
       shippingAddress: address._id,
       paymentMethod: paymentMethod,
       paymentStatus: paymentStatus,
-      couponApplied: couponApplied
+      couponApplied: couponApplied,
+      offerDisc: offerDiscount
     });
 
     const a = await order.save();
 
-    if(paymentMethod === "Wallet"){
+    if (paymentMethod === "Wallet") {
       const history = new WalletHistory({
         userId: userId,
         transactionType: "Debit",
-        amount : usercart.subtotal,
+        amount: usercart.subtotal,
         order: a._id
       })
       await history.save();
     }
-    
+
     // Remove ordered products from the cart
     await Cart.findOneAndUpdate(
       { user: userId },
@@ -175,7 +185,7 @@ exports.razorPayOrder = async (req, res) => {
       return res.status(404).json({ message: "Address not found" });
     }
 
-    if(usercart.couponApplied){
+    if (usercart.couponApplied) {
       coupon = usercart.coupon;
     }
 
@@ -189,9 +199,18 @@ exports.razorPayOrder = async (req, res) => {
         originalPrice: item.productId.price * item.quantity,
         price: totalPrice || 0, // Set default value if calculation results in NaN
         quantity: item.quantity,
+        offerDiscount: item.productId.offerDiscount * item.quantity
       };
     });
     // console.log(totalAmountAfterDiscount)
+
+    // Calculate the sum of all offerDiscount values using reduce
+    const offerDiscount= orderedItemsWithPrice.reduce((total, item) => {
+      // Add the offerDiscount of the current item to the total
+      return total + item.offerDiscount;
+    }, 0); // Initialize total with 0
+
+
 
     // Create the order with calculated prices
     const order = new Order({
@@ -202,7 +221,8 @@ exports.razorPayOrder = async (req, res) => {
       shippingAddress: address._id,
       paymentMethod: "RazorPay",
       paymentStatus: "Completed",
-      couponApplied: coupon
+      couponApplied: coupon,
+      offerDisc: offerDiscount
     });
 
     await order.save();
@@ -229,7 +249,7 @@ exports.razorPayOrder = async (req, res) => {
 
     // Redirect to order success page
     return res.render("user/orderplaced", { order: "Success" });
-    
+
   } catch (e) {
     console.log(e);
     res.status(500).send("Internal Server Error")
@@ -282,10 +302,10 @@ exports.cancelOrder = async (req, res) => {
       const history = new WalletHistory({
         userId: id,
         transactionType: "Credit",
-        amount : userorder.totalAmount,
+        amount: userorder.totalAmount,
         order: userorder._id
       })
-      await history.save();  
+      await history.save();
     }
 
     // Iterate through ordered items to restock the products
@@ -358,81 +378,3 @@ exports.singleOrder = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 }
-
-exports.generateInvoice = async (req, res) => {
-  try {
-    const orderId = req.params.oid;
-    const order = await Order.findById(orderId)
-      .populate('couponApplied shippingAddress')
-
-    if (!order) {
-      return res.status(404).json({ message: 'Order not found' });
-    }
-
-    const doc = new PDFDocument();
-    // Set content disposition to attachment so that the browser will prompt the user to download the PDF
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', 'attachment; filename=order_invoice.pdf');
-    doc.pipe(res);
-
-    // Add content to the PDF document based on the order details
-    doc.image('public/img/landing/dp.png', {
-      width: 50,
-      align: 'right'
-    }).moveDown(0.5);
-
-    // Helper function to add underlined text
-    function addUnderlinedText(text, fontSize = 12, align = 'left') {
-      const textWidth = doc.widthOfString(text);
-      const textHeight = doc.heightOfString(text, { width: textWidth });
-      const startX = align === 'center' ? (doc.page.width - textWidth) / 2 : align === 'right' ? doc.page.width - textWidth : 0;
-      const startY = doc.y;
-
-      doc.fontSize(fontSize).text(text, { align });
-      doc.moveDown(0.5); // Add some vertical space after the text
-      doc.lineWidth(1).moveTo(startX, startY + textHeight + 2).lineTo(startX + textWidth, startY + textHeight + 2).stroke();
-    }
-
-    doc.fontSize(20).text('RISHI STUDIO', { align: 'center' });
-    doc.moveDown(0.5);
-    addUnderlinedText('Order Invoice', 18, 'center');
-    doc.moveDown();
-
-    // Order details
-    doc.fontSize(12).text(`Order ID: ${order._id}`);
-    doc.fontSize(12).text(`Order Date: ${order.orderDate.toDateString()}`);
-    doc.fontSize(12).text(`Payment Status: ${order.paymentStatus}`);
-    doc.fontSize(12).text(`Payment Method: ${order.paymentMethod}`);
-    doc.moveDown();
-
-
-    // User details
-    doc.fontSize(12).text(`User Name: ${order.name}`);
-    doc.fontSize(12).text(`User Address: ${order.shippingAddress.address}, ${order.shippingAddress.city}, ${order.shippingAddress.state}, ${order.shippingAddress.pincode}`);
-    doc.moveDown();
-
-    // Ordered items
-    // Ordered items
-    order.orderedItems.forEach(async (item) => {
-      doc.fontSize(12).text(`Product: ${item.pname}`);
-      doc.fontSize(12).text(`Quantity: ${item.quantity}`);
-      doc.fontSize(12).text(`Price: Rs.${item.price}`);
-
-      doc.moveDown();
-    });
-
-    if(order.couponApplied!=null){
-      doc.fontSize(12).text(`Discount reduction: $${order.couponApplied.discountAmount}`);
-    }
-
-    // Total amount
-    doc.fontSize(14).text(`Total Amount: Rs.${order.totalAmount}/-`, { align: 'right' });
-
-    doc.end();
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-};
-

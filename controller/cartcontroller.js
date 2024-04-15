@@ -46,7 +46,7 @@ exports.showCart = async (req, res) => {
         }
       }
 
-      if(usercart.couponApplied){
+      if (usercart.couponApplied) {
         subtotalFromCart -= usercart.discount;
       }
 
@@ -68,7 +68,6 @@ exports.addToCart = async (req, res) => {
   try {
     const id = req.params.id;
     const userId = req.session.user._id;
-    const quantity = req.query.quantity;
     // console.log(quantity);
 
     // Fetch the product and check stock availability
@@ -95,6 +94,7 @@ exports.addToCart = async (req, res) => {
 
     if (!cart) {
       cart = new CartDb({ user: userId, product: [], subtotal: 0 });
+      console.log("New cart used!")
     }
 
     const existingProductIndex = cart.product.findIndex((item) =>
@@ -108,22 +108,32 @@ exports.addToCart = async (req, res) => {
     if (product.stock > 0) {
       cart.product.push({
         productId: product._id,
-        quantity: quantity,
+        discount: product.offerDiscount
       });
+      console.log("Pushed Discount")
       // Check if couponApplied is true, then reset the discount and remove coupon-related fields
-    if (cart.couponApplied) {
-      cart.couponApplied = false;
-      cart.discount = 0;
-      cart.couponCode = undefined;
-      cart.coupon = undefined;
-    }
+      if (cart.couponApplied) {
+        cart.couponApplied = false;
+        cart.discount = 0;
+        cart.couponCode = undefined;
+        cart.coupon = undefined;
+      }
+      console.log("Coupon checked");
+
+      let discountTotal = cart.product.reduce((total, item) => {
+        // Multiply item.discount by item.quantity
+        const itemDiscount = item.discount;
+        return total - itemDiscount;
+      }, 0);
+      cart.subtotal = discountTotal;
+      console.log("Almost finished")
       await cart.save();
     } else {
       return res.status(400).json({ message: "Product out of stock" });
     }
     res.redirect("/user/cart?msg=addcart");
   } catch (error) {
-    console.error(error);
+    console.log(error);
     res.redirect("/user/cart?msg=error");
   }
 };
@@ -142,7 +152,7 @@ exports.removeCart = async (req, res) => {
 
     const unsetOperation = CartDb.findOneAndUpdate(
       { user: userId },
-      { $unset: { coupon: "", couponCode: "" , discount: null } },
+      { $unset: { coupon: "", couponCode: "", discount: null } },
       { new: true } // Return the updated document
     );
 
@@ -215,13 +225,14 @@ exports.updateQuantity = async (req, res) => {
         if (product.quantity >= product.productId.stock) {
           product.quantity = product.productId.stock;
         }
+        product.discount += product.productId.offerDiscount;
       }
     });
 
     // Recalculate the subtotal
     let subtotal = 0;
     updatedCartItem.product.forEach((item) => {
-      subtotal += item.productId.total_price * item.quantity;
+      subtotal += (item.productId.total_price - item.productId.offerDiscount) * item.quantity;
     });
     // console.log("Subtotal:", subtotal);
 

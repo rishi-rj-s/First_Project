@@ -307,13 +307,18 @@
             </div>
 
             <div class="mb-3">
-              <span class="h3">$<%=product.total_price%></span>
+              <span class="h3">$<%=(product.total_price - product.offerDiscount)%></span>
               <span class="text-muted">&nbsp;<del>$<%=product.price%></del></span>
             </div>
 
             <p style="color: green; font-weight: 700;">
               <%=product.discount%>% Discount
             </p>
+            <%if(product.offerActive){%>
+            <p style="color: green; font-weight: 700;">
+              Rs.<%=product.offerDiscount%> Offer Discount!!
+            </p>
+            <%}%>
 
             <p>
               <%=product.description%>
@@ -321,86 +326,8 @@
 
             <hr />
 
-            <div class="row mb-4">
-              <div class="col-md-4 col-6">
-                <label class="mb-2">Quantity</label>
-                <div class="input-group">
-                  <button class="btn btn-outline-secondary" type="button" id="decrementBtn">-</button>
-                  <input type="text" class="form-control border border-secondary"
-                    style="height: 35px; text-align: center;" value="1" readonly>
-                  <button class="btn btn-outline-secondary" type="button" id="incrementBtn">+</button>
-                </div>
-              </div>
-            </div>
-            <script>
-              document.addEventListener('DOMContentLoaded', function () {
-                const decrementBtn = document.getElementById('decrementBtn');
-                const incrementBtn = document.getElementById('incrementBtn');
-                const quantityInput = document.querySelector('.form-control');
-                const addToCartBtn = document.getElementById('addToCartBtn');
-                const stock = <%= product.stock %>; // Assuming product.stock contains the available stock
-            
-                // Set initial quantity to 1
-                quantityInput.value = 1;
-            
-                // Function to update input value and handle stock restrictions
-                function updateQuantity(newVal) {
-                  if (newVal < 1) {
-                    Swal.fire({
-                      title: 'Error!',
-                      text: 'Minimum quantity should be 1',
-                      icon: 'error',
-                      confirmButton: 'OK'
-                    });
-                    return;
-                  }
-                  if (newVal > stock) {
-                    Swal.fire({
-                      title: 'Error!',
-                      text: `There's only ${stock} stock left for this product`,
-                      icon: 'error',
-                      confirmButton: 'OK'
-                    });
-                    return;
-                  }
-                  quantityInput.value = newVal;
-                  addToCartBtn.href = `/user/addtocart/<%= product._id %>?quantity=${newVal}`;
-                }
-            
-                decrementBtn.addEventListener('click', function () {
-                  let currentValue = parseInt(quantityInput.value);
-                  if (currentValue > 1) {
-                    updateQuantity(currentValue - 1);
-                  }
-                });
-            
-                incrementBtn.addEventListener('click', function () {
-                  let currentValue = parseInt(quantityInput.value);
-                  if (currentValue < 5 && currentValue < stock) {
-                    updateQuantity(currentValue + 1);
-                  } else if (currentValue < stock) {
-                    Swal.fire({
-                      title: 'Error!',
-                      text: 'Maximum quantity should be 5',
-                      icon: 'error',
-                      confirmButton: 'OK'
-                    });
-                  } else {
-                    Swal.fire({
-                      title: 'Error!',
-                      text: `There's only ${stock} stock left for this product`,
-                      icon: 'error',
-                      confirmButton: 'OK'
-                    });
-                  }
-                });
-              });
-            </script>
-            
-
-
             <% if(product.stock> 0) { %>
-              <a href="/user/addtocart/<%= product._id %>?quantity=" class="btn btn-primary shadow-0" id="addToCartBtn">
+              <a href="/user/addtocart/<%= product._id %>" class="btn btn-primary shadow-0" id="addToCartBtn">
                 <i class="me-1 fa fa-shopping-basket"></i> Add to cart
               </a>
             <% } %>
