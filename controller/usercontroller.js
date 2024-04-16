@@ -11,6 +11,7 @@ const nodemailer = require("nodemailer");
 const path = require("path");
 const otpGenerator = require("otp-generator");
 const OrderDb = require("../model/ordermodel");
+const { error } = require("console");
 
 let uid = "";
 exports.login = async (req, res) => {
@@ -108,19 +109,17 @@ exports.products = async (req, res) => {
     const categoryNames = categoriesToInclude.map((cat) => cat._id);
 
     // Find products including categories with listing: true, paginated
-    const products = await ProductDb.find({ category: { $in: categoryNames } }).limit(3)
+    const [products, totalCount] = await Promise.all([
+      ProductDb.find({ category: { $in: categoryNames } }).limit(3),
+      ProductDb.countDocuments({ category: { $in: categoryNames } })
+    ]);
 
-    if (!products || products.length === 0) {
-      return res.render("user/products", {
-        message: "No products found.",
-        products,
-        category: categoriesToInclude,
-      });
-    }
+    const totalPages = Math.ceil(totalCount / 3);
 
     res.render("user/products", {
       products,
       category: categoriesToInclude,
+      totalPages
     });
   } catch (e) {
     console.log(e);
@@ -623,30 +622,35 @@ exports.actions = async (req, res) => {
   try {
     const page = req.query.page;
     const filter = req.query.filter;
-    const sort = req.query.sort;
-    console.log(page, filter, sort);
-    
+    const sortBy = (req.query.sort);
+    console.log(sortBy);
+    const sort = JSON.parse(sortBy);
+    console.log(sort);
+
     // Find categories with listing: true to include in products query
     const categoriesToInclude = await CatDb.find({ listing: true }).select(
       "category"
     );
-    const categoryNames = categoriesToInclude.map((cat) => cat._id);
+    const categoryIds = categoriesToInclude.map(cat => cat._id.toString());
 
-    // Find products including categories with listing: true, paginated
-    const products = await ProductDb.find({ category: { $in: categoryNames } }).limit(3)
+    const skip = (page - 1) * 3;
 
-    if (!products || products.length === 0) {
-      return res.render("user/products", {
-        message: "No products found.",
-        products,
-        category: categoriesToInclude,
-      });
-    }
+    const categories = filter.split(',');
+    let totalPages = 0
 
-    res.render("user/products", {
-      products,
-      category: categoriesToInclude,
-    });
+    // Check if all categories in the filter are included in categoriesToInclude
+    const hasMatchingId = categories.some(category => categoryIds.includes(category));
+
+    if (hasMatchingId) {
+      console.log("True")
+      const products = await ProductDb.find({ category: { $in: categories } }).sort(sort).limit(3).skip(skip);
+      console.log(products);
+      totalPages = await ProductDb.countDocuments({ category: { $in: categories } });
+
+      res.status(200).json({ products, totalPages }); // Send JSON response with products data
+    } else {
+      return res.status(404).json({ error: 'Categories in filter not included in allowed categories' }); // Send error response
+    }    
   } catch (e) {
     console.log(e);
     return res.status(500).send("Internal Server Error!");

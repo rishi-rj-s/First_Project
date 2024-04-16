@@ -195,6 +195,32 @@
       text-overflow: ellipsis;
     }
 
+    .custom-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .page-number {
+      margin: 0 5px;
+      padding: 5px 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #fff;
+      cursor: pointer;
+    }
+
+    .page-number:hover {
+      background-color: #f0f0f0;
+    }
+
+
     footer {
       margin-top: auto;
     }
@@ -347,7 +373,7 @@
             <% category.forEach((cat)=> { %>
               <div class="col-6 mb-2">
                 <div class="form-check">
-                  <input class="form-check-input" type="checkbox" value="<%= cat.category %>" id="<%= cat.category %>"
+                  <input class="form-check-input" type="checkbox" value="<%= cat._id %>" id="<%= cat.category %>"
                     checked>
                   <label class="form-check-label small-label" for="<%= cat.category %>">
                     <%= cat.category %>
@@ -365,12 +391,13 @@
           <div class="col-md-4">
             <label for="sortSelect">Sort By:</label>
             <select id="sortSelect" class="form-control">
-              <option value="/user/sortby?sortBy=nameAsc">Name (A-Z)</option>
-              <option value="/user/sortby?sortBy=nameDesc">Name (Z-A)</option>
-              <option value="/user/sortby?sortBy=priceAsc">Price (Low to High)</option>
-              <option value="/user/sortby?sortBy=priceDesc">Price (High to Low)</option>
-              <option value="/user/sortby?sortBy=available">Available</option>
-              <option value="/user/sortby?sortBy=newest">Latest</option>
+              <option value='{"_id": 1}'>None</option>
+              <option value='{"p_name": 1}'>Name (A-Z)</option>
+              <option value='{"p_name": -1}'>Name (Z-A)</option>
+              <option value='{"total_price": 1}'>Price (Low to High)</option>
+              <option value='{"total_price": -1}'>Price (High to Low)</option>
+              <option value='{"listing": "Listed"}'>Available</option>
+              <option value='{"_id": -1}'>Latest</option>
             </select>
           </div>
         </div>
@@ -390,39 +417,55 @@
       </div>
 
       <div class="row" id="productGrid">
-        <% products.forEach((pdt)=> { %>
-          <div class="col-md-4">
-            <div id="product-<%= pdt._id %>" class="single-product">
-              <div class="part-1">
-                <img src="/<%= pdt.images[0] %>" alt="Product Image"
-                  style="height: 100%; width: 100%; background-repeat: no-repeat; background-size: cover; background-position: center;">
-                <ul>
-                  <% if(pdt.stock> 0) { %>
-                    <li><a href="/user/addtocart/<%= pdt._id %>"><i class="fa fa-shopping-cart"></i></a></li>
-                    <% } %>
-                      <li><a href="/user/addwishlist/<%= pdt._id %>"><i class="fa fa-heart"></i></a></li>
-                      <li><a href="/user/productview/<%= pdt._id %>"><i class="fa fa-expand"></i></a></li>
-                </ul>
-              </div>
-              <div class="part-2">
-                <h3 class="product-title">
-                  <%= pdt.p_name %>
-                </h3>
-                <% if(pdt.stock <=0) { %>
-                  <p class="text-danger">Out of Stock</p>
-                  <% } else { %>
-                    <h4 class="product-old-price">$<%= pdt.price %>
-                    </h4>
-                    <h4 class="product-price text-lg">$<%= (pdt.total_price - pdt.offerDiscount) %>
-                    </h4>
-                    <% } %>
-              </div>
+        <%if(products.length < 1){%>
+          <div class="container custom-container">
+            <div class="centered-message">
+              <h1 class="bg-dark p-4 rounded text-white">No Products Found!</h1>
             </div>
           </div>
-          <% }); %>
+          <%}else{%>
+            <% products.forEach((pdt)=> { %>
+              <div class="col-md-4">
+                <div id="product-<%= pdt._id %>" class="single-product">
+                  <div class="part-1">
+                    <img src="/<%= pdt.images[0] %>" alt="Product Image"
+                      style="height: 100%; width: 100%; background-repeat: no-repeat; background-size: cover; background-position: center;">
+                    <ul>
+                      <% if(pdt.stock> 0) { %>
+                        <li><a href="/user/addtocart/<%= pdt._id %>"><i class="fa fa-shopping-cart"></i></a></li>
+                        <% } %>
+                          <li><a href="/user/addwishlist/<%= pdt._id %>"><i class="fa fa-heart"></i></a></li>
+                          <li><a href="/user/productview/<%= pdt._id %>"><i class="fa fa-expand"></i></a></li>
+                    </ul>
+                  </div>
+                  <div class="part-2">
+                    <h3 class="product-title">
+                      <%= pdt.p_name %>
+                    </h3>
+                    <% if(pdt.stock <=0) { %>
+                      <p class="text-danger">Out of Stock</p>
+                      <% } else { %>
+                        <h4 class="product-old-price">$<%= pdt.price %>
+                        </h4>
+                        <h4 class="product-price text-lg">$<%= (pdt.total_price - pdt.offerDiscount) %>
+                        </h4>
+                        <% } %>
+                  </div>
+                </div>
+              </div>
+              <% })}; %>
       </div>
     </div>
   </section>
+
+  <div class="pagination">
+    <%for(i=1;i<=totalPages;i++){%>
+      <button class="page-number">
+        <%=i%>
+      </button>
+      <%}%>
+  </div>
+
 
   <!-- CONTENT ENDS -->
   <!--  FOOTER MARKUP STARTS  -->
@@ -450,6 +493,94 @@
   </footer>
 
   <!--  FOOTER MARKUP ENDS  -->
+  <script>
+    // Fetch function to send data to the backend
+    function fetchData() {
+      const checkboxes = document.querySelectorAll('.form-check-input');
+      const sortSelect = document.getElementById('sortSelect');
+      const currentPage = document.querySelector('.page-number.active').textContent.trim();
+
+      const filters = Array.from(checkboxes)
+        .filter(checkbox => checkbox.checked)
+        .map(checkbox => checkbox.value);
+
+      const sortBy = sortSelect.value;
+
+      const queryParams = new URLSearchParams({
+        filter: filters.join(','),
+        sort: sortBy,
+        page: currentPage
+      });
+      console.log("Triggered!")
+
+      fetch('/user/actions?' + queryParams)
+        .then(response => response.json())
+        .then(data => {
+          // Update product grid with fetched data
+          const productGrid = document.getElementById('productGrid');
+          productGrid.innerHTML = ''; // Clear existing content
+
+          if (data.products.length < 1) {
+            productGrid.innerHTML = `
+          <div class="container custom-container">
+            <div class="centered-message">
+              <h1 class="bg-dark p-4 rounded text-white">No Products Found!</h1>
+            </div>
+          </div>
+        `;
+          } else {
+            data.products.forEach(product => {
+              productGrid.innerHTML += `
+            <div class="col-md-4">
+              <div id="product-${product._id}" class="single-product">
+                <div class="part-1">
+                  <img src="/${product.images[0]}" alt="Product Image" style="height: 100%; width: 100%; background-repeat: no-repeat; background-size: cover; background-position: center;">
+                  <ul>
+                    ${product.stock > 0 ? `<li><a href="/user/addtocart/${product._id}"><i class="fa fa-shopping-cart"></i></a></li>` : ''}
+                    <li><a href="/user/addwishlist/${product._id}"><i class="fa fa-heart"></i></a></li>
+                    <li><a href="/user/productview/${product._id}"><i class="fa fa-expand"></i></a></li>
+                  </ul>
+                </div>
+                <div class="part-2">
+                  <h3 class="product-title">${product.p_name}</h3>
+                  ${product.stock <= 0 ? `<p class="text-danger">Out of Stock</p>` : `<h4 class="product-old-price">$${product.price}</h4><h4 class="product-price text-lg">$${product.total_price - product.offerDiscount}</h4>`}
+                </div>
+              </div>
+            </div>
+          </div>`;
+            });
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching data:', error);
+        });
+    }
+
+    // Attach event listeners to pagination buttons
+    const paginationButtons = document.querySelectorAll('.page-number');
+    paginationButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        // Remove active class from all buttons
+        paginationButtons.forEach(btn => btn.classList.remove('active'));
+        // Add active class to the clicked button
+        button.classList.add('active');
+        // Fetch data when a pagination button is clicked
+        fetchData();
+      });
+    });
+
+    // Attach event listener to checkboxes and sort select
+    const formElements = document.querySelectorAll('.form-check-input, #sortSelect');
+    formElements.forEach(element => {
+      element.addEventListener('change', () => {
+        // Fetch data when a checkbox or sort select is changed
+        fetchData();
+      });
+    });
+
+    // Initial fetch when the page loads
+    fetchData();
+  </script>
   <!-- Include jQuery library -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </body>

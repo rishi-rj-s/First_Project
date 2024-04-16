@@ -110,7 +110,6 @@ exports.addToCart = async (req, res) => {
         productId: product._id,
         discount: product.offerDiscount
       });
-      console.log("Pushed Discount")
       // Check if couponApplied is true, then reset the discount and remove coupon-related fields
       if (cart.couponApplied) {
         cart.couponApplied = false;
@@ -118,7 +117,6 @@ exports.addToCart = async (req, res) => {
         cart.couponCode = undefined;
         cart.coupon = undefined;
       }
-      console.log("Coupon checked");
 
       let discountTotal = cart.product.reduce((total, item) => {
         // Multiply item.discount by item.quantity
@@ -126,7 +124,6 @@ exports.addToCart = async (req, res) => {
         return total - itemDiscount;
       }, 0);
       cart.subtotal = discountTotal;
-      console.log("Almost finished")
       await cart.save();
     } else {
       return res.status(400).json({ message: "Product out of stock" });

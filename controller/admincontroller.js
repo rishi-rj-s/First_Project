@@ -35,16 +35,16 @@ exports.login = async (req, res) => {
 
 exports.dashboard = async (req, res) => {
   try {
-    const [quantitySold, completedOrdersCount, overallDiscount] = await Promise.all([
+    const [quantitySold, completedOrdersCount] = await Promise.all([
       getTotalQuantitySold(),
       getCompletedOrdersCount(),
-      getOverallDiscount()
+      // getOverallDiscount()
     ]);
 
     // Render your dashboard with the retrieved data
     res.render('admin/dashboard', {
       totalQuantitySold: quantitySold, totalOrders: completedOrdersCount,
-      overallDiscount: overallDiscount.toFixed(2) // Convert to 2 decimal places
+      // overallDiscount: overallDiscount.toFixed(2) // Convert to 2 decimal places
     });
   } catch (error) {
     console.error('Error in dashboard function:', error);
@@ -57,8 +57,8 @@ async function getTotalQuantitySold() {
   const result = await OrderDb.aggregate([
     {
       $match: {
-        'orderedItems.paymentStatus': 'Completed', // Filter by paymentStatus Completed
-        'orderedItems.returned': false // Filter by returned: false within orderedItems
+        'paymentStatus': 'Completed', // Filter by paymentStatus Completed
+        'returned': false // Filter by returned: false within orderedItems
       }
     },
     {
@@ -77,46 +77,47 @@ async function getTotalQuantitySold() {
 
 // Function to get the count of completed orders
 async function getCompletedOrdersCount() {
-  const count = await OrderDb.countDocuments({ 'orderedItems.paymentStatus': 'Completed' });
+  const count = await OrderDb.countDocuments({ 'paymentStatus': 'Completed' });
   return count;
 }
 
 // Function to calculate the overall discount from each order and sum it up
-async function getOverallDiscount() {
-  const result = await OrderDb.aggregate([
-    {
-      $match: {
-        'orderedItems.paymentStatus': 'Completed', // Filter by paymentStatus Completed
-        'orderedItems.returned': false // Filter by returned: false within orderedItems
-      }
-    },
-    {
-      $unwind: '$orderedItems' // Deconstruct the orderedItems array
-    },
-    {
-      $group: {
-        _id: '$_id', // Group by document _id to maintain document boundaries
-        totalOriginalPrice: { $sum: '$orderedItems.originalPrice' }, // Sum originalPrice per document
-        totalAmount: { $first: '$totalAmount' } // Take the totalAmount from the document
-      }
-    },
-    {
-      $group: {
-        _id: null, // Group by null to calculate the total discount across all documents
-        totalOriginalPrice: { $sum: '$totalOriginalPrice' }, // Sum all originalPrices
-        totalAmount: { $sum: '$totalAmount' } // Sum all totalAmounts
-      }
-    },
-    {
-      $project: {
-        overallDiscount: { $subtract: ['$totalOriginalPrice', '$totalAmount'] } // Calculate overall discount
-      }
-    }
-  ]);
+// async function getOverallDiscount() {
+//   const result = await OrderDb.aggregate([
+//     {
+//       $match: {
+//         'paymentStatus': 'Completed', // Filter by paymentStatus Completed
+//         'returned': false // Filter by returned: false within orderedItems
+//       }
+//     },
+//     {
+//       $unwind: '$orderedItems' // Deconstruct the orderedItems array
+//     },
+//     {
+//       $group: {
+//         _id: '$_id', // Group by document _id to maintain document boundaries
+//         totalOriginalPrice: { $sum: '$orderedItems.originalPrice' }, // Sum originalPrice per document
+//         totalAmount: { $first: '$totalAmount' }, // Take the totalAmount from the document
+//         totalOfferDiscount: { $sum: '$orderedItems.offerDiscount' } // Sum offerDisc per document
+//       }
+//     },
+//     {
+//       $group: {
+//         _id: null, // Group by null to calculate the total discount across all documents
+//         totalOriginalPrice: { $sum: '$totalOriginalPrice' }, // Sum all originalPrices
+//         totalAmount: { $sum: '$totalAmount' }, // Sum all totalAmounts
+//         totalOfferDiscount: { $sum: '$totalOfferDiscount' } // Sum all offerDisc values
+//       }
+//     },
+//     {
+//       $project: {
+//         overallDiscount: { $subtract: ['$totalOriginalPrice', { $subtract: ['$totalAmount', '$totalOfferDiscount'] }] } // Calculate overall discount
+//       }
+//     }
+//   ]);
 
-  return result.length > 0 ? result[0].overallDiscount : 0; // Return overall discount or 0 if no data found
-}
-
+//   return result.length > 0 ? result[0].overallDiscount : 0; // Return overall discount or 0 if no data found
+// }
 
 
 exports.logout = (req, res) => {
@@ -233,8 +234,8 @@ exports.addproduct = async (req, res) => {
 
     // Save the data to the collection
     const newPdt = await data.save();
-    const offer = await OfferDb.findOne({catId: newPdt.category})
-    if(offer){
+    const offer = await OfferDb.findOne({ catId: newPdt.category })
+    if (offer) {
       newPdt.offerActive = true;
       newPdt.offerId = offer._id;
       newPdt.offerDiscount = Math.round((offer.discount / 100) * newPdt.total_price);
@@ -320,7 +321,7 @@ exports.viewSingleProduct = async (req, res) => {
   if (!product) {
     return res.status(404).send('Product not found');
   }
-  
+
   if (!product) {
     res.status(404).send("No such product found!");
   }
@@ -397,7 +398,7 @@ exports.deletecategory = async (req, res) => {
       // Delete the category itself
       CatDb.findByIdAndDelete(id),
       // Delete offers in the category
-      OfferDb.findOneAndDelete({catId: id})
+      OfferDb.findOneAndDelete({ catId: id })
     ]);
 
     res.status(200).redirect("/admin/category");
@@ -525,7 +526,7 @@ exports.acceptReturn = async (req, res) => {
 
     // Update the user's wallet with the returnedItemPrice
     await Userdb.findByIdAndUpdate(userId, { $inc: { wallet: returnedItemPrice } });
-    
+
     const history = new WalletHistory({
       userId: updatedOrder.user_id,
       transactionType: "Credit",
@@ -542,15 +543,15 @@ exports.acceptReturn = async (req, res) => {
   }
 };
 
-exports.singleOrder = async(req, res)=> {
-  try{
+exports.singleOrder = async (req, res) => {
+  try {
     const orderId = req.query.oid;
     const order = await OrderDb.findById(orderId);
-    if(!order || order.length == 0){
+    if (!order || order.length == 0) {
       res.status(404).send("No order found");
     }
-    res.render('admin/order',{order})
-  }catch(e){
+    res.render('admin/order', { order })
+  } catch (e) {
     console.log(e.toString());
     res.status(500).send("Internal Server Error");
   }
