@@ -43,10 +43,6 @@ const schema = new mongoose.Schema({
         type: Number,
         default: 0
     },
-    offerDiscount: {
-        type: Number,
-        default: 0
-    }
 },
 {
     timestamps: true

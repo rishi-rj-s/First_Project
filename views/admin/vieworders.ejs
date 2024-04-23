@@ -64,6 +64,12 @@
       background-color: #fff;
       color: #333;
     }
+
+    .object-fit-cover {
+      object-fit: cover;
+      height: 100px;
+      width: 100px;
+    }
   </style>
 </head>
 
@@ -344,45 +350,45 @@
                           </thead>
                           <tbody>
                             <% orders.forEach(order=> {%>
-                                <% if (order.status==="Delivered" ) { %>
-                                  <tr>
-                                    <td class="text-center align-middle">
-                                      <%= order._id %>
-                                    </td>
-                                    <td class="text-center align-middle">
-                                      <%= order.paymentStatus %>
-                                    </td>
-                                    <td class="text-center align-middle">
-                                      <%= order.orderDate.toLocaleDateString() %>
-                                    </td>
-                                    <td class="text-center align-middle">
-                                      <%= order.status %>
-                                    </td>
-                                    <td class="text-center align-middle">
-                                      $<%= order.totalAmount %>
-                                    </td>
-                                    <td class="text-center align-middle">
-                                      <button class="btn btn-info view-order-btn"
-                                        data-order-id="<%= order._id %>">View</button>
-                                    </td>
-                                    <script>
-                                      document.addEventListener('DOMContentLoaded', function () {
-                                        const viewOrderBtns = document.querySelectorAll('.view-order-btn');
-  
-                                        viewOrderBtns.forEach(btn => {
-                                          btn.addEventListener('click', function () {
-                                            const orderId = this.getAttribute('data-order-id');
-                                            const url = `/admin/viewsingleorder?oid=${orderId}`;
-  
-                                            // Redirect to the specified URL
-                                            window.location.href = url;
-                                          });
+                              <% if (order.status==="Delivered" ) { %>
+                                <tr>
+                                  <td class="text-center align-middle">
+                                    <%= order._id %>
+                                  </td>
+                                  <td class="text-center align-middle">
+                                    <%= order.paymentStatus %>
+                                  </td>
+                                  <td class="text-center align-middle">
+                                    <%= order.orderDate.toLocaleDateString() %>
+                                  </td>
+                                  <td class="text-center align-middle">
+                                    <%= order.status %>
+                                  </td>
+                                  <td class="text-center align-middle">
+                                    $<%= order.totalAmount %>
+                                  </td>
+                                  <td class="text-center align-middle">
+                                    <button class="btn btn-info view-order-btn"
+                                      data-order-id="<%= order._id %>">View</button>
+                                  </td>
+                                  <script>
+                                    document.addEventListener('DOMContentLoaded', function () {
+                                      const viewOrderBtns = document.querySelectorAll('.view-order-btn');
+
+                                      viewOrderBtns.forEach(btn => {
+                                        btn.addEventListener('click', function () {
+                                          const orderId = this.getAttribute('data-order-id');
+                                          const url = `/admin/viewsingleorder?oid=${orderId}`;
+
+                                          // Redirect to the specified URL
+                                          window.location.href = url;
                                         });
                                       });
-                                    </script>
-                                  </tr>
-                                  <% } %>
-                                      <% }) %>
+                                    });
+                                  </script>
+                                </tr>
+                                <% } %>
+                                  <% }) %>
                           </tbody>
                         </table>
                       </div>
@@ -403,52 +409,37 @@
                           </thead>
                           <tbody>
                             <% orders.forEach(order=> {%>
-                                <% if (order.status==="Processing" ) { %>
+
+                              <% order.orderedItems.forEach(pdt=> { %>
+                                <% if (pdt.status==="Processing" ) { %>
                                   <tr>
                                     <td class="text-center align-middle">
-                                      <%= order._id %>
+                                      <img class="object-fit-cover" src="/<%= pdt.pimages[0] %>" alt="">
                                     </td>
                                     <td class="text-center align-middle">
-                                      <%= order.paymentStatus %>
+                                      <%= pdt.status %>
                                     </td>
                                     <td class="text-center align-middle">
-                                      <%= order.orderDate.toLocaleDateString() %>
+                                      <%= pdt.pname %>
                                     </td>
                                     <td class="text-center align-middle">
-                                      <%= order.status %>
+                                      <%= pdt.quantity %>
                                     </td>
                                     <td class="text-center align-middle">
-                                      <%= order.totalAmount %>
+                                      <%= pdt.price %>
                                     </td>
                                     <td class="text-center align-middle">
-                                      <button class="btn btn-success accept"
-                                        data-orderid="<%= order._id %>">
+                                      <button class="btn btn-success accept" data-orderid="<%= order._id %>"
+                                        data-product-id="<%= pdt._id %>">
                                         Accept
                                       </button>
-                                      <button class="btn btn-danger reject"
-                                        data-orderid="<%= order._id %>">
+                                      <button class="btn btn-danger reject" data-orderid="<%= order._id %>"
+                                        data-product-id="<%= pdt._id %>">
                                         Reject
                                       </button>
                                     </td>
-                                    <td class="text-center align-middle">
-                                      <button class="btn btn-info view-order-btn"
-                                        data-order-id="<%= order._id %>">View</button>
-                                    </td>
-                                    <script>
-                                      document.addEventListener('DOMContentLoaded', function () {
-                                        const viewOrderBtns = document.querySelectorAll('.view-order-btn');
-  
-                                        viewOrderBtns.forEach(btn => {
-                                          btn.addEventListener('click', function () {
-                                            const orderId = this.getAttribute('data-order-id');
-                                            const url = `/admin/viewsingleorder?oid=${orderId}`;
-  
-                                            // Redirect to the specified URL
-                                            window.location.href = url;
-                                          });
-                                        });
-                                      });
-                                    </script>
+                                    <%}%>
+                                      <%})%>
                                   </tr>
                                   <script>
                                     document.addEventListener("DOMContentLoaded", function () {
@@ -456,6 +447,7 @@
                                       document.querySelectorAll('.accept').forEach(button => {
                                         button.addEventListener('click', function () {
                                           const orderId = this.getAttribute('data-orderid'); // Replace with actual order ID
+                                          const productId = this.getAttribute('data-product-id')
 
                                           // Display SweetAlert confirmation dialog
                                           Swal.fire({
@@ -469,7 +461,7 @@
                                           }).then((result) => {
                                             if (result.isConfirmed) {
                                               // Send AJAX request to accept route
-                                              fetch(`/admin/acceptreturn/${orderId}`, {
+                                              fetch(`/admin/acceptreturn/${orderId}?pid=${productId}`, {
                                                 method: "GET",
                                               })
                                                 .then((response) => {
@@ -515,6 +507,7 @@
                                       document.querySelectorAll('.reject').forEach(button => {
                                         button.addEventListener('click', function () {
                                           const orderId = this.getAttribute('data-orderid'); // Replace with actual order ID
+                                          const productId = this.getAttribute('data-product-id')
 
                                           // Display SweetAlert confirmation dialog
                                           Swal.fire({
@@ -528,7 +521,7 @@
                                           }).then((result) => {
                                             if (result.isConfirmed) {
                                               // Send AJAX request to reject route
-                                              fetch(`/admin/rejectreturn/${orderId}`, {
+                                              fetch(`/admin/rejectreturn/${orderId}?pid=${productId}`, {
                                                 method: "GET",
                                               })
                                                 .then((response) => {
@@ -571,8 +564,7 @@
                                       });
                                     });
                                   </script>
-                                  <% } %>
-                                      <% }) %>
+                                  <% }) %>
                           </tbody>
                         </table>
                       </div>
@@ -592,45 +584,45 @@
                           </thead>
                           <tbody>
                             <% orders.forEach(order=> {%>
-                                <% if (order.status==="Cancelled" ) { %>
-                                  <tr>
-                                    <td class="text-center align-middle">
-                                      <%= order._id %>
-                                    </td>
-                                    <td class="text-center align-middle">
-                                      <%= order.paymentStatus %>
-                                    </td>
-                                    <td class="text-center align-middle">
-                                      <%= order.orderDate.toLocaleDateString() %>
-                                    </td>
-                                    <td class="text-center align-middle">
-                                      <%= order.status %>
-                                    </td>
-                                    <td class="text-center align-middle">
-                                      <%= order.totalAmount %>
-                                    </td>
-                                    <td class="text-center align-middle">
-                                      <button class="btn btn-info view-order-btn"
-                                        data-order-id="<%= order._id %>">View</button>
-                                    </td>
-                                    <script>
-                                      document.addEventListener('DOMContentLoaded', function () {
-                                        const viewOrderBtns = document.querySelectorAll('.view-order-btn');
-  
-                                        viewOrderBtns.forEach(btn => {
-                                          btn.addEventListener('click', function () {
-                                            const orderId = this.getAttribute('data-order-id');
-                                            const url = `/admin/viewsingleorder?oid=${orderId}`;
-  
-                                            // Redirect to the specified URL
-                                            window.location.href = url;
-                                          });
+                              <% if (order.status==="Cancelled" ) { %>
+                                <tr>
+                                  <td class="text-center align-middle">
+                                    <%= order._id %>
+                                  </td>
+                                  <td class="text-center align-middle">
+                                    <%= order.paymentStatus %>
+                                  </td>
+                                  <td class="text-center align-middle">
+                                    <%= order.orderDate.toLocaleDateString() %>
+                                  </td>
+                                  <td class="text-center align-middle">
+                                    <%= order.status %>
+                                  </td>
+                                  <td class="text-center align-middle">
+                                    <%= order.totalAmount %>
+                                  </td>
+                                  <td class="text-center align-middle">
+                                    <button class="btn btn-info view-order-btn"
+                                      data-order-id="<%= order._id %>">View</button>
+                                  </td>
+                                  <script>
+                                    document.addEventListener('DOMContentLoaded', function () {
+                                      const viewOrderBtns = document.querySelectorAll('.view-order-btn');
+
+                                      viewOrderBtns.forEach(btn => {
+                                        btn.addEventListener('click', function () {
+                                          const orderId = this.getAttribute('data-order-id');
+                                          const url = `/admin/viewsingleorder?oid=${orderId}`;
+
+                                          // Redirect to the specified URL
+                                          window.location.href = url;
                                         });
                                       });
-                                    </script>
-                                  </tr>
-                                  <% } %>
-                                      <% }) %>
+                                    });
+                                  </script>
+                                </tr>
+                                <% } %>
+                                  <% }) %>
                           </tbody>
                         </table>
                       </div>
@@ -650,45 +642,45 @@
                           </thead>
                           <tbody>
                             <% orders.forEach(order=> {%>
-                                <% if (order.status==="Returned" ) { %>
-                                  <tr>
-                                    <td class="text-center align-middle">
-                                      <%= order._id %>
-                                    </td>
-                                    <td class="text-center align-middle">
-                                      <%= order.paymentStatus %>
-                                    </td>
-                                    <td class="text-center align-middle">
-                                      <%= order.orderDate.toLocaleDateString() %>
-                                    </td>
-                                    <td class="text-center align-middle">
-                                      <%= order.status %>
-                                    </td>
-                                    <td class="text-center align-middle">
-                                      <%= order.totalAmount %>
-                                    </td>
-                                    <td class="text-center align-middle">
-                                      <button class="btn btn-info view-order-btn"
-                                        data-order-id="<%= order._id %>">View</button>
-                                    </td>
-                                    <script>
-                                      document.addEventListener('DOMContentLoaded', function () {
-                                        const viewOrderBtns = document.querySelectorAll('.view-order-btn');
-  
-                                        viewOrderBtns.forEach(btn => {
-                                          btn.addEventListener('click', function () {
-                                            const orderId = this.getAttribute('data-order-id');
-                                            const url = `/admin/viewsingleorder?oid=${orderId}`;
-  
-                                            // Redirect to the specified URL
-                                            window.location.href = url;
-                                          });
+                              <% if (order.status==="Returned" ) { %>
+                                <tr>
+                                  <td class="text-center align-middle">
+                                    <%= order._id %>
+                                  </td>
+                                  <td class="text-center align-middle">
+                                    <%= order.paymentStatus %>
+                                  </td>
+                                  <td class="text-center align-middle">
+                                    <%= order.orderDate.toLocaleDateString() %>
+                                  </td>
+                                  <td class="text-center align-middle">
+                                    <%= order.status %>
+                                  </td>
+                                  <td class="text-center align-middle">
+                                    <%= order.totalAmount %>
+                                  </td>
+                                  <td class="text-center align-middle">
+                                    <button class="btn btn-info view-order-btn"
+                                      data-order-id="<%= order._id %>">View</button>
+                                  </td>
+                                  <script>
+                                    document.addEventListener('DOMContentLoaded', function () {
+                                      const viewOrderBtns = document.querySelectorAll('.view-order-btn');
+
+                                      viewOrderBtns.forEach(btn => {
+                                        btn.addEventListener('click', function () {
+                                          const orderId = this.getAttribute('data-order-id');
+                                          const url = `/admin/viewsingleorder?oid=${orderId}`;
+
+                                          // Redirect to the specified URL
+                                          window.location.href = url;
                                         });
                                       });
-                                    </script>
-                                  </tr>
-                                  <% } %>
-                                      <% }) %>
+                                    });
+                                  </script>
+                                </tr>
+                                <% } %>
+                                  <% }) %>
                           </tbody>
                         </table>
                       </div>

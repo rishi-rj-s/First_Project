@@ -42,6 +42,15 @@ const schema = new mongoose.Schema({
             type: Number,
             default: 0,
             required: true
+        },
+        status: {
+            type: String,
+            default: "Pending",
+            enum: ['Pending', 'Shipped', 'Processing', 'Delivered', 'Cancelled', 'Returned']
+        },
+        returned: {
+            type: Boolean,
+            default: false
         }
     }],
     status: {
@@ -63,7 +72,7 @@ const schema = new mongoose.Schema({
         required: true,
         enum: ['COD', 'Wallet', 'RazorPay']
     },
-    offerDisc:{
+    offerDisc: {
         type: Number,
         default: 0,
         required: true

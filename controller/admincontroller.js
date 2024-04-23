@@ -40,11 +40,63 @@ exports.dashboard = async (req, res) => {
       getCompletedOrdersCount(),
       // getOverallDiscount()
     ]);
+    const orders = await OrderDb.find().populate('orderedItems.productId');
+    // Calculate top 10 products bought
+    const productFrequency = {};
+    orders.forEach(order => {
+      order.orderedItems  .forEach(item => {
+        const productId = item.productId._id.toString();
+        if (productFrequency[productId]) {
+          productFrequency[productId]++;
+        } else {
+          productFrequency[productId] = 1;
+        }
+      });
+    });
+    const topProductsIds = Object.keys(productFrequency)
+      .sort((a, b) => productFrequency[b] - productFrequency[a])
+      .slice(0, 10);
+
+    const topProducts = await Promise.all(topProductsIds.map(async productId => {
+      const product = await ProductDb.findById(productId);
+      return {
+        id: productId,
+        name: product.p_name,
+        images: product.images,
+        frequency: productFrequency[productId]
+      };
+    }));
+
+    // Calculate top 10 categories
+    const categoryFrequency = {};
+    orders.forEach(order => {
+      order.orderedItems.forEach(item => {
+        const categoryId = item.productId.category.toString();
+        if (categoryFrequency[categoryId]) {
+          categoryFrequency[categoryId]++;
+        } else {
+          categoryFrequency[categoryId] = 1;
+        }
+      });
+    });
+    const topCategoriesIds = Object.keys(categoryFrequency)
+      .sort((a, b) => categoryFrequency[b] - categoryFrequency[a])
+      .slice(0, 10);
+
+    const topCategories = await Promise.all(topCategoriesIds.map(async categoryId => {
+      const category = await CatDb.findById(categoryId);
+      return {
+        id: categoryId,
+        name: category.category,
+        frequency: categoryFrequency[categoryId]
+      };
+    }));
+
 
     // Render your dashboard with the retrieved data
     res.render('admin/dashboard', {
       totalQuantitySold: quantitySold, totalOrders: completedOrdersCount,
-      // overallDiscount: overallDiscount.toFixed(2) // Convert to 2 decimal places
+      topProducts, topCategories
     });
   } catch (error) {
     console.error('Error in dashboard function:', error);
@@ -466,16 +518,15 @@ exports.viewOrders = async (req, res) => {
 exports.rejectReturn = async (req, res) => {
   try {
     const orderId = req.params.oid;
+    const productId = req.query.pid;
 
     // Use async/await with findByIdAndUpdate to ensure proper error handling
     const updatedOrder = await OrderDb.findByIdAndUpdate(
-      orderId,
-      {
-        $set: {
-          status: "Delivered",
-          returned: true,
-        },
-      },
+      { _id: orderId, "orderedItems._id": productId }, // Find the order by ID and product ID
+      { $set: { 
+        "orderedItems.$.status": "Delivered", // Update status to "Delivered"
+        "orderedItems.$.returned": true // Set returned to true
+    }  }, // Update the status of the specified product
       {
         new: true, // Return the updated document
       }
@@ -498,20 +549,25 @@ exports.rejectReturn = async (req, res) => {
 exports.acceptReturn = async (req, res) => {
   try {
     const orderId = req.params.oid;
+    const productId = req.query.pid;
+    console.log(orderId, productId);
 
     // Use async/await with findByIdAndUpdate to ensure proper error handling
-    const updatedOrder = await OrderDb.findByIdAndUpdate(
-      orderId,
-      {
-        $set: {
-          status: "Returned",
-          paymentStatus: "Refunded",
-        }
+    const updatedOrder = await OrderDb.findOneAndUpdate(
+      { 
+          _id: orderId, 
+      },
+      { 
+          $set: { 
+              "orderedItems.$[item].status": "Returned" 
+          } 
       },
       {
-        new: true, // Return the updated document
+          new: true,
+          arrayFilters: [{ "item._id": productId }]
       }
-    );
+  );
+  
 
     // Check if updatedOrder is null (order not found) or if it's updated successfully
     if (!updatedOrder) {
@@ -519,7 +575,12 @@ exports.acceptReturn = async (req, res) => {
     }
 
     // Calculate the price of the returned item
-    const returnedItemPrice = updatedOrder.totalAmount;
+    const returnedProduct = updatedOrder.orderedItems.find(item => item._id.toString() === productId);
+    if (!returnedProduct) {
+        return res.status(404).json({ msg: "Product not found in order" });
+    }
+
+    const returnedItemPrice = returnedProduct.price;
 
     // Get the user ID from the updatedOrder
     const userId = updatedOrder.user_id;

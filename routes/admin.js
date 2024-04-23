@@ -85,7 +85,14 @@ route.post('/editoffer', cookieJwtAuth, offercontroller.editOffer)
 route.get('/deleteoffer/:offId', cookieJwtAuth, offercontroller.deleteOffer);
 
 route.get('/viewreports', cookieJwtAuth, reportcontroller.renderReportPage);
-route.get('/sales-report', cookieJwtAuth, reportcontroller.generateReport)
+route.get('/sales-report', cookieJwtAuth, reportcontroller.generateReport);
+route.get('/sales-data', reportcontroller.salesdata);
+route.get('/salesamount-data', reportcontroller.salesamountdata);
+route.get('/monthly-sales-data', reportcontroller.monthlysalesdata);
+route.get('/monthly-salesamount-data', reportcontroller.monthlysalesamountdata);
+route.get('/yearly-sales-data', reportcontroller.yearlysalesdata);
+route.get('/yearly-salesamount-data', reportcontroller.yearlysalesamountdata);
+
 
 
 route.get("**", (req, res) => {

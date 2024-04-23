@@ -388,13 +388,14 @@
             <h3>Payment Method</h3>
             <hr />
             <div class="form-check">
-              <% if ((usercart.subtotal - usercart.offerDiscount) <=1000) { %>
+              <% if (usercart.subtotal <=1000) { %>
                 <input class="form-check-input" type="radio" name="paymentMethod" value="COD" />
                 <label class="form-check-label" for="COD">
                   Cash On Delivery
                 </label>
                 <% } else { %>
-                  <label class="form-check-label" style="color: red;">`
+                  <label class="form-check-label" style="color: red;">
+                    COD Unavailable; Price >= 1000
                   </label>
                   <% } %>
                     <br>
@@ -404,7 +405,7 @@
                       RazorPay
                     </label>
                     <br>
-                    <% if ((usercart.subtotal - usercart.offerDiscount) <=wallet) { %>
+                    <% if (usercart.subtotal <= wallet) { %>
                       <input class="form-check-input" type="radio" name="paymentMethod" value="Wallet" />
                       <label class="form-check-label" for="wallet">
                         Wallet (Remaining: $<%= wallet %>)

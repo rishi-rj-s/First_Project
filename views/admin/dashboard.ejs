@@ -36,6 +36,13 @@
   <!-- Nepcha Analytics (nepcha.com) -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.all.min.js"></script>
 
+  <style>
+    .object-fit-cover {
+      object-fit: cover;
+      height: 100px;
+      width: 100px;
+    }
+  </style>
 </head>
 
 <body class="g-sidenav-show  bg-gray-200">
@@ -147,7 +154,9 @@
               </div>
               <div class="text-end pt-1">
                 <p class="text-sm mb-0 text-capitalize">Stocks Sold</p>
-                <h4 class="mb-0"><%= totalQuantitySold %></h4>
+                <h4 class="mb-0">
+                  <%= totalQuantitySold %>
+                </h4>
               </div>
             </div>
           </div>
@@ -161,46 +170,130 @@
               </div>
               <div class="text-end pt-1">
                 <p class="text-sm mb-0 text-capitalize">Total Order's</p>
-                <h4 class="mb-0"><%= totalOrders %></h4>
+                <h4 class="mb-0">
+                  <%= totalOrders %>
+                </h4>
               </div>
             </div>
           </div>
-        </div>
         </div>
       </div>
-      <div class="row mt-4">
-        <div class="col-lg-6 col-md-6 mt-4 mb-4">
-          <div class="card z-index-2 ">
-            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
-              <div class="bg-gradient-primary shadow-primary border-radius-lg py-3 pe-1">
-                <div class="chart">
-                  <canvas id="chart-bars" class="chart-canvas" height="170"></canvas>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <h6 class="mb-0 ">Website Views</h6>
-              <p class="text-sm ">Last Campaign Performance</p>
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-6 col-md-6 mt-4 mb-4">
-          <div class="card z-index-2  ">
-            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
-              <div class="bg-gradient-success shadow-success border-radius-lg py-3 pe-1">
-                <div class="chart">
-                  <canvas id="chart-line" class="chart-canvas" height="170"></canvas>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <h6 class="mb-0 "> Daily Sales </h6>
-              <p class="text-sm "> (<span class="font-weight-bolder">+15%</span>) increase in today sales. </p>
-            </div>
-          </div>
-        </div>
-        
+    </div>
+    <div class="row justify-content-between mt-3">
+      <div class="col-4">
+        <h2>Charts</h2>
       </div>
+      <div class="col-md-2 me-3 ms-5">
+        <!-- Dropdown for filtering sales data -->
+        <select id="intervalSelect" class="form-select bg-dark text-white">
+          <option value="weekly" class="text-center" selected>Weekly</option>
+          <option value="monthly" class="text-center">Monthly</option>
+          <option value="yearly" class="text-center">Yearly</option>
+        </select>
+      </div>
+
+    </div>
+    <div class="row mt-4 mb-4">
+      <div class="col-lg-6 col-md-6 mt-4 mb-4">
+        <div class="card z-index-2 ">
+          <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
+            <div class="bg-gradient-primary shadow-primary border-radius-lg py-3 pe-1">
+              <div class="chart">
+                <canvas id="chart-bars" class="chart-canvas" height="150"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <h6 class="mb-0 ">Sales</h6>
+            <p class="text-sm ">Sales in a Week/month /year</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 col-md-6 mt-4 mb-4">
+        <div class="card z-index-2  ">
+          <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
+            <div class="bg-gradient-success shadow-success border-radius-lg py-3 pe-1">
+              <div class="chart">
+                <canvas id="chart-line" class="chart-canvas" height="150"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <h6 class="mb-0 "> Sales Amount </h6>
+            <p class="text-sm ">Sales Amount of Sales per week/month/Year </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+    <div class="container-fluid mb-5 row">
+      <div class="col-lg-6 mb-5">
+        <div class="card shadow">
+          <div class="card-header bg-primary text-white">
+            <h3 class="card-title">Top 10 Products</h3>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover">
+                <thead>
+                  <tr>
+                    <th class="text-center">Image</th>
+                    <th>Product Name</th>
+                    <th class="text-center">Sold</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% topProducts.forEach(product=> { %>
+                    <tr>
+                      <td class="te xt-center"><img src="/<%= product.images[0] %>" class="object-fit-cover"
+                          alt="<%= product.name %>"></td>
+                      <td class="text-start text-truncate" style="max-width: 150px;">
+                        <%= product.name %>
+                      </td>
+                      <td class="text-center">
+                        <%= product.frequency %>
+                      </td>
+                    </tr>
+                    <% }); %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6 mb-5">
+        <div class="card shadow">
+          <div class="card-header bg-success text-white">
+            <h3 class="card-title">Top 10 Categories</h3>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover">
+                <thead>
+                  <tr>
+                    <th>Category Name</th>
+                    <th class="text-center">Sold</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% topCategories.forEach(category=> { %>
+                    <tr>
+                      <td class="text-start text-truncate" style="max-width: 150px;">
+                        <%= category.name %>
+                      </td>
+                      <td class="text-center">
+                        <%= category.frequency %>
+                      </td>
+                    </tr>
+                    <% }); %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
     <!--   Core JS Files   -->
     <script src="/js/admin/core/popper.min.js"></script>
@@ -209,250 +302,123 @@
     <script src="/js/admin/plugins/smooth-scrollbar.min.js"></script>
     <script src="/js/admin/plugins/chartjs.min.js"></script>
     <script>
-      var ctx = document.getElementById("chart-bars").getContext("2d");
+      document.addEventListener('DOMContentLoaded', function () {
+        const ctx = document.getElementById('chart-bars').getContext('2d');
+        const ctx2 = document.getElementById('chart-line').getContext('2d');
 
-      new Chart(ctx, {
-        type: "bar",
-        data: {
-          labels: ["M", "T", "W", "T", "F", "S", "S"],
-          datasets: [{
-            label: "Sales",
-            tension: 0.4,
-            borderWidth: 0,
-            borderRadius: 4,
-            borderSkipped: false,
-            backgroundColor: "rgba(255, 255, 255, .8)",
-            data: [50, 20, 10, 22, 50, 10, 40],
-            maxBarThickness: 6
-          },],
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              display: false,
+        const intervalSelect = document.getElementById('intervalSelect');
+
+        try {
+          let salesUrl = '/admin/sales-data';
+          let salesAmountUrl = '/admin/salesamount-data';
+
+          intervalSelect.value = 'weekly';
+
+          intervalSelect.addEventListener('change', async function () {
+            const selectedInterval = intervalSelect.value;
+            switch (selectedInterval) {
+              case 'weekly':
+                salesUrl = '/admin/sales-data';
+                salesAmountUrl = '/admin/salesamount-data';
+                break;
+              case 'monthly':
+                salesAmountUrl = '/admin/monthly-salesamount-data';
+                salesUrl = '/admin/monthly-sales-data';
+                break;
+              case 'yearly':
+                salesUrl = '/admin/yearly-sales-data';
+                salesAmountUrl = '/admin/yearly-salesamount-data';
+                break;
+              default:
+                break;
             }
-          },
-          interaction: {
-            intersect: false,
-            mode: 'index',
-          },
-          scales: {
-            y: {
-              grid: {
-                drawBorder: false,
-                display: true,
-                drawOnChartArea: true,
-                drawTicks: false,
-                borderDash: [5, 5],
-                color: 'rgba(255, 255, 255, .2)'
-              },
-              ticks: {
-                suggestedMin: 0,
-                suggestedMax: 500,
-                beginAtZero: true,
-                padding: 10,
-                font: {
-                  size: 14,
-                  weight: 300,
-                  family: "Roboto",
-                  style: 'normal',
-                  lineHeight: 2
-                },
-                color: "#fff"
-              },
+
+            // Fetch data using updated URLs
+            await fetchDataAndRenderCharts();
+          });
+
+          async function fetchDataAndRenderCharts() {
+            const salesResponse = await fetch(salesUrl);
+            const salesData = await salesResponse.json();
+
+            const salesAmountResponse = await fetch(salesAmountUrl);
+            const salesAmountData = await salesAmountResponse.json();
+
+            // Update chart data
+            salesChart.data.labels = salesData.labels;
+            salesChart.data.datasets[0].data = salesData.sales;
+            salesAmountChart.data.labels = salesAmountData.labels;
+            salesAmountChart.data.datasets[0].data = salesAmountData.salesAmount;
+
+            // Re-render charts
+            salesChart.update();
+            salesAmountChart.update();
+          }
+
+          const salesChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: [],
+              datasets: [{
+                label: 'Sales',
+                data: [],
+                backgroundColor: 'rgba(255, 255, 255, .8)',
+                maxBarThickness: 6
+              }]
             },
-            x: {
-              grid: {
-                drawBorder: false,
-                display: true,
-                drawOnChartArea: true,
-                drawTicks: false,
-                borderDash: [5, 5],
-                color: 'rgba(255, 255, 255, .2)'
-              },
-              ticks: {
-                display: true,
-                color: '#f8f9fa',
-                padding: 10,
-                font: {
-                  size: 14,
-                  weight: 300,
-                  family: "Roboto",
-                  style: 'normal',
-                  lineHeight: 2
+            options: {
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  ticks: {
+                    color: 'rgba(0, 0, 0, 1)' // Set text color for y-axis
+                  }
                 },
+                x: {
+                  ticks: {
+                    color: 'rgba(0, 0, 0, 1)' // Set text color for x-axis
+                  }
+                }
               }
-            },
-          },
-        },
-      });
-
-
-      var ctx2 = document.getElementById("chart-line").getContext("2d");
-
-      new Chart(ctx2, {
-        type: "line",
-        data: {
-          labels: ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-          datasets: [{
-            label: "Mobile apps",
-            tension: 0,
-            borderWidth: 0,
-            pointRadius: 5,
-            pointBackgroundColor: "rgba(255, 255, 255, .8)",
-            pointBorderColor: "transparent",
-            borderColor: "rgba(255, 255, 255, .8)",
-            borderColor: "rgba(255, 255, 255, .8)",
-            borderWidth: 4,
-            backgroundColor: "transparent",
-            fill: true,
-            data: [50, 40, 300, 320, 500, 350, 200, 230, 500],
-            maxBarThickness: 6
-
-          }],
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              display: false,
             }
-          },
-          interaction: {
-            intersect: false,
-            mode: 'index',
-          },
-          scales: {
-            y: {
-              grid: {
-                drawBorder: false,
-                display: true,
-                drawOnChartArea: true,
-                drawTicks: false,
-                borderDash: [5, 5],
-                color: 'rgba(255, 255, 255, .2)'
-              },
-              ticks: {
-                display: true,
-                color: '#f8f9fa',
-                padding: 10,
-                font: {
-                  size: 14,
-                  weight: 300,
-                  family: "Roboto",
-                  style: 'normal',
-                  lineHeight: 2
-                },
-              }
+          });
+
+          const salesAmountChart = new Chart(ctx2, {
+            type: 'line',
+            data: {
+              labels: [],
+              datasets: [{
+                label: 'Sales Amount',
+                data: [],
+                borderColor: 'rgba(255, 255, 255, .8)',
+                backgroundColor: 'transparent',
+                borderWidth: 4,
+                pointRadius: 5,
+                pointBackgroundColor: 'rgba(255, 255, 255, .8)',
+                fill: true
+              }]
             },
-            x: {
-              grid: {
-                drawBorder: false,
-                display: false,
-                drawOnChartArea: false,
-                drawTicks: false,
-                borderDash: [5, 5]
-              },
-              ticks: {
-                display: true,
-                color: '#f8f9fa',
-                padding: 10,
-                font: {
-                  size: 14,
-                  weight: 300,
-                  family: "Roboto",
-                  style: 'normal',
-                  lineHeight: 2
+            options: {
+              scales: {
+                y: {
+                  ticks: {
+                    color: 'rgba(0, 0, 0, 1)' // Set text color for y-axis
+                  }
                 },
+                x: {
+                  ticks: {
+                    color: 'rgba(0, 0, 0, 1)' // Set text color for x-axis
+                  }
+                }
               }
-            },
-          },
-        },
-      });
-
-      var ctx3 = document.getElementById("chart-line-tasks").getContext("2d");
-
-      new Chart(ctx3, {
-        type: "line",
-        data: {
-          labels: ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-          datasets: [{
-            label: "Mobile apps",
-            tension: 0,
-            borderWidth: 0,
-            pointRadius: 5,
-            pointBackgroundColor: "rgba(255, 255, 255, .8)",
-            pointBorderColor: "transparent",
-            borderColor: "rgba(255, 255, 255, .8)",
-            borderWidth: 4,
-            backgroundColor: "transparent",
-            fill: true,
-            data: [50, 40, 300, 220, 500, 250, 400, 230, 500],
-            maxBarThickness: 6
-
-          }],
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              display: false,
             }
-          },
-          interaction: {
-            intersect: false,
-            mode: 'index',
-          },
-          scales: {
-            y: {
-              grid: {
-                drawBorder: false,
-                display: true,
-                drawOnChartArea: true,
-                drawTicks: false,
-                borderDash: [5, 5],
-                color: 'rgba(255, 255, 255, .2)'
-              },
-              ticks: {
-                display: true,
-                padding: 10,
-                color: '#f8f9fa',
-                font: {
-                  size: 14,
-                  weight: 300,
-                  family: "Roboto",
-                  style: 'normal',
-                  lineHeight: 2
-                },
-              }
-            },
-            x: {
-              grid: {
-                drawBorder: false,
-                display: false,
-                drawOnChartArea: false,
-                drawTicks: false,
-                borderDash: [5, 5]
-              },
-              ticks: {
-                display: true,
-                color: '#f8f9fa',
-                padding: 10,
-                font: {
-                  size: 14,
-                  weight: 300,
-                  family: "Roboto",
-                  style: 'normal',
-                  lineHeight: 2
-                },
-              }
-            },
-          },
-        },
+          });
+
+
+          fetchDataAndRenderCharts();
+        } catch (error) {
+          console.error(error);
+        }
       });
     </script>
     <script>

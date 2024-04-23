@@ -21,6 +21,7 @@ exports.showCart = async (req, res) => {
 
     // Initialize total subtotal for the cart
     let subtotalFromCart = 0;
+    let offerDiscount = 0;
 
     // Check if usercart exists and has products
     if (usercart && usercart.product.length > 0) {
@@ -34,7 +35,7 @@ exports.showCart = async (req, res) => {
         if (product.quantity >= product.productId.stock) {
           product.quantity = product.productId.stock;
         }
-        let offerDiscount = product.productId.offerDiscount;
+        offerDiscount = product.productId.offerDiscount;
 
         // Check if the product is in stock
         if (product.productId.stock >= product.quantity) {
@@ -42,7 +43,7 @@ exports.showCart = async (req, res) => {
           const updatedProduct = await ProductDb.findById(
             product.productId._id
           );
-          subtotalFromCart += (updatedProduct.total_price - offerDiscount) * product.quantity;
+          subtotalFromCart += updatedProduct.total_price * product.quantity;
         }
       }
 
@@ -51,7 +52,7 @@ exports.showCart = async (req, res) => {
       }
 
       // Update subtotal for the cart
-      usercart.subtotal = subtotalFromCart;
+      usercart.subtotal = subtotalFromCart - offerDiscount;
 
       // Save the updated cart item
       await usercart.save();

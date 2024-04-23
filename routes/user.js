@@ -68,7 +68,9 @@ route.get('/viewsingleorder',checkBlocked, cookieJwtAuth, ordercontroller.single
 route.get('/checkcoupon',checkBlocked, cookieJwtAuth, couponcontroller.checkCoupon);
 route.post('/placeorder',checkBlocked, cookieJwtAuth, ordercontroller.placeOrder);
 route.get('/vieworders',checkBlocked, cookieJwtAuth, ordercontroller.viewOrders);
-route.post('/razorpay/:cid',checkBlocked, cookieJwtAuth, ordercontroller.razorPayOrder)
+route.post('/razorpay/:cid',checkBlocked, cookieJwtAuth, ordercontroller.razorPayOrder);
+route.get('/pendingpay/:oid', checkBlocked, cookieJwtAuth, ordercontroller.renderPendingPay)
+route.post('/pendingpay/:oid',checkBlocked, cookieJwtAuth, ordercontroller.pendingPay);
 route.get('/cancelorder/:oid',checkBlocked, cookieJwtAuth, ordercontroller.cancelOrder);
 route.get('/returnorder/:oid',checkBlocked, cookieJwtAuth, ordercontroller.returnOrder);
 route.get('/generateinvoice/:oid',checkBlocked, cookieJwtAuth, reportcontroller.generateInvoice);

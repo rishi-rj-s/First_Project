@@ -1,6 +1,5 @@
 const Address = require("../model/addressmodel");
 const Order = require("../model/ordermodel");
-const Category = require("../model/categorymodel");
 const User = require("../model/usermodel")
 const Cart = require("../model/cartmodel");
 const Product = require("../model/productmodel");
@@ -59,7 +58,8 @@ exports.placeOrder = async (req, res) => {
     ])
 
     if (usercart.couponApplied === true) {
-      couponApplied = true;
+      couponApplied = usercart.coupon;
+      console.log("True")
     }
 
     if (!usercart) {
@@ -70,7 +70,7 @@ exports.placeOrder = async (req, res) => {
     }
 
     // Check if total amount is above 1000 for COD
-    if (paymentMethod === 'COD' && totalAmountAfterDiscount > 1000) {
+    if (paymentMethod === 'COD' && usercart.subtotal > 1000) {
       return res.status(400).json({ message: 'Cash On Delivery is not allowed for orders above 1000' });
     }
 
@@ -205,7 +205,7 @@ exports.razorPayOrder = async (req, res) => {
     // console.log(totalAmountAfterDiscount)
 
     // Calculate the sum of all offerDiscount values using reduce
-    const offerDiscount= orderedItemsWithPrice.reduce((total, item) => {
+    const offerDiscount = orderedItemsWithPrice.reduce((total, item) => {
       // Add the offerDiscount of the current item to the total
       return total + item.offerDiscount;
     }, 0); // Initialize total with 0
@@ -253,6 +253,51 @@ exports.razorPayOrder = async (req, res) => {
   } catch (e) {
     console.log(e);
     res.status(500).send("Internal Server Error")
+  }
+}
+
+exports.renderPendingPay = async (req, res) => {
+  try {
+    const orderId = req.params.oid;
+    // Fetch orders, categories, and user from the database
+    const order = await Order.findById(orderId)
+      .populate("shippingAddress")
+
+    const user = req.session.user;
+    // console.log(orders)
+    // Render the order list page and pass the orders, categories, user, and cancelledProducts data to the view
+    res.render("user/razorpay", { order, user });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
+exports.pendingPay = async (req, res) => {
+  try {
+    const orderId = req.params.oid;
+    // console.log(orderId)
+
+    // Fetch orders, categories, and user from the database
+    const orders = await Order.findById(orderId)
+
+    if(!orders || orders.length < 1){
+      res.status(404).send("Order not found!");
+    }
+
+    if(orders.paymentStatus === "Pending"){
+      orders.paymentStatus = "Completed";
+    }else{
+      res.status(404).send("Payment cannot be completed!")
+    }
+
+    await orders.save();
+
+    // Render the order list page and pass the orders, categories, user, and cancelledProducts data to the view
+    res.redirect("/user/vieworders?msg=paysuc");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
   }
 }
 
@@ -336,12 +381,13 @@ exports.cancelOrder = async (req, res) => {
 exports.returnOrder = async (req, res) => {
   try {
     const orderId = req.params.oid;
-    // console.log(orderId)
+    const productId = req.query.pid;
+    // console.log(orderId, productId)
 
     // Use async/await with findByIdAndUpdate to ensure proper error handling
-    const updatedOrder = await Order.findByIdAndUpdate(
-      orderId,
-      { $set: { status: "Processing" } },
+    const updatedOrder = await Order.findOneAndUpdate(
+      { _id: orderId, "orderedItems.productId": productId }, // Find the order by ID and product ID
+      { $set: { "orderedItems.$.status": "Processing" } }, // Update the status of the specified product
       {
         new: true, // Return the updated document
       }
@@ -368,11 +414,21 @@ exports.singleOrder = async (req, res) => {
   try {
     const orderId = req.query.oid;
     const name = req.session.user.name
-    const order = await Order.findById(orderId);
+    const order = await Order.findById(orderId).populate('shippingAddress');
     if (!order || order.length == 0) {
       res.status(404).send("No order found");
     }
     res.render('user/vieworder', { order, name })
+  } catch (e) {
+    console.log(e.toString());
+    res.status(500).send("Internal Server Error");
+  }
+}
+
+exports.cancelSingle = async (req, res) => {
+  try {
+    const orderId = req.params.oid;
+    const productId = req.query.pid;
   } catch (e) {
     console.log(e.toString());
     res.status(500).send("Internal Server Error");

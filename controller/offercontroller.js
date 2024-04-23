@@ -108,14 +108,19 @@ exports.addCOffer = async (req, res) => {
     for (const product of products) {
       if (product.offerActive) {
         let offerId = product.offerId;
-        await OfferDb.findByIdAndDelete(offerId);
+        let offDisc = Math.round((discount / 100) * product.total_price);
+        if(product.offerDiscount > offDisc){
+          continue;
+        }else{
+          await OfferDb.findByIdAndDelete(offerId);
+        }
+      }else{
+        product.offerActive = true;
+        product.offerDiscount = Math.round((discount / 100) * product.total_price);
+        product.offerId = offer._id;
+  
+        await product.save();  
       }
-
-      product.offerActive = true;
-      product.offerDiscount = Math.round((discount / 100) * product.total_price);
-      product.offerId = offer._id;
-
-      await product.save();
     }
 
     res.redirect('/admin/offers?msg=cofs');
