@@ -28,7 +28,8 @@ exports.renderOrderPage = async (req, res) => {
       Address.find({ user_id: id })
     ]);
     let subtotal = usercart.subtotal;
-    let coupons = await CouponDb.find({ minimumPurchaseAmount: { $lte: subtotal } });
+    let date = Date.now()
+    let coupons = await CouponDb.find({ minimumPurchaseAmount: { $lte: subtotal }, expiryDate: {$gte: date} });
 
     const razorpayKeyId = process.env.KEY_ID;
     // console.log(razorpayKeyId);
@@ -169,6 +170,8 @@ exports.razorPayOrder = async (req, res) => {
     const cartId = req.params.cid;
     const addId = req.body.addressId;
     const userId = req.session.user;
+    const paymentStatus = req.body.paymentStatus || "Completed";
+    // console.log(paymentStatus);
     let coupon;
     // console.log(cartId, addId);
 
@@ -208,8 +211,7 @@ exports.razorPayOrder = async (req, res) => {
     const offerDiscount = orderedItemsWithPrice.reduce((total, item) => {
       // Add the offerDiscount of the current item to the total
       return total + item.offerDiscount;
-    }, 0); // Initialize total with 0
-
+    }, 0); 
 
 
     // Create the order with calculated prices
@@ -220,7 +222,7 @@ exports.razorPayOrder = async (req, res) => {
       totalAmount: usercart.subtotal,
       shippingAddress: address._id,
       paymentMethod: "RazorPay",
-      paymentStatus: "Completed",
+      paymentStatus: paymentStatus,
       couponApplied: coupon,
       offerDisc: offerDiscount
     });
@@ -275,19 +277,20 @@ exports.renderPendingPay = async (req, res) => {
 
 exports.pendingPay = async (req, res) => {
   try {
+    console.log("Triggered!")
     const orderId = req.params.oid;
     // console.log(orderId)
 
     // Fetch orders, categories, and user from the database
     const orders = await Order.findById(orderId)
 
-    if(!orders || orders.length < 1){
+    if (!orders || orders.length < 1) {
       res.status(404).send("Order not found!");
     }
 
-    if(orders.paymentStatus === "Pending"){
+    if (orders.paymentStatus === "Pending" || orders.paymentStatus === "Failed") {
       orders.paymentStatus = "Completed";
-    }else{
+    } else {
       res.status(404).send("Payment cannot be completed!")
     }
 
@@ -306,11 +309,34 @@ exports.viewOrders = async (req, res) => {
     const id = req.session.user._id;
     // Fetch orders, categories, and user from the database
     const orders = await Order.find({ user_id: id })
-      .populate("orderedItems.productId")
+      .populate("orderedItems.productId").limit(5)
       .sort({ orderDate: -1 });
+
+    let pages = await Order.countDocuments({ user_id: id });
+    pages = Math.ceil(pages/5)
     // console.log(orders)
     // Render the order list page and pass the orders, categories, user, and cancelledProducts data to the view
-    res.render("user/orders", { orders, username: req.session.user.name });
+    res.render("user/orders", { orders, username: req.session.user.name, pages });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
+exports.viewOrdersMore = async (req, res) => {
+  try {
+    const id = req.session.user._id;
+    const page = req.query.page;
+    let jump = (page-1) * 5;
+    console.log(id, page, jump)
+
+    // Fetch orders, categories, and user from the database
+    const orders = await Order.find({ user_id: id })
+      .populate("orderedItems.productId").limit(5).skip(jump)
+      .sort({ orderDate: -1 });
+    // console.log(orders)
+    // return the order list page and pass the orders, categories, user, and cancelledProducts data to the view
+    return res.status(200).json({ orders}); // Send JSON response with orders data
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
@@ -378,6 +404,105 @@ exports.cancelOrder = async (req, res) => {
   }
 };
 
+exports.cancelSingle = async (req, res) => {
+  try {
+    const userId = req.session.user._id;
+    const orderId = req.params.oid;
+    const productId = req.query.pid;
+    console.log(userId, orderId, productId);
+
+    // Find the order and check its payment status
+    const order = await Order.findById(orderId).populate('couponApplied');
+    // Check if the order exists and belongs to the user
+    if (!order || order.user_id.toString() !== userId) {
+      return res.status(404).json({ message: 'Order not found or unauthorized' });
+    }
+
+    // Find the ordered item corresponding to the specified product ID
+    const orderedItem = order.orderedItems.find(item => item.productId.toString() === productId);
+
+    // Check if the ordered item exists
+    if (!orderedItem) {
+      return res.status(404).json({ message: 'Product not found in the order' });
+    }
+
+    // Update the status of the ordered item to Cancelled
+    orderedItem.status = 'Cancelled';
+    orderedItem.returned = true;
+    let couponAmount = 0;
+    let minimumAmount = 0;
+
+    if (order.paymentStatus == "Completed") {
+      if(order.couponApplied){
+        couponAmount = order.couponApplied.discountAmount;
+        minimumAmount = order.couponApplied.minimumPurchaseAmount;
+        console.log(couponAmount, minimumAmount)
+      }
+      if((order.totalAmount - orderedItem.price) > minimumAmount){
+        let refund = orderedItem.price - orderedItem.offerDiscount;
+        await User.findByIdAndUpdate(userId, { $inc: { wallet: refund } });
+        const history = new WalletHistory({
+          userId: userId,
+          transactionType: "Credit",
+          amount: refund,
+          order: order._id
+        })
+        await history.save();
+      }else{
+        let refund = ((orderedItem.price - orderedItem.offerDiscount) - couponAmount);
+        await User.findByIdAndUpdate(userId, { $inc: { wallet: refund } });
+        const history = new WalletHistory({
+          userId: userId,
+          transactionType: "Credit",
+          amount: refund,
+          order: order._id
+        })
+        await history.save();
+      }
+      
+    } else if (order.paymentStatus === 'Failed' || order.paymentStatus === 'Pending') {
+      if (order.couponApplied) {
+        couponAmount = order.couponApplied.discountAmount;
+        minimumAmount = order.couponApplied.minimumPurchaseAmount;
+        console.log(couponAmount, minimumAmount)
+
+        if ((order.totalAmount - (orderedItem.price - orderedItem.offerDiscount)) < minimumAmount) {
+          // Remove the coupon and increase the order total amount
+          order.totalAmount += (couponAmount - (orderedItem.price - orderedItem.offerDiscount));
+          order.couponApplied = null; // Remove the coupon reference from the order
+        }
+      }
+    }
+
+    const allCancelled = order.orderedItems.every(pdt => pdt.status === "Cancelled");
+    if(allCancelled){
+      order.status = "Cancelled";
+      if(order.paymentStatus === "Completed"){
+        order.paymentStatus = "Refunded";
+      }
+    }
+
+    // Save the updated order
+    await order.save();
+
+    // Restock the cancelled quantity of the product
+    const product = await Product.findById(productId);
+    if (product) {
+      product.stock += orderedItem.quantity;
+      await product.save();
+    } else {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    return res
+      .status(200)
+      .json({ success: true, message: "Product has been cancelled." });
+  } catch (e) {
+    console.error(e);
+    return res.redirect("/user/orders?msg=cancelerr");
+  }
+}
+
 exports.returnOrder = async (req, res) => {
   try {
     const orderId = req.params.oid;
@@ -414,21 +539,11 @@ exports.singleOrder = async (req, res) => {
   try {
     const orderId = req.query.oid;
     const name = req.session.user.name
-    const order = await Order.findById(orderId).populate('shippingAddress');
+    const order = await Order.findById(orderId).populate('shippingAddress couponApplied');
     if (!order || order.length == 0) {
       res.status(404).send("No order found");
     }
     res.render('user/vieworder', { order, name })
-  } catch (e) {
-    console.log(e.toString());
-    res.status(500).send("Internal Server Error");
-  }
-}
-
-exports.cancelSingle = async (req, res) => {
-  try {
-    const orderId = req.params.oid;
-    const productId = req.query.pid;
   } catch (e) {
     console.log(e.toString());
     res.status(500).send("Internal Server Error");

@@ -46,7 +46,7 @@ const schema = new mongoose.Schema({
         status: {
             type: String,
             default: "Pending",
-            enum: ['Pending', 'Shipped', 'Processing', 'Delivered', 'Cancelled', 'Returned']
+            enum: ['Pending', 'Shipped', 'Processing', 'Delivered', 'Cancelled', 'Returned'],
         },
         returned: {
             type: Boolean,
@@ -64,7 +64,7 @@ const schema = new mongoose.Schema({
     },
     paymentStatus: {
         type: String,
-        enum: ['Pending', 'Processing', 'Completed', 'Cancelled', 'Refunded'],
+        enum: ['Pending', 'Processing', 'Completed', 'Failed', 'Cancelled', 'Refunded'],
         default: 'Pending',
     },
     paymentMethod: {

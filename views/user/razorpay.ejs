@@ -199,11 +199,11 @@
           <!-- Razorpay checkout form -->
           <div class="row">
                <div class="col-md-6">
-                    <form id="razorpay-form" action="/user/pendingpay/<%=order._id %>" method="POST">
+                    <form id="razorpay-form" action="/user/pendingpay/<%= order._id %>" method="POST">
                          <script src="https://checkout.razorpay.com/v1/checkout.js" data-key="rzp_test_sat2P9V0ocnwA6"
                               data-amount="<%= order.totalAmount * 100 %>" data-currency="INR" data-buttontext=""
-                              data-description="Payment for Order <%= order._id %>"
-                              data-prefill.name="<%= user.name %>" data-prefill.email="<%= user.email %>">
+                              data-description="Payment for Order <%= order._id %>" data-prefill.name="<%= user.name %>"
+                              data-prefill.email="<%= user.email %>">
                               </script>
                          <button id="rzp-button" class="btn btn-primary">Pay with Razorpay</button>
                     </form>

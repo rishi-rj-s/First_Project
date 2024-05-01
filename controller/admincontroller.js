@@ -8,7 +8,7 @@ const OfferDb = require('../model/offermodel');
 const WalletHistory = require("../model/wallethistory");
 const jwt = require("jsonwebtoken");
 const multer = require("multer");
-const path = require("path");
+const mongoose = require('mongoose')
 
 exports.login = async (req, res) => {
   const { username, password } = req.body;
@@ -44,7 +44,7 @@ exports.dashboard = async (req, res) => {
     // Calculate top 10 products bought
     const productFrequency = {};
     orders.forEach(order => {
-      order.orderedItems  .forEach(item => {
+      order.orderedItems.forEach(item => {
         const productId = item.productId._id.toString();
         if (productFrequency[productId]) {
           productFrequency[productId]++;
@@ -132,45 +132,6 @@ async function getCompletedOrdersCount() {
   const count = await OrderDb.countDocuments({ 'paymentStatus': 'Completed' });
   return count;
 }
-
-// Function to calculate the overall discount from each order and sum it up
-// async function getOverallDiscount() {
-//   const result = await OrderDb.aggregate([
-//     {
-//       $match: {
-//         'paymentStatus': 'Completed', // Filter by paymentStatus Completed
-//         'returned': false // Filter by returned: false within orderedItems
-//       }
-//     },
-//     {
-//       $unwind: '$orderedItems' // Deconstruct the orderedItems array
-//     },
-//     {
-//       $group: {
-//         _id: '$_id', // Group by document _id to maintain document boundaries
-//         totalOriginalPrice: { $sum: '$orderedItems.originalPrice' }, // Sum originalPrice per document
-//         totalAmount: { $first: '$totalAmount' }, // Take the totalAmount from the document
-//         totalOfferDiscount: { $sum: '$orderedItems.offerDiscount' } // Sum offerDisc per document
-//       }
-//     },
-//     {
-//       $group: {
-//         _id: null, // Group by null to calculate the total discount across all documents
-//         totalOriginalPrice: { $sum: '$totalOriginalPrice' }, // Sum all originalPrices
-//         totalAmount: { $sum: '$totalAmount' }, // Sum all totalAmounts
-//         totalOfferDiscount: { $sum: '$totalOfferDiscount' } // Sum all offerDisc values
-//       }
-//     },
-//     {
-//       $project: {
-//         overallDiscount: { $subtract: ['$totalOriginalPrice', { $subtract: ['$totalAmount', '$totalOfferDiscount'] }] } // Calculate overall discount
-//       }
-//     }
-//   ]);
-
-//   return result.length > 0 ? result[0].overallDiscount : 0; // Return overall discount or 0 if no data found
-// }
-
 
 exports.logout = (req, res) => {
   res.cookie("token", "", { maxAge: 0 });
@@ -520,25 +481,32 @@ exports.rejectReturn = async (req, res) => {
     const orderId = req.params.oid;
     const productId = req.query.pid;
 
+    // Check if orderId and productId are valid MongoDB ObjectIDs
+    if (!mongoose.Types.ObjectId.isValid(orderId) || !mongoose.Types.ObjectId.isValid(productId)) {
+      return res.status(400).json({ msg: "Invalid order ID or product ID" });
+    }
+
     // Use async/await with findByIdAndUpdate to ensure proper error handling
     const updatedOrder = await OrderDb.findByIdAndUpdate(
-      { _id: orderId, "orderedItems._id": productId }, // Find the order by ID and product ID
-      { $set: { 
-        "orderedItems.$.status": "Delivered", // Update status to "Delivered"
-        "orderedItems.$.returned": true // Set returned to true
-    }  }, // Update the status of the specified product
+      orderId,
       {
-        new: true, // Return the updated document
+        $set: {
+          "orderedItems.$[item].status": "Delivered",
+          "orderedItems.$[item].returned": true
+        }
+      },
+      {
+        new: true,
+        arrayFilters: [{ "item._id": productId }]
       }
     );
 
     // Check if updatedOrder is null (order not found) or if it's updated successfully
     if (!updatedOrder) {
-      return res.status(404).json({ msg: "Order not found" });
+      return res.status(404).json({ msg: "Order not found or product not found in the order" });
     }
 
     // Handle the case where the order is updated successfully
-    // console.log('Updated Order:', updatedOrder);
     return res.status(200).json({ success: true, message: "Return rejected!" });
   } catch (error) {
     console.error("Error:", error);
@@ -554,20 +522,21 @@ exports.acceptReturn = async (req, res) => {
 
     // Use async/await with findByIdAndUpdate to ensure proper error handling
     const updatedOrder = await OrderDb.findOneAndUpdate(
-      { 
-          _id: orderId, 
-      },
-      { 
-          $set: { 
-              "orderedItems.$[item].status": "Returned" 
-          } 
+      {
+        _id: orderId,
       },
       {
-          new: true,
-          arrayFilters: [{ "item._id": productId }]
+        $set: {
+          "orderedItems.$[item].status": "Returned"
+        }
+      },
+      {
+        new: true,
+        arrayFilters: [{ "item._id": productId }]
       }
-  );
-  
+    );
+
+
 
     // Check if updatedOrder is null (order not found) or if it's updated successfully
     if (!updatedOrder) {
@@ -577,10 +546,33 @@ exports.acceptReturn = async (req, res) => {
     // Calculate the price of the returned item
     const returnedProduct = updatedOrder.orderedItems.find(item => item._id.toString() === productId);
     if (!returnedProduct) {
-        return res.status(404).json({ msg: "Product not found in order" });
+      return res.status(404).json({ msg: "Product not found in order" });
     }
 
     const returnedItemPrice = returnedProduct.price;
+
+    await OrderDb.findByIdAndUpdate(orderId, {
+      $inc: { totalAmount: -returnedItemPrice }
+    });
+
+    // Check if all products in the order are returned
+    const allReturned = updatedOrder.orderedItems.every(item => item.status === "Returned");
+
+    if (allReturned) {
+      // Update order status and payment status
+      const updatedOrderStatus = await OrderDb.findByIdAndUpdate(orderId, {
+        $set: {
+          status: "Returned",
+          paymentStatus: "Refunded",
+          totalAmount: 0
+        }
+      });
+
+      if (!updatedOrderStatus) {
+        return res.status(500).json({ msg: "Failed to update order status or payment status" });
+      }
+    }
+   
 
     // Get the user ID from the updatedOrder
     const userId = updatedOrder.user_id;
@@ -626,8 +618,16 @@ exports.statusShipped = async (req, res) => {
     // Use async/await with findByIdAndUpdate to ensure proper error handling
     const updatedOrder = await OrderDb.findByIdAndUpdate(
       orderId,
-      { $set: { status: "Shipped" } },
-      { new: true } // Return the updated document
+      {
+        $set: {
+          status: "Shipped",
+          "orderedItems.$[item].status": "Shipped" // Update orderedItems.status if the condition is met
+        }
+      },
+      {
+        new: true,
+        arrayFilters: [{ "item.status": { $in: ["Shipped", "Pending"] } }] // Filter to update only if status is Shipped or Pending
+      } // Return the updated document
     );
 
     // Check if updatedOrder is null (order not found) or if it's updated successfully
@@ -648,28 +648,32 @@ exports.statusDelivered = async (req, res) => {
     const orderId = req.params.oid;
     // console.log(orderId);
 
-    // Use async/await with findByIdAndUpdate to ensure proper error handling
-    const updatedOrder = await OrderDb.findByIdAndUpdate(
-      orderId,
-      {
-        $set: {
-          status: "Delivered",
-          paymentStatus: "Completed", // Set paymentStatus to Completed
-        },
-      },
-      {
-        new: true, // Return the updated document
-      }
-    );
-    // console.log(updatedOrder);
+    const orderToUpdate = await OrderDb.findById(orderId);
 
-    // Check if updatedOrder is null (order not found) or if it's updated successfully
-    if (!updatedOrder) {
-      return res.status(404).json({ msg: "Order not found" });
+    if (orderToUpdate && (orderToUpdate.status === 'Shipped' || orderToUpdate.status === 'Pending')) {
+      const updatedOrder = await OrderDb.findByIdAndUpdate(
+        orderId,
+        {
+          $set: {
+            status: "Delivered",
+            paymentStatus: "Completed",
+            "orderedItems.$[item].status": "Delivered" // Update orderedItems.status if the condition is met
+          },
+        },
+        {
+          new: true,
+          arrayFilters: [{ "item.status": { $in: ["Shipped", "Pending"] } }] // Filter to update only if status is Shipped or Pending
+        }
+      );
+      // Check if updatedOrder is null (order not found) or if it's updated successfully
+      if (!updatedOrder) {
+        return res.status(404).json({ msg: "Order not found" });
+      }
+      console.log(updatedOrder);
+    } else {
+      console.log("Order not eligible for update.");
     }
 
-    // Handle the case where the order is updated successfully
-    // console.log('Updated Order:', updatedOrder);
     return res.status(200).json({ success: true, message: "Order Delivered." });
   } catch (error) {
     console.error("Error:", error);

@@ -11,7 +11,8 @@ const nodemailer = require("nodemailer");
 const path = require("path");
 const otpGenerator = require("otp-generator");
 const OrderDb = require("../model/ordermodel");
-const { error } = require("console");
+const PDFDocument = require('pdfkit-table');
+
 
 let uid = "";
 exports.login = async (req, res) => {
@@ -102,30 +103,68 @@ exports.showLanding = async (req, res) => {
 
 exports.products = async (req, res) => {
   try {
-    // Find categories with listing: true to include in products query
-    const categoriesToInclude = await CatDb.find({ listing: true }).select(
-      "category"
-    );
+    const categoriesToInclude = await CatDb.find({ listing: true });
     const categoryNames = categoriesToInclude.map((cat) => cat._id);
 
-    // Find products including categories with listing: true, paginated
-    const [products, totalCount] = await Promise.all([
-      ProductDb.find({ category: { $in: categoryNames } }).limit(3),
-      ProductDb.countDocuments({ category: { $in: categoryNames } })
-    ]);
+    // Find products including categories with listing: true, paginated and sorted
+    const products = await ProductDb.find({ category: { $in: categoryNames } })
+      .limit(3)
 
+    const totalCount = await ProductDb.countDocuments({ category: { $in: categoryNames } });
     const totalPages = Math.ceil(totalCount / 3);
+
+    let currentPage = 1;
 
     res.render("user/products", {
       products,
       category: categoriesToInclude,
-      totalPages
+      totalPages,
+      currentPage
     });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send("Internal Server Error!");
+  }
+};
+
+exports.actions = async (req, res) => {
+  try {
+    const page = req.query.page;
+    const filter = req.query.filter;
+    const sortBy = (req.query.sort);
+    console.log(sortBy);
+    const sort = JSON.parse(sortBy);
+    console.log(sort);
+
+    // Find categories with listing: true to include in products query
+    const categoriesToInclude = await CatDb.find({ listing: true }).select(
+      "category"
+    );
+    const categoryIds = categoriesToInclude.map(cat => cat._id.toString());
+
+    const skip = (page - 1) * 3;
+
+    const categories = filter.split(',');
+    let totalPages = 0
+
+    // Check if all categories in the filter are included in categoriesToInclude
+    const hasMatchingId = categories.some(category => categoryIds.includes(category));
+
+    if (hasMatchingId) {
+      console.log("True")
+      const products = await ProductDb.find({ category: { $in: categories } }).sort(sort).limit(3).skip(skip);
+      console.log(products);
+      totalPages = await ProductDb.countDocuments({ category: { $in: categories } });
+
+      res.status(200).json({ products, totalPages }); // Send JSON response with products data
+    } else {
+      return res.status(404).json({ error: 'Categories in filter not included in allowed categories' }); // Send error response
+    }
   } catch (e) {
     console.log(e);
     return res.status(500).send("Internal Server Error!");
   }
-};
+}
 
 exports.checkSearch = async (req, res) => {
   try {
@@ -172,18 +211,25 @@ exports.searchProduct = async (req, res) => {
 }
 
 exports.productview = async (req, res) => {
-  const p_id = req.params.id;
-  const product = await ProductDb.findById(p_id);
-  const relatedProduct = await ProductDb.find({
-    category: product.category,
-  }).limit(4);
-  if (!product) {
-    res.status(404).send("No such product found!");
+  try {
+    const p_id = req.query.id;
+    console.log(p_id)
+    const product = await ProductDb.findById(p_id);
+    const relatedProduct = await ProductDb.find({
+      category: product.category,
+    }).limit(4);
+    if (!product) {
+      res.status(404).send("No such product found!");
+    }
+    res.render("user/product_view", {
+      product: product,
+      similar: relatedProduct,
+    });
+  } catch (e) {
+    console.log(e);
+    res.render('pagenotfound');
   }
-  res.render("user/product_view", {
-    product: product,
-    similar: relatedProduct,
-  });
+
 };
 
 exports.search = async (req, res) => {
@@ -618,41 +664,96 @@ exports.editUsername = async (req, res) => {
   }
 };
 
-exports.actions = async (req, res) => {
+exports.generateInvoice = async (req, res) => {
   try {
-    const page = req.query.page;
-    const filter = req.query.filter;
-    const sortBy = (req.query.sort);
-    console.log(sortBy);
-    const sort = JSON.parse(sortBy);
-    console.log(sort);
+    const orderId = req.params.oid;
+    const order = await OrderDb.findOne({
+      '_id': orderId,
+      'orderedItems.status': 'Delivered' // Find orders where at least one ordered item has a status of "Delivered"
+    }).populate('couponApplied shippingAddress')
 
-    // Find categories with listing: true to include in products query
-    const categoriesToInclude = await CatDb.find({ listing: true }).select(
-      "category"
-    );
-    const categoryIds = categoriesToInclude.map(cat => cat._id.toString());
+    console.log(order)
 
-    const skip = (page - 1) * 3;
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
 
-    const categories = filter.split(',');
-    let totalPages = 0
+    const doc = new PDFDocument();
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename=order_invoice.pdf');
+    doc.pipe(res);
 
-    // Check if all categories in the filter are included in categoriesToInclude
-    const hasMatchingId = categories.some(category => categoryIds.includes(category));
+    // Header Section
+    doc.image('public/img/landing/dp.png', {
+      width: 50,
+      align: 'right'
+    }).moveDown(0.5);
 
-    if (hasMatchingId) {
-      console.log("True")
-      const products = await ProductDb.find({ category: { $in: categories } }).sort(sort).limit(3).skip(skip);
-      console.log(products);
-      totalPages = await ProductDb.countDocuments({ category: { $in: categories } });
+    doc.fontSize(20).text('RISHI STUDIO', { align: 'center' });
+    doc.moveDown(0.5);
+    doc.fontSize(16).text('Invoice', { align: 'center' });
+    doc.moveDown();
 
-      res.status(200).json({ products, totalPages }); // Send JSON response with products data
-    } else {
-      return res.status(404).json({ error: 'Categories in filter not included in allowed categories' }); // Send error response
-    }    
-  } catch (e) {
-    console.log(e);
-    return res.status(500).send("Internal Server Error!");
+    // Invoice Details
+    doc.fontSize(12).text(`Invoice Number: ${generateInvoiceNumber(order)}`);
+    doc.fontSize(12).text(`Invoice Date: ${formatDate(order.orderDate)}`);
+    doc.moveDown();
+
+    // Customer Information
+    doc.fontSize(14).text(`Customer Information:`, { underline: true });
+    doc.fontSize(12).text(`Name: ${order.name}`);
+    doc.fontSize(12).text(`Shipping Address: ${order.shippingAddress.address},`);
+    doc.fontSize(12).text(` ${order.shippingAddress.city}, ${order.shippingAddress.state}`);
+    doc.fontSize(12).text(` ${order.shippingAddress.pincode}`);
+    doc.moveDown();
+
+    // Ordered Items Table
+    generateTable(doc, order.orderedItems);
+    doc.moveDown();
+
+    // Payment Information
+    doc.fontSize(12).text(`Payment Method: ${order.paymentMethod}`);
+    doc.fontSize(12).text(`Payment Status: ${order.paymentStatus}`);
+    doc.fontSize(12).text(`Total Amount: $${order.totalAmount}/-`, { align: 'right' });
+    if (order.couponApplied) {
+      doc.fontSize(12).text(`Coupon: (-)$${order.couponApplied.discountAmount}/-`, { align: 'right' });
+    }
+    doc.moveDown();
+
+    // Footer Section
+    doc.fontSize(10).text('Thank you for your purchase!', { align: 'center' });
+
+    doc.end();
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
   }
+};
+
+function generateTable(doc, orderedItems) {
+  const tableHeaders = ['Product Name', 'Quantity', 'Price', 'Offer', 'Total'];
+  const filteredItems = orderedItems.filter(item => item.status !== 'Cancelled');
+  const tableData = filteredItems.map(item => [
+    item.pname,
+    item.quantity,
+    `$${item.price}/-`,
+    `(-)$${item.offerDiscount}/-`,
+    `$${item.price - item.offerDiscount}/-`
+  ]);
+
+  doc.table({
+    headers: tableHeaders,
+    rows: tableData
+  });
+}
+
+function generateInvoiceNumber(order) {
+  // Generate a unique invoice number based on order details
+  return `INV-${order._id}`;
+}
+
+function formatDate(date) {
+  // Format date in a readable format
+  return date.toLocaleDateString();
 }

@@ -53,7 +53,7 @@ app.use('/user', require('./routes/user'))
 app.use('/admin',require('./routes/admin'))
 app.use('/auth',require('./routes/auth'))
 
-app.get('**',(req,res)=>{
+app.use((req,res)=>{
      res.render('pagenotfound');
 })
 

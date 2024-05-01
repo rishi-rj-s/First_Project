@@ -417,46 +417,46 @@
       </div>
 
       <div class="row" id="productGrid">
-        <%if(products.length < 1){%>
+        <% if(products.length < 1){ %>
           <div class="container custom-container">
             <div class="centered-message">
               <h1 class="bg-dark p-4 rounded text-white">No Products Found!</h1>
             </div>
           </div>
-          <%}else{%>
+          <% } else { %>
             <% products.forEach((pdt)=> { %>
-              <div class="col-md-4">
-                <div id="product-<%= pdt._id %>" class="single-product">
+                <!-- Adjust column size based on viewport -->
+                <div id="product-<%= pdt._id %>" class="single-product col-md-4 col-sm-6 col-12 mb-4">
                   <div class="part-1">
                     <img src="/<%= pdt.images[0] %>" alt="Product Image"
                       style="height: 100%; width: 100%; background-repeat: no-repeat; background-size: cover; background-position: center;">
                     <ul>
-                      <% if(pdt.stock> 0) { %>
-                        <li><a href="/user/addtocart/<%= pdt._id %>"><i class="fa fa-shopping-cart"></i></a></li>
-                        <% } %>
-                          <li><a href="/user/addwishlist/<%= pdt._id %>"><i class="fa fa-heart"></i></a></li>
-                          <li><a href="/user/productview/<%= pdt._id %>"><i class="fa fa-expand"></i></a></li>
+                      <% if(pdt.stock > 0) { %>
+                      <li><a href="/user/addtocart/<%= pdt._id %>"><i class="fa fa-shopping-cart"></i></a></li>
+                      <% } %>
+                      <li><a href="/user/addwishlist/<%= pdt._id %>"><i class="fa fa-heart"></i></a></li>
+                      <li><a href="/user/productview?id=<%= pdt._id %>"><i class="fa fa-expand"></i></a></li>
                     </ul>
                   </div>
                   <div class="part-2">
                     <h3 class="product-title">
                       <%= pdt.p_name %>
                     </h3>
-                    <% if(pdt.stock <=0) { %>
-                      <p class="text-danger">Out of Stock</p>
-                      <% } else { %>
-                        <h4 class="product-old-price">$<%= pdt.price %>
-                        </h4>
-                        <h4 class="product-price text-lg">$<%= (pdt.total_price - pdt.offerDiscount) %>
-                        </h4>
-                        <% } %>
+                    <% if(pdt.stock <= 0) { %>
+                    <p class="text-danger">Out of Stock</p>
+                    <% } else { %>
+                    <h4 class="product-old-price">$<%= pdt.price %></h4>
+                    <h4 class="product-price text-lg">$<%= (pdt.total_price - pdt.offerDiscount) %></h4>
+                    <% } %>
                   </div>
                 </div>
-              </div>
-              <% })}; %>
+              <% }); %>
+        
+                <% } %>
       </div>
     </div>
   </section>
+
 
   <div class="pagination">
     <%for(i=1;i<=totalPages;i++){%>
@@ -531,8 +531,7 @@
           } else {
             data.products.forEach(product => {
               productGrid.innerHTML += `
-            <div class="col-md-4">
-              <div id="product-${product._id}" class="single-product">
+              <div id="product-${product._id}" class="single-product col-md-4 col-sm-6 col-12 mb-4">
                 <div class="part-1">
                   <img src="/${product.images[0]}" alt="Product Image" style="height: 100%; width: 100%; background-repeat: no-repeat; background-size: cover; background-position: center;">
                   <ul>
@@ -546,8 +545,7 @@
                   ${product.stock <= 0 ? `<p class="text-danger">Out of Stock</p>` : `<h4 class="product-old-price">$${product.price}</h4><h4 class="product-price text-lg">$${product.total_price - product.offerDiscount}</h4>`}
                 </div>
               </div>
-            </div>
-          </div>`;
+            </div>`;
             });
           }
         })

@@ -138,6 +138,27 @@
 </head>
 
 <body class="g-sidenav-show  bg-gray-200">
+     <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl sticky-top" id="navbarBlur"
+          data-scroll="true">
+          <div class="container-fluid py-1 px-3">
+               <nav aria-label="breadcrumb">
+                    <a class="navbar-brand fw-bolder" href="/admin/dashboard">RISHI STUDIO</a>
+               </nav>
+               <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
+                    <ul class="navbar-nav  justify-content-end">
+                         <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
+                              <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
+                                   <div class="sidenav-toggler-inner">
+                                        <i class="sidenav-toggler-line"></i>
+                                        <i class="sidenav-toggler-line"></i>
+                                        <i class="sidenav-toggler-line"></i>
+                                   </div>
+                              </a>
+                         </li>
+                    </ul>
+               </div>
+          </div>
+     </nav>
      <aside
           class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3   bg-gradient-dark"
           id="sidenav-main">
@@ -187,12 +208,12 @@
                     </li>
                     <li class="nav-item">
                          <a class="nav-link text-white " href="/admin/viewreports">
-                           <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                             <i class="material-icons opacity-10">bar_chart</i>
-                           </div>
-                           <span class="nav-link-text ms-1">Sales Report</span>
+                              <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                                   <i class="material-icons opacity-10">bar_chart</i>
+                              </div>
+                              <span class="nav-link-text ms-1">Sales Report</span>
                          </a>
-                       </li>
+                    </li>
                     <li class="nav-item">
                          <a class="nav-link text-white active bg-gradient-primary" href="/admin/viewcoupons">
                               <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
@@ -241,7 +262,7 @@
                          <div class="card my-4">
                               <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
                                    <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
-                                        <h6 class="text-white text-capitalize ps-3">Add Category</h6>
+                                        <h6 class="text-white text-capitalize ps-3">Edit Coupon</h6>
                                    </div>
                               </div>
                               <div class="container-fluid">
@@ -268,6 +289,11 @@
                                                             name="minimumPurchaseAmount"
                                                             placeholder="Enter Minimum Purchase Amount"
                                                             value="<%= coupon.minimumPurchaseAmount %>" required>
+                                                  </div>
+                                                  <div class="form-group">
+                                                       <label for="category">Expiry Date</label>
+                                                       <input type="text" class="form-control datepicker"
+                                                            name="expiryDate" value="<%= coupon.expiryDate %>" required>
                                                   </div>
                                                   <input type="submit" class="btn btn-primary" value="Save">
                                              </form>
@@ -314,6 +340,13 @@
      <script src="/js/admin/core/bootstrap.min.js"></script>
      <script src="/js/admin/plugins/perfect-scrollbar.min.js"></script>
      <script src="/js/admin/plugins/smooth-scrollbar.min.js"></script>
+     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+     <script
+          src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+
+     
      <script>
           var win = navigator.platform.indexOf('Win') > -1;
           if (win && document.querySelector('#sidenav-scrollbar')) {
@@ -324,9 +357,16 @@
           }
      </script>
      <!-- Github buttons -->
-     <script async defer src="https://buttons.github.io/buttons.js"></script>
-     <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
      <script src="/js/admin/material-dashboard.min.js?v=3.1.0"></script>
+
+     <script>
+          $(document).ready(function () {
+               $('.datepicker').datepicker({
+                    format: 'yyyy-mm-dd',
+                    autoclose: true
+               });
+          });
+     </script>
 </body>
 
 </html>

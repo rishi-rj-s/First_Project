@@ -32,7 +32,7 @@ exports.addPOffer = async (req, res) => {
     console.log(productId, discount)
     if (!productId || !discount) {
       return res.status(404).send('All fields are necessary')
-    } else if (discount > 30 || discount < 10) {
+    } else if (discount > 90 || discount < 10) {
       return res.status(404).send('Inappropriate Discount')
     }
 
@@ -78,7 +78,7 @@ exports.addCOffer = async (req, res) => {
     const { categoryId, discount } = req.body;
     if (!categoryId || !discount) {
       return res.status(404).send('All fields are necessary')
-    } else if (discount > 30 || discount < 10) {
+    } else if (discount > 90 || discount < 10) {
       return res.status(404).send('Inappropriate Discount')
     }
 

@@ -23,17 +23,16 @@ route.post('/checkotp', usercontroller.checkotp)
 route.get('/resetPassword', usercontroller.resetPage)
 route.post('/resetPassword', usercontroller.resetPass)
 
+route.post("/login",usercontroller.login);
+route.get('/logout',cookieJwtAuth, usercontroller.logout);
+
 route.get('/landing',checkBlocked, cookieJwtAuth, usercontroller.showLanding)
 
-route.get('/logout',cookieJwtAuth, usercontroller.logout)
-
-route.get('/products',checkBlocked ,cookieJwtAuth, usercontroller.products)
-route.get('/check',checkBlocked, cookieJwtAuth, usercontroller.checkSearch)
-route.get('/search',checkBlocked, cookieJwtAuth, usercontroller.searchProduct)
-route.get('/actions',checkBlocked, cookieJwtAuth, usercontroller.actions)
-route.get('/productview/:id',checkBlocked , cookieJwtAuth, usercontroller.productview)
-
-route.post("/login",usercontroller.login)
+route.get('/products',checkBlocked ,cookieJwtAuth, usercontroller.products);
+route.get('/actions',checkBlocked, cookieJwtAuth, usercontroller.actions);
+route.get('/check',checkBlocked, cookieJwtAuth, usercontroller.checkSearch);
+route.get('/search',checkBlocked, cookieJwtAuth, usercontroller.searchProduct);
+route.get('/productview',checkBlocked , cookieJwtAuth, usercontroller.productview);
 
 route.get('/profile',checkBlocked, cookieJwtAuth, usercontroller.profile);
 
@@ -68,14 +67,16 @@ route.get('/viewsingleorder',checkBlocked, cookieJwtAuth, ordercontroller.single
 route.get('/checkcoupon',checkBlocked, cookieJwtAuth, couponcontroller.checkCoupon);
 route.post('/placeorder',checkBlocked, cookieJwtAuth, ordercontroller.placeOrder);
 route.get('/vieworders',checkBlocked, cookieJwtAuth, ordercontroller.viewOrders);
+route.get('/viewmoreorder',checkBlocked, cookieJwtAuth, ordercontroller.viewOrdersMore)
 route.post('/razorpay/:cid',checkBlocked, cookieJwtAuth, ordercontroller.razorPayOrder);
 route.get('/pendingpay/:oid', checkBlocked, cookieJwtAuth, ordercontroller.renderPendingPay)
 route.post('/pendingpay/:oid',checkBlocked, cookieJwtAuth, ordercontroller.pendingPay);
-route.get('/cancelorder/:oid',checkBlocked, cookieJwtAuth, ordercontroller.cancelOrder);
+route.get('/cancelorder/:oid',checkBlocked,  cookieJwtAuth, ordercontroller.cancelOrder);
+route.get('/cancelsingle/:oid',checkBlocked, cookieJwtAuth, ordercontroller.cancelSingle)
 route.get('/returnorder/:oid',checkBlocked, cookieJwtAuth, ordercontroller.returnOrder);
-route.get('/generateinvoice/:oid',checkBlocked, cookieJwtAuth, reportcontroller.generateInvoice);
+route.get('/generateinvoice/:oid',checkBlocked, cookieJwtAuth, usercontroller.generateInvoice);
 
-route.get("**",(req,res)=>{
+route.use((req,res)=>{
      res.render('pagenotfound');
 })
 

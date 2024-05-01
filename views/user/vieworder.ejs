@@ -99,10 +99,11 @@
             }
         }
 
-        .object-fit-cover {
-            object-fit: cover;
-            height: 100px;
-            width: 100px;
+        .custom-image {
+            max-width: 100%;
+            max-height: 300px;
+            width: auto;
+            height: auto;
         }
     </style>
 </head>
@@ -110,7 +111,7 @@
 <body>
     <div class="container-fluid">
         <div class="row">
-            <nav class="col-md-3 col-lg-2 d-md-block sidebar">
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar ">
                 <div class="profile">
                     <img src="/img/landing/User Icon.webp" alt="Profile Picture">
                     <h5>Hey, <%= name %>
@@ -139,206 +140,221 @@
             <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
                 <div class="content">
                     <h1 class="mb-4">View Order</h1>
-                    <div class="row" id="addressList">
+                    <div class="row">
+                        <!-- Shipping Address Card -->
+                        <div class="col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title">Shipping Address</h4>
+                                    <hr />
+                                    <h5 class="card-subtitle mb-2 text-muted">To: <%= order.shippingAddress.name %>
+                                    </h5>
+                                    <p class="card-text">
+                                        <%= order.shippingAddress.address %>,<br>
+                                            <%= order.shippingAddress.city %>, <%= order.shippingAddress.state %>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Coupon Applied Card -->
+                        <div class="col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title">Coupon Applied</h4>
+                                    <hr />
+                                    <h5 class="card-subtitle mb-2">
+                                        Coupon: <% if(order.couponApplied===null){ %>
+                                            <span class="text-danger">None</span>
+                                            <% }else{ %>
+                                                <span class="text-success">
+                                                    <%= order.couponApplied.code %>
+                                                </span>
+                                                <% } %>
+                                    </h5>
+                                    <% if(order.couponApplied !==null){ %>
+                                        <p class="card-text">
+                                            Cashback: $<%= order.couponApplied.discountAmount %>
+                                        </p>
+                                        <% } %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- Ordered Items List -->
                         <% order.orderedItems.forEach((pdt)=> { %>
-                            <div class="col-sm-12 col-md-6 col-lg-4">
-                                <div class="address-card card">
-                                    <div class="card-body"
-                                        style="font-size: 18px; font-weight: 500; text-align: center;">
-                                        <table class="responsive-table">
-                                            <tr>
-                                                <th>Image</th>
-                                                <td>
-                                                    <img src="/<%= pdt.pimages[0] %>" class="object-fit-cover" alt="">
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <th>Name</th>
-                                                <td>
-                                                    <p class="h6 mb-0">
-                                                        <%= pdt.pname %>
-                                                    </p>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <th> Total Price</th>
-                                                <td>
-                                                    <p class="card-text mb-0">
-                                                        <strike class="text-danger">$<%= pdt.originalPrice%></strike> $
-                                                        <%= pdt.price - pdt.offerDiscount %>
-                                                    </p>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <th>Qty</th>
-                                                <td>
-                                                    <p class="card-text mb-0">
-                                                        <%= pdt.quantity %>
-                                                    </p>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <th>Status</th>
-                                                <td>
-                                                    <p class="card-text mb-0">
-                                                        <%= pdt.status %>
-                                                    </p>
-                                                </td>
-                                            </tr>
-                                            <% if(pdt.status==="Pending" || pdt.status==="Shipped" ){ %>
-                                                <tr>
-                                                    <td>
-                                                        <button class="btn btn-danger cancel"
-                                                            data-order-id="<%=order._id%>"
-                                                            data-product-id="<%=pdt.productId%>">Cancel Order</button>
-                                                    </td>
-                                                    <script>
-                                                        document.addEventListener("DOMContentLoaded", function () {
-                                                            // Add event listener to Cancel buttons
-                                                            document.querySelectorAll('.cancel').forEach(button => {
-                                                                button.addEventListener('click', function () {
-                                                                    console.log("Cancel button clicked!"); // Debugging statement
-
-                                                                    const orderId = this.getAttribute('data-order-id');
-                                                                    const productId = this.getAttribute('data-product-id');
-                                                                    // Display SweetAlert confirmation dialog
-                                                                    Swal.fire({
-                                                                        title: "Are you sure?",
-                                                                        text: "Cancel this order?",
-                                                                        icon: "warning",
-                                                                        showCancelButton: true,
-                                                                        confirmButtonColor: "#3085d6",
-                                                                        cancelButtonColor: "#d33",
-                                                                        confirmButtonText: "Ok",
-                                                                    }).then((result) => {
-                                                                        if (result.isConfirmed) {
-                                                                            // User confirmed cancellation, send request to cancel order
-                                                                            fetch(`/user/cancelorder/${orderId}?pid=${productId}`, {
-                                                                                method: "GET",
-                                                                            })
-                                                                                .then((response) => {
-                                                                                    if (!response.ok) {
-                                                                                        throw new Error("Failed to cancel order");
-                                                                                    }
-                                                                                    return response.json(); // Parse JSON response
-                                                                                })
-                                                                                .then((data) => {
-                                                                                    // Check the success status from the server response
-                                                                                    if (data.success) {
-                                                                                        // Show success message using SweetAlert
-                                                                                        Swal.fire({
-                                                                                            title: "Cancelled!",
-                                                                                            text: data.message,
-                                                                                            icon: "success",
-                                                                                        }).then(() => {
-                                                                                            // Reload the page or perform any other actions
-                                                                                            window.location.reload();
-                                                                                        });
-                                                                                    } else {
-                                                                                        // Show error message using SweetAlert
-                                                                                        Swal.fire({
-                                                                                            title: "Failed!",
-                                                                                            text: data.message,
-                                                                                            icon: "error",
-                                                                                        });
-                                                                                    }
-                                                                                })
-                                                                                .catch((error) => {
-                                                                                    console.error("Error:", error);
-                                                                                    // Show error message using SweetAlert
-                                                                                    Swal.fire({
-                                                                                        title: "Error!",
-                                                                                        text: "Something went wrong.",
-                                                                                        icon: "error",
-                                                                                    });
-                                                                                });
-                                                                        }
-                                                                    });
-                                                                });
-                                                            });
-                                                        });
-                                                    </script>
-                                                </tr>
-                                                <%} else if(pdt.status==="Delivered" && pdt.returned !==true){ %>
-                                                    <tr>
-                                                        <td>
-                                                            <button class="btn btn-danger return" data-order-id="<%=order._id%>"
-                                                                data-product-id="<%=pdt.productId%>">Return
-                                                                Order</button>
-                                                        </td>
-                                                        <script>
-                                                            document.addEventListener("DOMContentLoaded", function () {
-
-                                                                // Add event listener to Cancel buttons
-                                                                document.querySelectorAll('.return').forEach(button => {
-                                                                    button.addEventListener('click', function () {
-                                                                        console.log("Return button clicked!"); // Debugging statement
-
-                                                                        const orderId = this.getAttribute('data-order-id');
-                                                                        const productId = this.getAttribute('data-product-id');
-
-                                                                        // Display SweetAlert confirmation dialog
-                                                                        Swal.fire({
-                                                                            title: "Are you sure?",
-                                                                            text: "Return this order?",
-                                                                            icon: "warning",
-                                                                            showCancelButton: true,
-                                                                            confirmButtonColor: "#3085d6",
-                                                                            cancelButtonColor: "#d33",
-                                                                            confirmButtonText: "Return!",
-                                                                        }).then((result) => {
-                                                                            if (result.isConfirmed) {
-                                                                                // User confirmed cancellation, send request to cancel order
-                                                                                fetch(`/user/returnorder/${orderId}?pid=${productId}`, {
-                                                                                    method: "GET",
-                                                                                })
-                                                                                    .then((response) => {
-                                                                                        if (!response.ok) {
-                                                                                            throw new Error("Failed to return order");
-                                                                                        }
-                                                                                        return response.json(); // Parse JSON response
-                                                                                    })
-                                                                                    .then((data) => {
-                                                                                        // Check the success status from the server response
-                                                                                        if (data.success) {
-                                                                                            // Show success message using SweetAlert
-                                                                                            Swal.fire({
-                                                                                                title: "Processing",
-                                                                                                text: data.message,
-                                                                                                icon: "success",
-                                                                                            }).then(() => {
-                                                                                                // Reload the page or perform any other actions
-                                                                                                window.location.reload();
-                                                                                            });
-                                                                                        } else {
-                                                                                            // Show error message using SweetAlert
-                                                                                            Swal.fire({
-                                                                                                title: "Failed!",
-                                                                                                text: data.message,
-                                                                                                icon: "error",
-                                                                                            });
-                                                                                        }
-                                                                                    })
-                                                                                    .catch((error) => {
-                                                                                        console.error("Error:", error);
-                                                                                        // Show error message using SweetAlert
-                                                                                        Swal.fire({
-                                                                                            title: "Error!",
-                                                                                            text: "Something went wrong.",
-                                                                                            icon: "error",
-                                                                                        });
-                                                                                    });
-                                                                            }
-                                                                        });
-                                                                    });
-                                                                });
-                                                            });
-                                                        </script>
-
-                                                    </tr>
-                                                    <% } %>
-                                        </table>
+                            <div class="col-sm-12 col-md-6 col-lg-4 mb-4">
+                                <div class="card">
+                                    <img src="/<%= pdt.pimages[0] %>" class="card-img-top custom-image"
+                                        alt="Product Image">
+                                    <div class="card-body">
+                                        <h5 class="card-title">
+                                            <%= pdt.pname %>
+                                        </h5>
+                                        <p class="card-text">
+                                            Price: <strike class="text-danger">$<%= pdt.originalPrice%></strike> $
+                                            <%= pdt.price %>
+                                        </p>
+                                        <%if(order.offerDisc>0){%>
+                                            <p class="card-text">
+                                                Offer Price: <span class="text-success">-$<%= pdt.offerDiscount %></span>
+                                            </p>
+                                            <p class="card-text">
+                                                Total Price: $<%= pdt.price - pdt.offerDiscount%></span>
+                                            </p>
+                                        <%}%>
+                                        <p class="card-text">Qty: <%= pdt.quantity %>
+                                        </p>
+                                        <p class="card-text">Delivery Status: <%= pdt.status %>
+                                        </p>
+                                        <% if(pdt.status==="Pending" || pdt.status==="Shipped" ){ %>
+                                            <button class="btn btn-danger cancel-btn"
+                                                data-order-id="<%=order._id%>"
+                                                data-product-id="<%=pdt.productId%>">Cancel Order</button>
+                                        <% } else if(pdt.status==="Delivered" && pdt.returned !==true){ %>
+                                            <button class="btn btn-danger return"
+                                                data-order-id="<%=order._id%>"
+                                                data-product-id="<%=pdt.productId%>">Return Order</button>
+                                        <% } %>
                                     </div>
+                                    <script>
+                                        document.addEventListener("DOMContentLoaded", function () {
+
+                                            // Add event listener to Cancel buttons
+                                            document.querySelectorAll('.return').forEach(button => {
+                                                button.addEventListener('click', function () {
+                                                    console.log("Return button clicked!"); // Debugging statement
+
+                                                    const orderId = this.getAttribute('data-order-id');
+                                                    const productId = this.getAttribute('data-product-id');
+
+                                                    // Display SweetAlert confirmation dialog
+                                                    Swal.fire({
+                                                        title: "Are you sure?",
+                                                        text: "Return this order?",
+                                                        icon: "warning",
+                                                        showCancelButton: true,
+                                                        confirmButtonColor: "#3085d6",
+                                                        cancelButtonColor: "#d33",
+                                                        confirmButtonText: "Return!",
+                                                    }).then((result) => {
+                                                        if (result.isConfirmed) {
+                                                            // User confirmed cancellation, send request to cancel order
+                                                            fetch(`/user/returnorder/${orderId}?pid=${productId}`, {
+                                                                method: "GET",
+                                                            })
+                                                                .then((response) => {
+                                                                    if (!response.ok) {
+                                                                        throw new Error("Failed to return order");
+                                                                    }
+                                                                    return response.json(); // Parse JSON response
+                                                                })
+                                                                .then((data) => {
+                                                                    // Check the success status from the server response
+                                                                    if (data.success) {
+                                                                        // Show success message using SweetAlert
+                                                                        Swal.fire({
+                                                                            title: "Processing",
+                                                                            text: data.message,
+                                                                            icon: "success",
+                                                                        }).then(() => {
+                                                                            // Reload the page or perform any other actions
+                                                                            window.location.reload();
+                                                                        });
+                                                                    } else {
+                                                                        // Show error message using SweetAlert
+                                                                        Swal.fire({
+                                                                            title: "Failed!",
+                                                                            text: data.message,
+                                                                            icon: "error",
+                                                                        });
+                                                                    }
+                                                                })
+                                                                .catch((error) => {
+                                                                    console.error("Error:", error);
+                                                                    // Show error message using SweetAlert
+                                                                    Swal.fire({
+                                                                        title: "Error!",
+                                                                        text: "Something went wrong.",
+                                                                        icon: "error",
+                                                                    });
+                                                                });
+                                                        }
+                                                    });
+                                                });
+                                            });
+                                        });
+                                    </script>
+                                    <script>
+                                        document.addEventListener("DOMContentLoaded", function () {
+                                            // Add event listener to Cancel buttons
+                                            document.querySelectorAll('.cancel-btn').forEach(button => {
+                                                button.addEventListener('click', function () {
+                                                    console.log("Cancel button clicked!"); // Debugging statement
+
+                                                    const orderId = this.getAttribute('data-order-id');
+                                                    const productId = this.getAttribute('data-product-id');
+                                                    // console.log(orderId, productId)
+                                                    // Display SweetAlert confirmation dialog
+                                                    Swal.fire({
+                                                        title: "Are you sure?",
+                                                        text: "Cancel this order?",
+                                                        icon: "warning",
+                                                        showCancelButton: true,
+                                                        confirmButtonColor: "#3085d6",
+                                                        cancelButtonColor: "#d33",
+                                                        confirmButtonText: "Ok",
+                                                    }).then((result) => {
+                                                        if (result.isConfirmed) {
+                                                            // User confirmed cancellation, send request to cancel order
+                                                            fetch(`/user/cancelsingle/${orderId}?pid=${productId}`, {
+                                                                method: "GET",
+                                                            })
+                                                                .then((response) => {
+                                                                    if (!response.ok) {
+                                                                        throw new Error("Failed to cancel order");
+                                                                    }
+                                                                    return response.json(); // Parse JSON response
+                                                                })
+                                                                .then((data) => {
+                                                                    // Check the success status from the server response
+                                                                    if (data.success) {
+                                                                        // Show success message using SweetAlert
+                                                                        Swal.fire({
+                                                                            title: "Cancelled!",
+                                                                            text: data.message,
+                                                                            icon: "success",
+                                                                        }).then(() => {
+                                                                            // Reload the page or perform any other actions
+                                                                            window.location.reload();
+                                                                        });
+                                                                    } else {
+                                                                        // Show error message using SweetAlert
+                                                                        Swal.fire({
+                                                                            title: "Failed!",
+                                                                            text: data.message,
+                                                                            icon: "error",
+                                                                        });
+                                                                    }
+                                                                })
+                                                                .catch((error) => {
+                                                                    console.error("Error:", error);
+                                                                    // Show error message using SweetAlert
+                                                                    Swal.fire({
+                                                                        title: "Error!",
+                                                                        text: "Something went wrong.",
+                                                                        icon: "error",
+                                                                    });
+                                                                });
+                                                        }
+                                                    });
+                                                });
+                                            });
+                                        });
+                                    </script>
+
+
                                 </div>
                             </div>
                             <% }) %>

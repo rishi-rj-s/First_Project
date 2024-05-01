@@ -35,7 +35,7 @@ exports.showCart = async (req, res) => {
         if (product.quantity >= product.productId.stock) {
           product.quantity = product.productId.stock;
         }
-        offerDiscount = product.productId.offerDiscount;
+        offerDiscount += product.productId.offerDiscount*product.quantity;
 
         // Check if the product is in stock
         if (product.productId.stock >= product.quantity) {
@@ -53,6 +53,7 @@ exports.showCart = async (req, res) => {
 
       // Update subtotal for the cart
       usercart.subtotal = subtotalFromCart - offerDiscount;
+      console.log(usercart.subtotal, offerDiscount)
 
       // Save the updated cart item
       await usercart.save();

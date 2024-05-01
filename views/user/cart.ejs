@@ -173,7 +173,7 @@
                     <div class="card" data-product-id="<%= cartItem.productId._id %>">
                       <div class="card-body">
                         <div class="row align-items-center">
-                          <div class="col-md-4">
+                          <div class="col-md-3">
                             <img src="/<%= cartItem.productId.images[0] %>" alt="Product Image"
                               class="img-fluid object-fit-cover" />
                           </div>
@@ -181,8 +181,8 @@
                             <h4 class="card-title">
                               <%= cartItem.productId.p_name %>
                             </h4>
-                            <h5>Price - $<%=(cartItem.productId.total_price - cartItem.productId.offerDiscount)%>
-                            </h5>
+                            <p class="font-weight-bold">PRICE - $<%=(cartItem.productId.total_price - cartItem.productId.offerDiscount)%>  <strike>$<%= cartItem.productId.price %></strike>
+                            </p>
                             <% if (cartItem.productId.stock> 0) { %>
                               <div class="input-group me-2 mb-2">
                                 <button class="btn btn-outline-secondary decrement-btn" type="button"
@@ -193,8 +193,6 @@
                                 <button class="btn btn-outline-secondary increment-btn" type="button"
                                   onclick="updateQuantity('<%= cartItem.productId._id %>', 'add')">+</button>
                               </div>
-                              <h5>$<%= (cartItem.productId.total_price - cartItem.productId.offerDiscount)*(cartItem.quantity) %>
-                              </h5>
 
                               <script>
                                 async function updateQuantity(productId, action) {
@@ -259,15 +257,15 @@
                                   </button>
                                   <% if (cartItem.productId.discount) { %>
                                     <div class="d-flex mt-1">
-                                      Discount:
+                                      Product Discount:
                                       <p class="text-success">
                                         &emsp13; <%= cartItem.productId.discount %>%
                                       </p>
                                     </div>
                                     <%if(cartItem.productId.offerDiscount>0){%>
-                                      <div class="d-flex">
+                                      <div class="d-flex font-weight-bold text-success">
                                         Offer Discount:
-                                        <p class="text-success">
+                                        <p>
                                           &emsp13; Rs.<%= cartItem.productId.offerDiscount * cartItem.quantity %>
                                         </p>
                                       </div>

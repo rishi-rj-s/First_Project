@@ -228,7 +228,8 @@
                         <h5 class="card-title mr-2">
                           <%= cartItem.productId.p_name %>
                         </h5>
-                        <p>Qty: <%= cartItem.quantity %> || Total Price: <%= ((cartItem.productId.total_price - cartItem.productId.offerDiscount) * cartItem.quantity) %>
+                        <p>Qty: <%= cartItem.quantity %> || Total Price: <%= ((cartItem.productId.total_price -
+                              cartItem.productId.offerDiscount) * cartItem.quantity) %>
                         </p>
                       </div>
                     </div>
@@ -264,6 +265,8 @@
             <h3>Grand Total</h3>
             <hr />
             <p><strong>Total Amount: $<%= (usercart.subtotal) %></strong></p>
+            <p><strong>Coupon : <span class="text-success">-$<%= usercart.discount%></span></strong></p>
+            <hr>
           </div>
 
           <!-- Coupons -->
@@ -405,7 +408,7 @@
                       RazorPay
                     </label>
                     <br>
-                    <% if (usercart.subtotal <= wallet) { %>
+                    <% if (usercart.subtotal <=wallet) { %>
                       <input class="form-check-input" type="radio" name="paymentMethod" value="Wallet" />
                       <label class="form-check-label" for="wallet">
                         Wallet (Remaining: $<%= wallet %>)
@@ -461,18 +464,16 @@
       </div>
       <input type="hidden" name="cartId" value="<%= usercart._id %>">
 
-        <script src="https://checkout.razorpay.com/v1/checkout.js"
-        data-key="rzp_test_sat2P9V0ocnwA6"
-        data-amount="<%= usercart.subtotal * 100 %>"
-        data-currency="INR"
-        data-buttontext=""
-        data-description="Payment for Order <%= usercart._id %>"
-        data-prefill.name="<%= username.name %>"
+      <!-- Hidden field for payment status -->
+      <input type="hidden" name="paymentStatus" id="paymentStatus" value="">
+
+      <script src="https://checkout.razorpay.com/v1/checkout.js" data-key="rzp_test_sat2P9V0ocnwA6"
+        data-amount="<%= usercart.subtotal * 100 %>" data-currency="INR" data-buttontext=""
+        data-description="Payment for Order <%= usercart._id %>" data-prefill.name="<%= username.name %>"
         data-prefill.email="<%= username.email %>">
-</script>
+        </script>
       <button id="rzp-button" class="btn btn-block btn-primary font-weight-bold py-3" disabled>Place order</button>
     </form>
-
   </div>
 
   <script>
@@ -482,6 +483,7 @@
       var razorpayFormContainer = document.getElementById('razorpayFormContainer');
       var placeOrderBtn = document.getElementById('placeOrderBtn');
       var razorpayOrder = document.getElementById('rzp-button');
+      var paymentStatusInput = document.getElementById('paymentStatus');
 
       // Function to show RazorPay form and hide other elements
       function showRazorPayForm() {
@@ -522,6 +524,39 @@
           razorpayOrder.disabled = !document.querySelector('input[name="addressId"]:checked');
         });
       });
+
+      var paymentTimeout; // Variable to store the timeout
+
+      // Event listener for when Razorpay window is closed
+      window.addEventListener('message', function (event) {
+        if (event.data.event === 'payment.success') {
+          clearTimeout(paymentTimeout); // Clear the timeout if payment is successful
+        } else if (event.data.event === 'payment.closed') {
+          handlePaymentTimeout(); // Handle payment timeout if Razorpay window is closed without success
+        }
+      });
+
+      // Function to handle payment timeout
+      function handlePaymentTimeout() {
+        console.log("Payment should be failed by now!")
+        paymentStatusInput.value = 'Failed';
+        document.getElementById('razorpay-form').submit(); // Submit the form with payment status failed
+      }
+
+      // Event listener for when Razorpay window is closed
+      window.addEventListener('message', function (event) {
+        if (event.data.event === 'payment.success') {
+          clearTimeout(paymentTimeout); // Clear the timeout if payment is successful
+        }
+      });
+
+      // Event listener for form submission (before payment)
+      document.getElementById('razorpay-form').addEventListener('submit', function () {
+        // Set a timeout for payment completion (adjust the time as needed)
+        paymentTimeout = setTimeout(handlePaymentTimeout, 20000); // 1 minute timeout
+      });
+
+
     });
   </script>
 

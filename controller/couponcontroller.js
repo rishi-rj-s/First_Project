@@ -27,11 +27,12 @@ exports.showAddCoupon = (req, res) => {
 
 exports.addCoupon = async (req, res) => {
   try {
-    const { code, discountAmount, minimumPurchaseAmount } = req.body;
+    const { code, discountAmount, minimumPurchaseAmount, expiryDate } = req.body;
     if (
-      !code.trim() ||
-      !discountAmount.trim() ||
-      !minimumPurchaseAmount.trim()
+      !code ||
+      !discountAmount ||
+      !minimumPurchaseAmount || 
+      !expiryDate
     ) {
       return res.status(200).send("All fields are necessary");
     }
@@ -48,6 +49,7 @@ exports.addCoupon = async (req, res) => {
       code: code.toUpperCase(),
       discountAmount: discountAmount,
       minimumPurchaseAmount: minimumPurchaseAmount,
+      expiryDate: expiryDate
     });
     await new_coupon.save();
     return res.redirect("/admin/viewcoupons?msg=success");
@@ -121,11 +123,9 @@ exports.editCoupon = async (req, res) => {
     const cid = req.params.cid;
     const discountAmount = parseInt(req.body.discountAmount);
     const minimumPurchaseAmount = parseInt(req.body.minimumPurchaseAmount);
-    if (
-      !code.value.trim() ||
-      !discountAmount.value.trim() ||
-      !minimumPurchaseAmount.value.trim()
-    ) {
+    const code = req.body.code.toUpperCase();
+    const expiryDate = req.body.expiryDate;
+    if (!code | !discountAmount || !minimumPurchaseAmount || !expiryDate) {
       return res.status(200).send("All fields are necessary");
     }
 
@@ -136,14 +136,12 @@ exports.editCoupon = async (req, res) => {
         .send("Discount Amount cannot be greater than Minimum Purchase Amount");
     }
 
-    // Convert code to uppercase
-    const code = req.body.code.toUpperCase();
-
     // Update coupon
     const updatedCoupon = await CouponDb.findByIdAndUpdate(cid, {
       code: code,
       minimumPurchaseAmount: minimumPurchaseAmount,
       discountAmount: discountAmount,
+      expiryDate: expiryDate
     });
 
     if (!updatedCoupon) {
@@ -158,24 +156,24 @@ exports.editCoupon = async (req, res) => {
 };
 
 exports.checkCoupon = async (req, res) => {
-     try {
-       const code = req.query.code;
-   
-       const regex = new RegExp(`^${code}`, "i"); // Create a regex pattern to match coupons starting with the input
-   
-     //   console.log("Received code:", code); // Log the received code parameter
-       let coupons = await CouponDb.find({
-         code: { $regex: regex },
-         isActive: true,
-       }, ['code', 'discountAmount', 'minimumPurchaseAmount']); // Select only necessary fields
-   
-       if (coupons.length === 0) {
-         return res.json({ valid: false, codes: [] }); // No matching coupons found
-       } else {
-         return res.json({ valid: true, codes: coupons }); // Send coupon codes with discountAmount and minimumPurchaseAmount
-       }
-     } catch (error) {
-       console.log(error);
-       return res.status(500).send("Internal server error!");
-     }
-   };
+  try {
+    const code = req.query.code;
+
+    const regex = new RegExp(`^${code}`, "i"); // Create a regex pattern to match coupons starting with the input
+
+    //   console.log("Received code:", code); // Log the received code parameter
+    let coupons = await CouponDb.find({
+      code: { $regex: regex },
+      isActive: true,
+    }, ['code', 'discountAmount', 'minimumPurchaseAmount']); // Select only necessary fields
+
+    if (coupons.length === 0) {
+      return res.json({ valid: false, codes: [] }); // No matching coupons found
+    } else {
+      return res.json({ valid: true, codes: coupons }); // Send coupon codes with discountAmount and minimumPurchaseAmount
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send("Internal server error!");
+  }
+};

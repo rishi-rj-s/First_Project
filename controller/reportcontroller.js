@@ -62,7 +62,8 @@ exports.salesamountdata = async (req, res) => {
         const weeklySalesAmountData = await OrderDb.aggregate([
             {
                 $match: {
-                    orderDate: { $gte: startDate, $lte: endDate } // Filter orders for the current week
+                    orderDate: { $gte: startDate, $lte: endDate }, // Filter orders for the current week
+                    status: { $nin: ["Cancelled", "Returned"] } // Exclude cancelled and returned orders
                 }
             },
             {
@@ -98,6 +99,11 @@ exports.monthlysalesdata = async (req, res) => {
         const monthlySalesData = await OrderDb.aggregate([
             {
                 $unwind: "$orderedItems"
+            },
+            {
+                $match: {
+                    "orderedItems.status": { $nin: ["Cancelled", "Returned"] } // Exclude cancelled and returned items
+                }
             },
             {
                 $group: {
@@ -162,6 +168,11 @@ exports.yearlysalesdata = async (req, res) => {
             },
             {
                 $unwind: "$orderedItems" // Unwind the items array to get separate documents for each item
+            },
+            {
+                $match: {
+                    "orderedItems.status": { $nin: ["Cancelled", "Returned"] } // Exclude cancelled and returned items
+                }
             },
             {
                 $group: {
@@ -236,38 +247,32 @@ exports.generateReport = async (req, res) => {
     try {
         const { filterType, startDate, endDate, reportType } = req.query;
 
-        let salesData;
         let dailySalesData;
         let reportTitle;
 
         if (filterType === 'daily') {
-            salesData = await getDailySales();
-            dailySalesData = salesData;
+            dailySalesData = await getDailySales();
             reportTitle = 'Today';
         } else if (filterType === 'weekly') {
-            salesData = await getWeeklySales();
-            dailySalesData = salesData;
+            dailySalesData = await getWeeklySales();
             reportTitle = `This Week`;
         } else if (filterType === 'monthly') {
-            salesData = await getMonthlySales();
-            dailySalesData = salesData;
+            dailySalesData = await getMonthlySales();
             const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
             reportTitle = monthNames[new Date().getMonth()]; // Use current month if no startDate provided
         } else if (filterType === 'yearly') {
-            salesData = await getYearlySales();
-            dailySalesData = salesData;
+            dailySalesData = await getYearlySales();
             reportTitle = `Yearly Sales Report (${new Date().getFullYear()})`;
         } else if (filterType === 'custom') {
             if (!startDate || !endDate) {
                 throw new Error('Custom date range requires both start date and end date.');
             }
-            salesData = await getCustomRangeSales(startDate, endDate);
-            dailySalesData = salesData;
+            dailySalesData = await getCustomRangeSales(startDate, endDate);
             reportTitle = `${new Date(startDate).toLocaleDateString()} to ${new Date(endDate).toLocaleDateString()}`;
         }
 
         if (reportType === 'pdf') {
-            generatePDFReport(res, reportTitle, salesData, dailySalesData); // Pass dailySalesData here
+            generatePDFReport(res, reportTitle, dailySalesData); // Pass dailySalesData here
         } else {
             res.status(400).json({ message: 'Invalid report type' });
         }
@@ -277,7 +282,7 @@ exports.generateReport = async (req, res) => {
     }
 };
 
-async function generatePDFReport(res, reportTitle, salesData, dailySalesData) {
+async function generatePDFReport(res, reportTitle, dailySalesData) {
     try {
         const doc = new PDFDocument();
         const buffers = [];
@@ -302,6 +307,7 @@ async function generatePDFReport(res, reportTitle, salesData, dailySalesData) {
         const overallTableData = dailySalesData.map(({ date, totalSales, totalOrderAmount, totalDiscount, totalCouponDiscount }) =>
             [new Date(date).toLocaleDateString(), totalSales, 'Rs.' + totalOrderAmount, 'Rs.' + totalDiscount, 'Rs.' + totalCouponDiscount]
         );
+        console.log(overallTableData)
         const { totalSalesSum, totalOrderAmountSum, totalDiscountSum, totalCouponDiscountSum } = calculateTotalSums(dailySalesData);
         generateTable(doc, overallTableHeaders, overallTableData, totalSalesSum, totalOrderAmountSum, totalDiscountSum, totalCouponDiscountSum);
 
@@ -334,7 +340,7 @@ function calculateTotalSums(dailySalesData) {
 }
 async function generateTable(doc, headers, data, totalSalesSum, totalOrderAmountSum, totalDiscountSum, totalCouponDiscountSum) {
     const tableData = [...data, ['Total:', totalSalesSum, 'Rs.' + totalOrderAmountSum, 'Rs.' + totalDiscountSum, 'Rs.' + totalCouponDiscountSum]];
-
+ 
     doc.table({
         headers: headers,
         rows: tableData,
@@ -384,8 +390,13 @@ async function getCustomRangeSales(startDate, endDate) {
 
 async function getOrderData(startDate, endDate) {
     console.log(startDate, endDate);
-    const orders = await OrderDb.find({ orderDate: { $gte: startDate, $lte: endDate } }).populate('orderedItems.productId').populate('couponApplied');
-    // console.log(orders);
+    const orders = await OrderDb.find({ orderDate: { $gte: startDate, $lte: endDate } })
+        .populate({
+            path: 'orderedItems',
+            match: { status: { $nin: ["Cancelled", "Returned"] } },
+            populate: { path: 'productId' }
+        })
+        .populate('couponApplied');
 
     let dailySalesData = [];
 
@@ -419,87 +430,7 @@ async function getOrderData(startDate, endDate) {
     // Sort the daily sales data by order date in ascending order
     dailySalesData.sort((a, b) => a.date - b.date);
 
+    console.log(dailySalesData)
+
     return dailySalesData;
 }
-
-exports.generateInvoice = async (req, res) => {
-    try {
-        const orderId = req.params.oid;
-        const order = await OrderDb.findById(orderId)
-            .populate('couponApplied shippingAddress')
-
-        if (!order) {
-            return res.status(404).json({ message: 'Order not found' });
-        }
-
-        const doc = new PDFDocument();
-        // Set content disposition to attachment so that the browser will prompt the user to download the PDF
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', 'attachment; filename=order_invoice.pdf');
-        doc.pipe(res);
-
-        // Add content to the PDF document based on the order details
-        doc.image('public/img/landing/dp.png', {
-            width: 50,
-            align: 'right'
-        }).moveDown(0.5);
-
-        // Helper function to add underlined text
-        function addUnderlinedText(text, fontSize = 12, align = 'left') {
-            const textWidth = doc.widthOfString(text);
-            const textHeight = doc.heightOfString(text, { width: textWidth });
-            const startX = align === 'center' ? (doc.page.width - textWidth) / 2 : align === 'right' ? doc.page.width - textWidth : 0;
-            const startY = doc.y;
-
-            doc.fontSize(fontSize).text(text, { align });
-            doc.moveDown(0.5); // Add some vertical space after the text
-            doc.lineWidth(1).moveTo(startX, startY + textHeight + 2).lineTo(startX + textWidth, startY + textHeight + 2).stroke();
-        }
-
-        doc.fontSize(20).text('RISHI STUDIO', { align: 'center' });
-        doc.moveDown(0.5);
-        addUnderlinedText('Order Invoice', 18, 'center');
-        doc.moveDown();
-
-        // Order details
-        doc.fontSize(12).text(`Order ID: ${order._id}`);
-        doc.moveDown();
-        doc.fontSize(13).text(`Order Date: ${order.orderDate.toDateString()}`);
-        doc.moveDown();
-        doc.fontSize(12).text(`Payment Status: ${order.paymentStatus}`);
-        doc.fontSize(12).text(`Payment Method: ${order.paymentMethod}`);
-        doc.moveDown();
-
-
-        // User details
-        doc.fontSize(13).text(`${order.name}`);
-        doc.fontSize(12).text(`${order.shippingAddress.address},`);
-        doc.fontSize(12).text(`${order.shippingAddress.city}, ${order.shippingAddress.state},`);
-        doc.fontSize(12).text(`${order.shippingAddress.pincode}`);
-        doc.moveDown();
-
-        // Ordered items
-        // Ordered items
-        order.orderedItems.forEach(async (item) => {
-            doc.fontSize(12).text(`Product: ${item.pname}`);
-            doc.fontSize(12).text(`Quantity: ${item.quantity}`);
-            doc.fontSize(12).text(`Price: $${item.price}`);
-            doc.fontSize(12).text(`Offer Discount: $${item.offerDiscount}`)
-
-            doc.moveDown();
-        });
-
-        if (order.couponApplied != null) {
-            doc.fontSize(12).text(`Coupon reduction: $${order.couponApplied.discountAmount}`);
-        }
-
-        // Total amount
-        doc.fontSize(14).text(`Total Amount: Rs.${order.totalAmount}/-`, { align: 'right' });
-
-        doc.end();
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-};

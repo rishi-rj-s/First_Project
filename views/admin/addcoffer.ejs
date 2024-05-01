@@ -138,6 +138,26 @@
 </head>
 
 <body class="g-sidenav-show  bg-gray-200">
+     <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl sticky-top" id="navbarBlur" data-scroll="true">
+          <div class="container-fluid py-1 px-3">
+            <nav aria-label="breadcrumb">
+              <a class="navbar-brand fw-bolder" href="/admin/dashboard">RISHI STUDIO</a>
+            </nav>
+            <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
+              <ul class="navbar-nav  justify-content-end">
+                <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
+                  <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
+                    <div class="sidenav-toggler-inner">
+                      <i class="sidenav-toggler-line"></i>
+                      <i class="sidenav-toggler-line"></i>
+                      <i class="sidenav-toggler-line"></i>
+                    </div>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
      <aside
           class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3   bg-gradient-dark"
           id="sidenav-main">
@@ -261,9 +281,9 @@
                                                        </select>
                                                   </div>
                                                   <div class="form-group">
-                                                       <label for="discount">Discount (Between 10-30%)</label>
+                                                       <label for="discount">Discount (Between 10-90%)</label>
                                                        <input type="number" class="form-control" name="discount"
-                                                            placeholder="Enter discount" min="10" max="30" required>
+                                                            placeholder="Enter discount" min="10" max="90" required>
                                                   </div>
                                                   <input type="submit" class="btn btn-primary" value="Add">
                                              </form>
@@ -280,6 +300,14 @@
                                                                  icon: 'error',
                                                                  confirmButton: 'Cool'
                                                             })
+                                                            return false; // Prevent form submission
+                                                       } else if (discount.value < 10 || discount.value > 90) {
+                                                            Swal.fire({
+                                                                 title: 'Error!',
+                                                                 text: 'Discount must be between 10-90%',
+                                                                 icon: 'error',
+                                                                 confirmButton: 'Cool'
+                                                            });
                                                             return false; // Prevent form submission
                                                        }
 

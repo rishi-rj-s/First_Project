@@ -140,6 +140,28 @@
             height: 100px;
             width: 100px;
         }
+
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .pagination {
+            display: flex;
+            gap: 10px;
+        }
+
+        .page-btn {
+            padding: 5px 10px;
+            border: 1px solid #ccc;
+            background-color: #f0f0f0;
+            cursor: pointer;
+        }
+
+        .page-btn:hover {
+            background-color: #e0e0e0;
+        }
     </style>
 </head>
 
@@ -148,10 +170,9 @@
         <div class="row">
             <nav class="col-md-3 col-lg-2 d-md-block sidebar">
                 <div class="profile">
-                    <img src="/img/landing/User Icon.webp" alt="Profile Picture">
-                    <h5>
-                        <%=username%>
-                    </h5>
+                    <h3 style="font-weight: bolder;">
+                        <%= username %>
+                    </h3>
                 </div>
                 <ul class="nav flex-column">
                     <li class="nav-item"><a class="nav-link" href="/"><i class="fas fa-home"></i>
@@ -178,11 +199,7 @@
                     <div class="col border">
                         <div class="bg-light p-4">
                             <div class="nav nav-tabs mb-4" role="tablist">
-                                <a class="nav-item nav-link active" data-bs-toggle="tab" href="#nav-pending">Pending</a>
-                                <a class="nav-item nav-link" data-bs-toggle="tab" href="#nav-delivered">Delivered</a>
-                                <a class="nav-item nav-link" data-bs-toggle="tab" href="#nav-processing">Processing</a>
-                                <a class="nav-item nav-link" data-bs-toggle="tab" href="#nav-cancelled">Cancelled</a>
-                                <a class="nav-item nav-link" data-bs-toggle="tab" href="#nav-returned">Returned</a>
+                                <a class="nav-item nav-link active" data-bs-toggle="tab" href="#nav-pending">Orders</a>
                             </div>
                             <div class="tab-content">
                                 <div class="tab-pane fade show active" id="nav-pending">
@@ -190,7 +207,7 @@
                                         <table class="table">
                                             <thead>
                                                 <tr>
-                                                    <th scope="col">Order ID</th>
+                                                    <th scope="col">SL No.</th>
                                                     <th scope="col">Payment Status</th>
                                                     <th scope="col">Order Date</th>
                                                     <th scope="col">Order Status</th>
@@ -199,376 +216,219 @@
                                                     <th></th>
                                                 </tr>
                                             </thead>
-                                            <tbody>
-                                                <% orders.forEach(order=> {%>
-                                                    <% if (order.status==="Pending" || order.status==="Shipped" ) { %>
-                                                        <tr>
+                                            <tbody id="innerPeace">
+                                                <% orders.forEach((order,i)=> {%>
+                                                    <tr>
+                                                        <td class="text-center align-middle">
+                                                            <%= i+1 %>
+                                                        </td>
+                                                        <td class="text-center align-middle">
+                                                            <%= order.paymentStatus %>
+                                                        </td>
+                                                        <td class="text-center align-middle">
+                                                            <%= order.orderDate.toLocaleDateString() %>
+                                                        </td>
+                                                        <td class="text-center align-middle">
+                                                            <%= order.status %>
+                                                        </td>
+                                                        <td class="text-center align-middle">
+                                                            $<%= order.totalAmount %>
+                                                        </td>
+                                                        <%if(order.status==="Shipping" || order.status==="Pending" ){%>
                                                             <td class="text-center align-middle">
-                                                                <%= order._id %>
-                                                            </td>
-                                                            <td class="text-center align-middle">
-                                                                <%= order.paymentStatus %>
-                                                            </td>
-                                                            <td class="text-center align-middle">
-                                                                <%= order.orderDate.toLocaleDateString() %>
-                                                            </td>
-                                                            <td class="text-center align-middle">
-                                                                <%= order.status %>
-                                                            </td>
-                                                            <td class="text-center align-middle">
-                                                                $<%= order.totalAmount %>
-                                                            </td>
-                                                            <td class="text-center align-middle">
-                                                                <% if(order.paymentStatus==="Pending"){ %>
-                                                                <a href="/user/pendingpay/<%= order._id %>"><button
-                                                                        class="btn btn-success text-white payment">
-                                                                        Pay Now
-                                                                    </button></a>
+                                                                <% if(order.paymentStatus==="Pending" ||
+                                                                    order.paymentStatus==="Failed" ){ %>
+                                                                    <a href="/user/pendingpay/<%= order._id %>"><button
+                                                                            class="btn btn-success text-white payment">
+                                                                            Pay Now
+                                                                        </button></a>
                                                                     <% } %>
-                                                                <button class="btn btn-warning text-white cancel"
-                                                                    data-order-id="<%= order._id %>">
-                                                                    Cancel
-                                                                </button>
+                                                                        <button
+                                                                            class="btn btn-warning text-white cancel"
+                                                                            data-order-id="<%= order._id %>">
+                                                                            Cancel
+                                                                        </button>
                                                             </td>
-                                                            <td class="text-center align-middle">
-                                                                <button class="btn btn-info view-order-btn"
-                                                                    data-order-id="<%= order._id %>">View</button>
-                                                            </td>
-                                                            <script>
-                                                                document.addEventListener('DOMContentLoaded', function () {
-                                                                    const viewOrderBtns = document.querySelectorAll('.view-order-btn');
-
-                                                                    viewOrderBtns.forEach(btn => {
-                                                                        btn.addEventListener('click', function () {
-                                                                            const orderId = this.getAttribute('data-order-id');
-                                                                            const url = `/user/viewsingleorder?oid=${orderId}`;
-
-                                                                            // Redirect to the specified URL
-                                                                            window.location.href = url;
-                                                                        });
-                                                                    });
-
-                                                                    // Add event listener to Cancel buttons
-                                                                    document.querySelectorAll('.cancel').forEach(button => {
-                                                                        button.addEventListener('click', function () {
-                                                                            console.log("Cancel button clicked!"); // Debugging statement
-
-                                                                            const orderId = this.getAttribute('data-order-id');
-                                                                            // Display SweetAlert confirmation dialog
-                                                                            Swal.fire({
-                                                                                title: "Are you sure?",
-                                                                                text: "Cancel this order?",
-                                                                                icon: "warning",
-                                                                                showCancelButton: true,
-                                                                                confirmButtonColor: "#3085d6",
-                                                                                cancelButtonColor: "#d33",
-                                                                                confirmButtonText: "Ok",
-                                                                            }).then((result) => {
-                                                                                if (result.isConfirmed) {
-                                                                                    // User confirmed cancellation, send request to cancel order
-                                                                                    fetch(`/user/cancelorder/${orderId}`, {
-                                                                                        method: "GET",
-                                                                                    })
-                                                                                        .then((response) => {
-                                                                                            if (!response.ok) {
-                                                                                                throw new Error("Failed to cancel order");
-                                                                                            }
-                                                                                            return response.json(); // Parse JSON response
-                                                                                        })
-                                                                                        .then((data) => {
-                                                                                            // Check the success status from the server response
-                                                                                            if (data.success) {
-                                                                                                // Show success message using SweetAlert
-                                                                                                Swal.fire({
-                                                                                                    title: "Cancelled!",
-                                                                                                    text: data.message,
-                                                                                                    icon: "success",
-                                                                                                }).then(() => {
-                                                                                                    // Reload the page or perform any other actions
-                                                                                                    window.location.reload();
-                                                                                                });
-                                                                                            } else {
-                                                                                                // Show error message using SweetAlert
-                                                                                                Swal.fire({
-                                                                                                    title: "Failed!",
-                                                                                                    text: data.message,
-                                                                                                    icon: "error",
-                                                                                                });
-                                                                                            }
-                                                                                        })
-                                                                                        .catch((error) => {
-                                                                                            console.error("Error:", error);
-                                                                                            // Show error message using SweetAlert
-                                                                                            Swal.fire({
-                                                                                                title: "Error!",
-                                                                                                text: "Something went wrong.",
-                                                                                                icon: "error",
-                                                                                            });
-                                                                                        });
-                                                                                }
-                                                                            });
-                                                                        });
-                                                                    });
-                                                                });
-                                                            </script>
-                                                        </tr>
-                                                        <% } %>
-                                                            <% }) %>
+                                                            <%} else if (order.status==="Delivered" ){%>
+                                                                <td class="text-center align-middle d-flex ">
+                                                                    <button class="btn btn-info text-white invoice"
+                                                                        data-order-id="<%= order._id %>">Invoice</button>
+                                                                </td>
+                                                                <%}else{%>
+                                                                    <td></td>
+                                                                    <%}%>
+                                                                        <td class="text-center align-middle">
+                                                                            <button class="btn btn-info view-order-btn"
+                                                                                data-order-id="<%= order._id %>">View</button>
+                                                                        </td>
+                                                    </tr>
+                                                    <% }) %>
                                             </tbody>
                                         </table>
                                     </div>
                                 </div>
-                                <div class="tab-pane fade" id="nav-delivered">
-                                    <div class="table-responsive">
-                                        <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <th scope="col">Order ID</th>
-                                                    <th scope="col">Payment Status</th>
-                                                    <th scope="col">Order Date</th>
-                                                    <th scope="col">Order Status</th>
-                                                    <th scope="col">Order Total</th>
-                                                    <th scope="col">Action</th>
-                                                    <th></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <% orders.forEach(order=> {%>
-                                                    <% if (order.status==="Delivered" ) { %>
-                                                        <tr>
-                                                            <td class="text-center align-middle">
-                                                                <%= order._id %>
-                                                            </td>
-                                                            <td class="text-center align-middle">
-                                                                <%= order.paymentStatus %>
-                                                            </td>
-                                                            <td class="text-center align-middle">
-                                                                <%= order.orderDate.toLocaleDateString() %>
-                                                            </td>
-                                                            <td class="text-center align-middle">
-                                                                <%= order.status %>
-                                                            </td>
-                                                            <td class="text-center align-middle">
-                                                                $<%= order.totalAmount %>
-                                                            </td>
-                                                            <td class="text-center align-middle d-flex ">
-                                                                <button class="btn btn-info text-white invoice"
-                                                                    data-order-id="<%= order._id %>">Invoice</button>
-                                                            </td>
-                                                            <td class="text-center align-middle">
-                                                                <button class="btn btn-info view-order-btn"
-                                                                    data-order-id="<%= order._id %>">View</button>
-                                                            </td>
-                                                            <script>
-                                                                document.addEventListener('DOMContentLoaded', function () {
-                                                                    const invoiceBtn = document.querySelectorAll('.invoice');
-                                                                    const viewOrderBtns = document.querySelectorAll('.view-order-btn');
 
-                                                                    viewOrderBtns.forEach(btn => {
-                                                                        btn.addEventListener('click', function () {
-                                                                            const orderId = this.getAttribute('data-order-id');
-                                                                            const url = `/user/viewsingleorder?oid=${orderId}`;
-
-                                                                            // Redirect to the specified URL
-                                                                            window.location.href = url;
-                                                                        });
-                                                                    });
-
-                                                                    invoiceBtn.forEach(btn => {
-                                                                        btn.addEventListener('click', function () {
-                                                                            const orderId = this.getAttribute('data-order-id');
-                                                                            const url = `/user/generateinvoice/${orderId}`;
-
-                                                                            // Redirect to the specified URL
-                                                                            window.location.href = url;
-                                                                        });
-                                                                    });
-                                                                });
-                                                            </script>
-                                                        </tr>
-                                                        <% } %>
-                                                            <% }) %>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                                <div class="tab-pane fade" id="nav-processing">
-                                    <div class="table-responsive">
-                                        <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <th scope="col">Order ID</th>
-                                                    <th scope="col">Payment Status</th>
-                                                    <th scope="col">Order Date</th>
-                                                    <th scope="col">Order Status</th>
-                                                    <th scope="col">Order Total</th>
-                                                    <th></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <% orders.forEach(order=> {%>
-                                                    <% if (order.status==="Processing" ) { %>
-                                                        <tr>
-                                                            <td class="text-center align-middle">
-                                                                <%= order._id %>
-                                                            </td>
-                                                            <td class="text-center align-middle">
-                                                                <%= order.paymentStatus %>
-                                                            </td>
-                                                            <td class="text-center align-middle">
-                                                                <%= order.orderDate.toLocaleDateString() %>
-                                                            </td>
-                                                            <td class="text-center align-middle">
-                                                                <%= order.status %>
-                                                            </td>
-                                                            <td class="text-center align-middle">
-                                                                $<%= order.totalAmount %>
-                                                            </td>
-                                                            <td class="text-center align-middle">
-                                                                <button class="btn btn-info view-order-btn"
-                                                                    data-order-id="<%= order._id %>">View</button>
-                                                            </td>
-                                                            <script>
-                                                                document.addEventListener('DOMContentLoaded', function () {
-                                                                    const viewOrderBtns = document.querySelectorAll('.view-order-btn');
-
-                                                                    viewOrderBtns.forEach(btn => {
-                                                                        btn.addEventListener('click', function () {
-                                                                            const orderId = this.getAttribute('data-order-id');
-                                                                            const url = `/user/viewsingleorder?oid=${orderId}`;
-
-                                                                            // Redirect to the specified URL
-                                                                            window.location.href = url;
-                                                                        });
-                                                                    });
-                                                                });
-                                                            </script>
-                                                        </tr>
-                                                        <% } %>
-                                                            <% }) %>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                                <div class="tab-pane fade" id="nav-cancelled">
-                                    <div class="table-responsive">
-                                        <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <th scope="col">Order ID</th>
-                                                    <th scope="col">Payment Status</th>
-                                                    <th scope="col">Order Date</th>
-                                                    <th scope="col">Order Status</th>
-                                                    <th scope="col">Order Total</th>
-                                                    <th></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <% orders.forEach(order=> {%>
-                                                    <% if (order.status==="Cancelled" ) { %>
-                                                        <tr>
-                                                            <td class="text-center align-middle">
-                                                                <%= order._id %>
-                                                            </td>
-                                                            <td class="text-center align-middle">
-                                                                <%= order.paymentStatus %>
-                                                            </td>
-                                                            <td class="text-center align-middle">
-                                                                <%= order.orderDate.toLocaleDateString() %>
-                                                            </td>
-                                                            <td class="text-center align-middle">
-                                                                <%= order.status %>
-                                                            </td>
-                                                            <td class="text-center align-middle">
-                                                                $<%= order.totalAmount %>
-                                                            </td>
-                                                            <td class="text-center align-middle">
-                                                                <button class="btn btn-info view-order-btn"
-                                                                    data-order-id="<%= order._id %>">View</button>
-                                                            </td>
-                                                            <script>
-                                                                document.addEventListener('DOMContentLoaded', function () {
-                                                                    const viewOrderBtns = document.querySelectorAll('.view-order-btn');
-
-                                                                    viewOrderBtns.forEach(btn => {
-                                                                        btn.addEventListener('click', function () {
-                                                                            const orderId = this.getAttribute('data-order-id');
-                                                                            const url = `/user/viewsingleorder?oid=${orderId}`;
-
-                                                                            // Redirect to the specified URL
-                                                                            window.location.href = url;
-                                                                        });
-                                                                    });
-                                                                });
-                                                            </script>
-                                                        </tr>
-                                                        <% } %>
-                                                            <% }) %>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                                <div class="tab-pane fade" id="nav-returned">
-                                    <div class="table-responsive">
-                                        <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <th scope="col">Order ID</th>
-                                                    <th scope="col">Payment Status</th>
-                                                    <th scope="col">Order Date</th>
-                                                    <th scope="col">Order Status</th>
-                                                    <th scope="col">Order Total</th>
-                                                    <th></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <% orders.forEach(order=> {%>
-                                                    <% if (order.status==="Returned" ) { %>
-                                                        <tr>
-                                                            <td class="text-center align-middle">
-                                                                <%= order._id %>
-                                                            </td>
-                                                            <td class="text-center align-middle">
-                                                                <%= order.paymentStatus %>
-                                                            </td>
-                                                            <td class="text-center align-middle">
-                                                                <%= order.orderDate.toLocaleDateString() %>
-                                                            </td>
-                                                            <td class="text-center align-middle">
-                                                                <%= order.status %>
-                                                            </td>
-                                                            <td class="text-center align-middle">
-                                                                $<%= order.totalAmount %>
-                                                            </td>
-                                                            <td class="text-center align-middle">
-                                                                <button class="btn btn-info view-order-btn"
-                                                                    data-order-id="<%= order._id %>">View</button>
-                                                            </td>
-                                                            <script>
-                                                                document.addEventListener('DOMContentLoaded', function () {
-                                                                    const viewOrderBtns = document.querySelectorAll('.view-order-btn');
-
-                                                                    viewOrderBtns.forEach(btn => {
-                                                                        btn.addEventListener('click', function () {
-                                                                            const orderId = this.getAttribute('data-order-id');
-                                                                            const url = `/user/viewsingleorder?oid=${orderId}`;
-
-                                                                            // Redirect to the specified URL
-                                                                            window.location.href = url;
-                                                                        });
-                                                                    });
-                                                                });
-                                                            </script>
-                                                        </tr>
-                                                        <% } %>
-                                                            <% }) %>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>
+                    <div class="pagination-container">
+                        <div class="pagination">
+                            <% for (let i=1; i <=pages; i++) { %>
+                                <button class="page-btn" data-page="<%= i %>">
+                                    <%= i %>
+                                </button>
+                                <% } %>
+                        </div>
+                    </div>
+                    <script>
+                        // Function to add event listeners to buttons
+                        function addEventListenersToButtons() {
+                            const viewOrderBtns = document.querySelectorAll('.view-order-btn');
+                            const invoiceBtns = document.querySelectorAll('.invoice');
+                            const cancelBtns = document.querySelectorAll('.cancel');
+
+                            viewOrderBtns.forEach(btn => {
+                                btn.addEventListener('click', function () {
+                                    const orderId = this.getAttribute('data-order-id');
+                                    const url = `/user/viewsingleorder?oid=${orderId}`;
+                                    window.location.href = url;
+                                });
+                            });
+
+                            invoiceBtns.forEach(btn => {
+                                btn.addEventListener('click', function () {
+                                    const orderId = this.getAttribute('data-order-id');
+                                    const url = `/user/generateinvoice/${orderId}`;
+                                    window.location.href = url;
+                                });
+                            });
+
+                            cancelBtns.forEach(btn => {
+                                btn.addEventListener('click', function () {
+                                    console.log("Cancel button clicked!"); // Debugging statement
+
+                                    const orderId = this.getAttribute('data-order-id');
+                                    Swal.fire({
+                                        title: "Are you sure?",
+                                        text: "Cancel this order?",
+                                        icon: "warning",
+                                        showCancelButton: true,
+                                        confirmButtonColor: "#3085d6",
+                                        cancelButtonColor: "#d33",
+                                        confirmButtonText: "Ok",
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            fetch(`/user/cancelorder/${orderId}`, {
+                                                method: "GET",
+                                            })
+                                                .then(response => {
+                                                    if (!response.ok) {
+                                                        throw new Error("Failed to cancel order");
+                                                    }
+                                                    return response.json();
+                                                })
+                                                .then(data => {
+                                                    if (data.success) {
+                                                        Swal.fire({
+                                                            title: "Cancelled!",
+                                                            text: data.message,
+                                                            icon: "success",
+                                                        }).then(() => {
+                                                            window.location.reload();
+                                                        });
+                                                    } else {
+                                                        Swal.fire({
+                                                            title: "Failed!",
+                                                            text: data.message,
+                                                            icon: "error",
+                                                        });
+                                                    }
+                                                })
+                                                .catch(error => {
+                                                    console.error("Error:", error);
+                                                    Swal.fire({
+                                                        title: "Error!",
+                                                        text: "Something went wrong.",
+                                                        icon: "error",
+                                                    });
+                                                });
+                                        }
+                                    });
+                                });
+                            });
+                        }
+
+
+                        document.addEventListener("DOMContentLoaded", function () {
+                            const pageButtons = document.querySelectorAll('.page-btn');
+
+                            pageButtons.forEach(button => {
+                                button.addEventListener('click', function () {
+                                    const page = this.getAttribute('data-page');
+                                    const url = `/user/viewmoreorder?page=${page}`;
+
+                                    fetch(url)
+                                        .then(response => {
+                                            if (!response.ok) {
+                                                throw new Error("Failed to fetch data");
+                                            }
+                                            return response.json();
+                                        })
+                                        .then(data => {
+                                            // Update product grid with fetched data
+                                            const productGrid = document.getElementById('innerPeace');
+                                            productGrid.innerHTML = ''; // Clear existing content
+
+                                            data.orders.forEach(order => {
+                                                productGrid.innerHTML += `
+                                <tr>
+                                    <td class="text-center align-middle">${order._id}</td>
+                                    <td class="text-center align-middle">${order.paymentStatus}</td>
+                                    <td class="text-center align-middle">${new Date(order.orderDate).toLocaleDateString()}</td>
+                                    <td class="text-center align-middle">${order.status}</td>
+                                    <td class="text-center align-middle">$${order.totalAmount}</td>
+                                    <td class="text-center align-middle">
+    ${(order.status === "Shipping" || order.status === "Pending")
+                                                        && (order.paymentStatus === "Pending")
+                                                        ? `<a href="/user/pendingpay/${order._id}">
+                <button class="btn btn-success text-white payment">Pay Now</button>
+            </a>`
+                                                        : ''
+                                                    }
+    ${(order.status === "Pending" || order.status === "Shipping")
+                                                        ? `<button class="btn btn-warning text-white cancel" data-order-id="${order._id}">Cancel</button>`
+                                                        : ''
+                                                    }
+    ${(order.status === "Delivered")
+                                                        ? `<button class="btn btn-info text-white invoice" data-order-id="${order._id}">Invoice</button>`
+                                                        : ''
+                                                    }
+</td>
+
+
+                                    <td class="text-center align-middle">
+                                        <button class="btn btn-info view-order-btn" data-order-id="${order._id}">
+                                            View
+                                        </button>
+                                    </td>
+                                </tr>
+                            `;
+                                            });
+
+                                            // Add event listeners to new buttons
+                                            addEventListenersToButtons();
+                                        })
+                                        .catch(error => {
+                                            console.error("Error:", error);
+                                            // Handle fetch errors
+                                        });
+                                });
+                            });
+
+                            // Initial call to add event listeners to buttons
+                            addEventListenersToButtons();
+                        });
+                    </script>
                 </div>
             </main>
         </div>
