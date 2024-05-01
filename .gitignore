@@ -1,6 +1,5 @@
 node_modules/
 .vscode/
-config.env
 uploads/*
 auth/keys.js
 originals/
