@@ -446,7 +446,7 @@
                                       <%= pdt.quantity %>
                                     </td>
                                     <td class="text-center align-middle">
-                                      <%= pdt.price %>
+                                      <%= pdt.price - pdt.offerDiscount %>
                                     </td>
                                     <td class="text-center align-middle">
                                       <button class="btn btn-success accept" data-orderid="<%= order._id %>"
@@ -656,7 +656,6 @@
                               <th scope="col">Payment Status</th>
                               <th scope="col">Order Date</th>
                               <th scope="col">Order Status</th>
-                              <th scope="col">Order Total</th>
                               <th></th>
                             </tr>
                           </thead>
@@ -675,9 +674,6 @@
                                   </td>
                                   <td class="text-center align-middle">
                                     <%= order.status %>
-                                  </td>
-                                  <td class="text-center align-middle">
-                                    <%= order.totalAmount %>
                                   </td>
                                   <td class="text-center align-middle">
                                     <button class="btn btn-info view-order-btn"

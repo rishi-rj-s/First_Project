@@ -669,14 +669,16 @@ exports.generateInvoice = async (req, res) => {
     const orderId = req.params.oid;
     const order = await OrderDb.findOne({
       '_id': orderId,
-      'orderedItems.status': 'Delivered' // Find orders where at least one ordered item has a status of "Delivered"
-    }).populate('couponApplied shippingAddress')
-
-    console.log(order)
+      'orderedItems.status': 'Delivered', // Find orders where at least one ordered item has a status of "Delivered"
+    }).populate('couponApplied shippingAddress');
 
     if (!order) {
       return res.status(404).json({ message: 'Order not found' });
     }
+
+    const filteredItems = order.orderedItems.filter(item =>
+      item.status === 'Delivered' && item.status !== 'Returned' && item.status !== 'Cancelled'
+    );
 
     const doc = new PDFDocument();
     res.setHeader('Content-Type', 'application/pdf');
@@ -708,16 +710,17 @@ exports.generateInvoice = async (req, res) => {
     doc.moveDown();
 
     // Ordered Items Table
-    generateTable(doc, order.orderedItems);
+    generateTable(doc, filteredItems);
     doc.moveDown();
 
     // Payment Information
     doc.fontSize(12).text(`Payment Method: ${order.paymentMethod}`);
     doc.fontSize(12).text(`Payment Status: ${order.paymentStatus}`);
-    doc.fontSize(12).text(`Total Amount: $${order.totalAmount}/-`, { align: 'right' });
     if (order.couponApplied) {
       doc.fontSize(12).text(`Coupon: (-)$${order.couponApplied.discountAmount}/-`, { align: 'right' });
+      doc.moveDown();
     }
+    doc.fontSize(12).text(`Total Amount: $${order.totalAmount}/-`, { align: 'right' });
     doc.moveDown();
 
     // Footer Section

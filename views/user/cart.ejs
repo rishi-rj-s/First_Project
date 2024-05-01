@@ -181,7 +181,7 @@
                             <h4 class="card-title">
                               <%= cartItem.productId.p_name %>
                             </h4>
-                            <p class="font-weight-bold">PRICE - $<%=(cartItem.productId.total_price - cartItem.productId.offerDiscount)%>  <strike>$<%= cartItem.productId.price %></strike>
+                            <p class="font-weight-bold">PRICE - $<%=((cartItem.productId.total_price - cartItem.productId.offerDiscount)*cartItem.quantity)%>  <strike>$<%= cartItem.productId.price*cartItem.quantity %></strike>
                             </p>
                             <% if (cartItem.productId.stock> 0) { %>
                               <div class="input-group me-2 mb-2">

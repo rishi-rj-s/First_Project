@@ -2,7 +2,7 @@ const Userdb = require("../model/usermodel");
 const ProductDb = require("../model/productmodel");
 const CatDb = require("../model/categorymodel");
 const AdminDb = require("../model/adminmodel");
-const AddressDb = require("../model/addressmodel");
+const CouponDb = require("../model/couponmodel");
 const OrderDb = require("../model/ordermodel");
 const OfferDb = require('../model/offermodel');
 const WalletHistory = require("../model/wallethistory");
@@ -518,41 +518,52 @@ exports.acceptReturn = async (req, res) => {
   try {
     const orderId = req.params.oid;
     const productId = req.query.pid;
-    console.log(orderId, productId);
 
     // Use async/await with findByIdAndUpdate to ensure proper error handling
     const updatedOrder = await OrderDb.findOneAndUpdate(
-      {
-        _id: orderId,
-      },
-      {
-        $set: {
-          "orderedItems.$[item].status": "Returned"
-        }
-      },
-      {
-        new: true,
-        arrayFilters: [{ "item._id": productId }]
-      }
+      { _id: orderId },
+      { $set: { "orderedItems.$[item].status": "Returned" } },
+      { new: true, arrayFilters: [{ "item._id": productId }] }
     );
-
-
 
     // Check if updatedOrder is null (order not found) or if it's updated successfully
     if (!updatedOrder) {
       return res.status(404).json({ msg: "Order not found" });
     }
 
-    // Calculate the price of the returned item
-    const returnedProduct = updatedOrder.orderedItems.find(item => item._id.toString() === productId);
-    if (!returnedProduct) {
+    // Calculate the total price of the returned items
+    const returnedProducts = updatedOrder.orderedItems.filter(item => item._id.toString() === productId && item.status === "Returned");
+    if (returnedProducts.length === 0) {
       return res.status(404).json({ msg: "Product not found in order" });
     }
 
-    const returnedItemPrice = returnedProduct.price;
+    let returnedItemPrice = 0;
+    for (const item of returnedProducts) {
+      const itemPrice = item.price - item.offerDiscount;
+      returnedItemPrice += itemPrice ;
+    }
 
+    console.log(returnedItemPrice); 
+
+    let refund = returnedItemPrice;
+    updatedOrder.totalAmount -= returnedItemPrice;
+    console.log(refund, updatedOrder.totalAmount);
+
+    // Adjust refund amount if coupon applied
+    if (updatedOrder.couponApplied) {
+      const coupon = await CouponDb.findById(updatedOrder.couponApplied);
+      if (coupon && (updatedOrder.totalAmount - returnedItemPrice) < coupon.minimumPurchaseAmount) {
+        // Reduce refund amount to meet coupon minimum purchase amount
+        refund -= coupon.discountAmount;
+        updatedOrder.totalAmount += coupon.discountAmount;
+        console.log(refund, updatedOrder.totalAmount);
+      }
+    }
+
+    // Update order with adjusted total amount and remove coupon
     await OrderDb.findByIdAndUpdate(orderId, {
-      $inc: { totalAmount: -returnedItemPrice }
+      $set: { totalAmount: updatedOrder.totalAmount },
+      $unset: { couponApplied: 1 } // Remove coupon from order
     });
 
     // Check if all products in the order are returned
@@ -560,32 +571,24 @@ exports.acceptReturn = async (req, res) => {
 
     if (allReturned) {
       // Update order status and payment status
-      const updatedOrderStatus = await OrderDb.findByIdAndUpdate(orderId, {
-        $set: {
-          status: "Returned",
-          paymentStatus: "Refunded",
-          totalAmount: 0
-        }
+      await OrderDb.findByIdAndUpdate(orderId, {
+        $set: { status: "Returned", paymentStatus: "Refunded", totalAmount: 0 }
       });
-
-      if (!updatedOrderStatus) {
-        return res.status(500).json({ msg: "Failed to update order status or payment status" });
-      }
     }
-   
 
     // Get the user ID from the updatedOrder
     const userId = updatedOrder.user_id;
 
-    // Update the user's wallet with the returnedItemPrice
-    await Userdb.findByIdAndUpdate(userId, { $inc: { wallet: returnedItemPrice } });
+    // Update the user's wallet with the refunded amount
+    await Userdb.findByIdAndUpdate(userId, { $inc: { wallet: refund } });
 
+    // Create wallet history entry
     const history = new WalletHistory({
       userId: updatedOrder.user_id,
       transactionType: "Credit",
-      amount: returnedItemPrice,
+      amount: refund,
       order: updatedOrder._id
-    })
+    });
     await history.save();
 
     // Handle the case where the order is updated successfully and wallet is updated
