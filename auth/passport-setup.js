@@ -18,7 +18,7 @@ passport.use(
     {
       clientID: keys.google.clientID,
       clientSecret: keys.google.clientSecret,
-      callbackURL: "http://localhost:5002/auth/redirect",
+      callbackURL: "https://rishistudio.shop/auth/redirect",
       // passReqToCallback   : true
     },
     (accessToken, refreshToken, profile, done) => {
