@@ -74,6 +74,7 @@ route.put('/couponactive/:cid', cookieJwtAuth, couponcontroller.couponActive);
 route.delete('/deletecoupon/:cid', cookieJwtAuth, couponcontroller.deleteCoupon);
 route.get('/editcoupon/:cid', cookieJwtAuth, couponcontroller.renderEdit);
 route.post('/editcoupon/:cid', cookieJwtAuth, couponcontroller.editCoupon);
+route.get('/viewmorecoupon', cookieJwtAuth, couponcontroller.showMoreCoupons)
 
 route.get('/offers', cookieJwtAuth, offercontroller.renderOffers);
 route.get('/addpoffer', cookieJwtAuth, offercontroller.renderAddPoffer);
@@ -82,7 +83,8 @@ route.get('/addcoffer', cookieJwtAuth, offercontroller.renderAddCoffer);
 route.post('/addcoffer', cookieJwtAuth, offercontroller.addCOffer);
 route.get('/showedit/:offId', cookieJwtAuth, offercontroller.renderEditOffer);
 route.post('/editoffer', cookieJwtAuth, offercontroller.editOffer)
-route.get('/deleteoffer/:offId', cookieJwtAuth, offercontroller.deleteOffer);
+route.delete('/deleteoffer/:offId', cookieJwtAuth, offercontroller.deleteOffer);
+route.get('/viewmoreoffer', cookieJwtAuth, offercontroller.renderMoreOffers)
 
 route.get('/viewreports', cookieJwtAuth, reportcontroller.renderReportPage);
 route.get('/sales-report', cookieJwtAuth, reportcontroller.generateReport);

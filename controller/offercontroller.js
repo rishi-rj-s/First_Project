@@ -4,16 +4,37 @@ const OfferDb = require('../model/offermodel');
 
 exports.renderOffers = async (req, res) => {
   try {
-    const offers = await OfferDb.find().populate('catId').populate('pdtId');
+    const offers = await OfferDb.find().populate('catId pdtId').limit(3).sort({_id:-1});
     if (!offers) {
       res.status(404).send("No offers");
     }
-    res.render('admin/offers', { offers });
+    let pages = await OfferDb.countDocuments();
+    pages = Math.ceil(pages/3)
+    res.render('admin/offers', { offers, pages });
   } catch (e) {
     console.log(e);
     res.status(500).send("Internal Server Error");
   }
 }
+
+exports.renderMoreOffers = async (req,res) => {
+  try{
+    const page = req.query.page
+    let jump = (page-1) * 3;
+    console.log(page, jump, "Triggered!")
+
+    // Fetch coupons details from the database
+    const offers = await OfferDb.find().populate('catId pdtId').limit(3).skip(jump).sort({_id:-1});
+    // console.log(offers)
+
+    // return the order list page and pass the orders, categories, user, and cancelledProducts data to the view
+    return res.status(200).json({ offers }); // Send JSON response with orders data
+  }catch(e){
+    console.log(e);
+    res.status(500).send("Internal Server Error!");
+  }
+}
+
 
 exports.renderAddPoffer = async (req, res) => {
   try {

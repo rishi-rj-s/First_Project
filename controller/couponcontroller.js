@@ -8,9 +8,11 @@ const CouponDb = require("../model/couponmodel");
 
 exports.showCoupons = async (req, res) => {
   try {
-    const coupons = await CouponDb.find();
+    const coupons = await CouponDb.find().limit(3).sort({_id:-1});
     if (coupons) {
-      res.render("admin/coupons", { coupons });
+      let pages = await CouponDb.countDocuments();
+    pages = Math.ceil(pages/3)
+      res.render("admin/coupons", { coupons, pages });
     } else {
       console.log(coupons);
       res.status(401).send({ message: "No Coupons Found" });
@@ -20,6 +22,25 @@ exports.showCoupons = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
+
+exports.showMoreCoupons = async (req,res) => {
+  try{
+    const page = req.query.page
+    let jump = (page-1) * 3;
+    console.log( page, jump)
+
+    // Fetch coupons details from the database
+    const coupons = await CouponDb.find()
+      .limit(3).skip(jump).sort({_id:-1})
+    // console.log(coupons)
+
+    // return the order list page and pass the orders, categories, user, and cancelledProducts data to the view
+    return res.status(200).json({ coupons}); // Send JSON response with orders data
+  }catch(e){
+    console.log(e);
+    res.status(500).send("Internal Server Error!");
+  }
+}
 
 exports.showAddCoupon = (req, res) => {
   res.render("admin/addcoupon");

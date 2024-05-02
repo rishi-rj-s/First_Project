@@ -41,30 +41,53 @@
                top: 50%;
                transform: translateY(-35%);
           }
+
+          .pagination-container {
+               display: flex;
+               justify-content: center;
+               margin-top: 10px;
+          }
+
+          .pagination {
+               display: flex;
+               gap: 10px;
+          }
+
+          .page-btn {
+               padding: 5px 10px;
+               border: 1px solid #ccc;
+               background-color: #f0f0f0;
+               cursor: pointer;
+          }
+
+          .page-btn:hover {
+               background-color: grey;
+          }
      </style>
 </head>
 
 <body class="g-sidenav-show  bg-gray-200">
-     <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl sticky-top" id="navbarBlur" data-scroll="true">
+     <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl sticky-top" id="navbarBlur"
+          data-scroll="true">
           <div class="container-fluid py-1 px-3">
-            <nav aria-label="breadcrumb">
-              <a class="navbar-brand fw-bolder" href="/admin/dashboard">RISHI STUDIO</a>
-            </nav>
-            <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
-              <ul class="navbar-nav  justify-content-end">
-                <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
-                  <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
-                    <div class="sidenav-toggler-inner">
-                      <i class="sidenav-toggler-line"></i>
-                      <i class="sidenav-toggler-line"></i>
-                      <i class="sidenav-toggler-line"></i>
-                    </div>
-                  </a>
-                </li>
-              </ul>
-            </div>
+               <nav aria-label="breadcrumb">
+                    <a class="navbar-brand fw-bolder" href="/admin/dashboard">RISHI STUDIO</a>
+               </nav>
+               <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
+                    <ul class="navbar-nav  justify-content-end">
+                         <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
+                              <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
+                                   <div class="sidenav-toggler-inner">
+                                        <i class="sidenav-toggler-line"></i>
+                                        <i class="sidenav-toggler-line"></i>
+                                        <i class="sidenav-toggler-line"></i>
+                                   </div>
+                              </a>
+                         </li>
+                    </ul>
+               </div>
           </div>
-        </nav>
+     </nav>
      <aside
           class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3   bg-gradient-dark"
           id="sidenav-main">
@@ -239,10 +262,10 @@
                                                                            <i class="fas fa-pencil-alt"></i>
                                                                       </button>
                                                                  </a>
-                                                                 <a href="/admin/deleteoffer/<%= offer._id %>"><button class="btn btn-warning ms-2"
-                                                                      id="deleteOfferBtn" data-id="<%= offer._id %>">
+                                                                 <button class="btn btn-warning ms-2 deleteOfferBtn"
+                                                                      data-id="<%= offer._id %>">
                                                                       <i class="fas fa-trash-alt"></i>
-                                                                 </button></a>
+                                                                 </button>
                                                             </div>
                                                        </td>
                                                   </tr>
@@ -253,38 +276,163 @@
                          </div>
                     </div>
                </div>
+               <div class="pagination-container">
+                    <div class="pagination">
+                         <% for (let i=1; i <=pages; i++) { %>
+                              <button class="page-btn" data-page="<%= i %>">
+                                   <%= i %>
+                              </button>
+                              <% } %>
+                    </div>
+               </div>
      </main>
 
-     <!-- <script>
+     <script>
+          document.addEventListener("DOMContentLoaded", function () {
+               const pageButtons = document.querySelectorAll('.page-btn');
+
+               pageButtons.forEach(button => {
+                    button.addEventListener('click', function () {
+                         const page = this.getAttribute('data-page');
+                         const url = `/admin/viewmoreoffer?page=${page}`;
+
+                         fetch(url)
+                              .then(response => {
+                                   if (!response.ok) {
+                                        throw new Error("Failed to fetch data");
+                                   }
+                                   return response.json();
+                              })
+                              .then(data => {
+                                   // console.log(data.order)
+
+                                   // Update product grid with fetched data
+                                   const productGrid = document.getElementById('categoryTableBody');
+                                   productGrid.innerHTML = ''; // Clear existing content
+
+                                   data.offers.forEach(offer => {
+                                        productGrid.innerHTML += `
+                            <tr>
+                                <td>
+                                    <div class="d-flex px-2 py-1">
+                                        <div class="d-flex flex-column justify-content-center">
+                                            <h6 class="mb-0 text-sm">
+                                                ${offer.type}
+                                            </h6>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex px-2 py-1">
+                                        <div class="d-flex flex-column justify-content-center">
+                                            <h6 class="mb-0 text-sm">
+                                                ${offer.catId ? offer.catId.category : offer.pdtId.p_name}
+                                            </h6>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex px-2 py-1">
+                                        <div class="d-flex flex-column justify-content-center">
+                                            <h6 class="mb-0 text-sm">
+                                                ${offer.discount}%
+                                            </h6>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-row">
+                                        <a href="/admin/showedit/${offer._id}">
+                                            <button class="btn btn-warning">
+                                                <i class="fas fa-pencil-alt"></i>
+                                            </button>
+                                        </a>
+                                        <a href="/admin/deleteoffer/${offer._id}">
+                                            <button class="btn btn-warning ms-2" id="deleteOfferBtn" data-id="${offer._id}">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>`;
+                                   });
+
+                                   // Add event listeners to new buttons
+                                   addEventListenersToButtons();
+                              })
+                              .catch(error => {
+                                   console.error("Error:", error);
+                                   // Handle fetch errors
+                              });
+                    });
+               });
+
+               // Initial call to add event listeners to buttons
+               addEventListenersToButtons();
+          });
+     </script>
+
+
+     <script>
           document.addEventListener('DOMContentLoaded', function () {
-               const deleteButtons = document.getElementById('.deleteOfferBtn');
+               const deleteButtons = document.querySelectorAll('.deleteOfferBtn');
 
                deleteButtons.forEach(button => {
-                    button.addEventListener('click', async function () {
+                    button.addEventListener('click', async function (event) {
+                         event.preventDefault(); // Prevent the default action of the button
+
                          const offerId = button.dataset.id; // Accessing data-id attribute
 
-                         try {
-                              const response = await fetch(`/user/deleteoffer/${offerId}`, {
-                                   method: 'DELETE',
-                              });
+                         // Show confirmation dialog
+                         const confirmed = await Swal.fire({
+                              title: 'Are you sure?',
+                              text: 'Once deleted, you will not be able to recover this offer!',
+                              icon: 'warning',
+                              showCancelButton: true,
+                              confirmButtonColor: '#d33',
+                              cancelButtonColor: '#3085d6',
+                              confirmButtonText: 'Yes, delete it!',
+                              cancelButtonText: 'Cancel'
+                         });
 
-                              if (response.ok) {
-                                   // Offer deleted successfully
-                                   alert('Offer deleted successfully.');
-                                   window.location.reload(); // Reload the page
-                              } else {
-                                   // Failed to delete offer
-                                   alert('Failed to delete offer.');
+                         // If user confirmed deletion
+                         if (confirmed.isConfirmed) {
+                              try {
+                                   const response = await fetch(`/admin/deleteoffer/${offerId}`, {
+                                        method: 'DELETE',
+                                   });
+
+                                   if (response.ok) {
+                                        // Offer deleted successfully
+                                        Swal.fire({
+                                             icon: 'success',
+                                             title: 'Success!',
+                                             text: 'Offer deleted successfully.',
+                                             timer: 2000, // Adjust as needed
+                                             showConfirmButton: false
+                                        }).then(() => window.location.reload()); // Reload the page after the alert is closed
+                                   } else {
+                                        // Failed to delete offer
+                                        Swal.fire({
+                                             icon: 'error',
+                                             title: 'Error!',
+                                             text: 'Failed to delete offer.'
+                                        });
+                                   }
+                              } catch (error) {
+                                   console.error('Error:', error);
+                                   Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error!',
+                                        text: 'An error occurred while deleting the offer.'
+                                   });
                               }
-                         } catch (error) {
-                              console.error('Error:', error);
-                              alert('An error occurred while deleting the offer.');
                          }
                     });
                });
           });
+     </script>
 
-     </script> -->
 
 
      <script>
