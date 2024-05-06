@@ -428,7 +428,7 @@
                 <!-- Adjust column size based on viewport -->
                 <div id="product-<%= pdt._id %>" class="single-product col-md-4 col-sm-6 col-12 mb-4">
                   <div class="part-1">
-                    <img src="/<%= pdt.images[0] %>" alt="Product Image"
+                    <img src="<%= pdt.images[0] %>" alt="Product Image"
                       style="height: 100%; width: 100%; background-repeat: no-repeat; background-size: cover; background-position: center;">
                     <ul>
                       <% if(pdt.stock > 0) { %>
@@ -533,7 +533,7 @@
               productGrid.innerHTML += `
               <div id="product-${product._id}" class="single-product col-md-4 col-sm-6 col-12 mb-4">
                 <div class="part-1">
-                  <img src="/${product.images[0]}" alt="Product Image" style="height: 100%; width: 100%; background-repeat: no-repeat; background-size: cover; background-position: center;">
+                  <img src="${product.images[0]}" alt="Product Image" style="height: 100%; width: 100%; background-repeat: no-repeat; background-size: cover; background-position: center;">
                   <ul>
                     ${product.stock > 0 ? `<li><a href="/user/addtocart/${product._id}"><i class="fa fa-shopping-cart"></i></a></li>` : ''}
                     <li><a href="/user/addwishlist/${product._id}"><i class="fa fa-heart"></i></a></li>

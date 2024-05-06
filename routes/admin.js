@@ -40,7 +40,7 @@ route.get("/logout", cookieJwtAuth, admincontroller.logout);
 route.post("/login", admincontroller.login);
 
 route.get("/addproduct", cookieJwtAuth, admincontroller.addproductpage);
-route.post("/addproduct", cookieJwtAuth, upload.array("images", 4), admincontroller.addproduct);
+route.post("/addproduct", cookieJwtAuth, admincontroller.addproduct);
 route.get("/viewproducts", cookieJwtAuth, admincontroller.viewproducts);
 route.get("/viewproduct/:pid", cookieJwtAuth, admincontroller.viewSingleProduct)
 route.get("/editproduct/:id", cookieJwtAuth, admincontroller.editproductpage);

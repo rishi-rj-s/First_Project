@@ -4,8 +4,6 @@ const path = require('path')
 const nocache = require('nocache')
 const cookieParser = require('cookie-parser')
 const session = require('express-session')
-const passportSetup = require('./auth/passport-setup')
-
 
 const connectDB = require('./database/connection')
 
@@ -33,8 +31,8 @@ app.use('/js', express.static(path.join(__dirname,"public/js")))
 app.use('/uploads',express.static('uploads'))
 
 app.set('view engine', 'ejs')
-app.use(express.json())
-app.use(express.urlencoded({extended:true}))
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 //login page
 app.get("/",(req,res)=>{

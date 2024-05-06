@@ -36,6 +36,8 @@
      <!-- Nepcha Analytics (nepcha.com) -->
      <!-- Nepcha is a easy-to-use web analytics. No cookies and fully compliant with GDPR, CCPA and PECR. -->
      <script defer data-site="YOUR_DOMAIN_HERE" src="https://api.nepcha.com/js/nepcha-analytics.js"></script>
+     <!-- Include Cropper.js CSS -->
+     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
      <style>
           .text-end {
                position: absolute;
@@ -142,30 +144,58 @@
                border-radius: 5px;
                padding: 10px;
           }
+
+          .image-wrapper {
+               position: relative;
+               max-width: 150px;
+          }
+
+          .img-thumbnail {
+               width: 100%;
+               height: auto;
+               object-fit: cover;
+          }
+
+          .delete-btn {
+               position: absolute;
+               top: 0;
+               right: 0;
+               background-color: rgba(255, 255, 255, 0.8);
+               border: none;
+               border-radius: 50%;
+               padding: 5px;
+               cursor: pointer;
+          }
+
+          .delete-btn i {
+               color: red;
+               font-size: 1.2rem;
+          }
      </style>
 </head>
 
 <body class="g-sidenav-show  bg-gray-200">
-     <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl sticky-top" id="navbarBlur" data-scroll="true">
+     <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl sticky-top" id="navbarBlur"
+          data-scroll="true">
           <div class="container-fluid py-1 px-3">
-            <nav aria-label="breadcrumb">
-              <a class="navbar-brand fw-bolder" href="/admin/dashboard">RISHI STUDIO</a>
-            </nav>
-            <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
-              <ul class="navbar-nav  justify-content-end">
-                <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
-                  <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
-                    <div class="sidenav-toggler-inner">
-                      <i class="sidenav-toggler-line"></i>
-                      <i class="sidenav-toggler-line"></i>
-                      <i class="sidenav-toggler-line"></i>
-                    </div>
-                  </a>
-                </li>
-              </ul>
-            </div>
+               <nav aria-label="breadcrumb">
+                    <a class="navbar-brand fw-bolder" href="/admin/dashboard">RISHI STUDIO</a>
+               </nav>
+               <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
+                    <ul class="navbar-nav  justify-content-end">
+                         <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
+                              <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
+                                   <div class="sidenav-toggler-inner">
+                                        <i class="sidenav-toggler-line"></i>
+                                        <i class="sidenav-toggler-line"></i>
+                                        <i class="sidenav-toggler-line"></i>
+                                   </div>
+                              </a>
+                         </li>
+                    </ul>
+               </div>
           </div>
-        </nav>
+     </nav>
      <aside
           class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3   bg-gradient-dark"
           id="sidenav-main">
@@ -214,14 +244,14 @@
                     </li>
                     <li class="nav-item">
                          <a class="nav-link text-white " href="/admin/viewreports">
-                           <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                             <i class="material-icons opacity-10">bar_chart</i>
-                           </div>
-                           <span class="nav-link-text ms-1">Sales Report</span>
+                              <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                                   <i class="material-icons opacity-10">bar_chart</i>
+                              </div>
+                              <span class="nav-link-text ms-1">Sales Report</span>
                          </a>
-                       </li>
+                    </li>
                     <li class="nav-item">
-                         <a class="nav-link text-white "  href="/admin/viewcoupons">
+                         <a class="nav-link text-white " href="/admin/viewcoupons">
                               <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
                                    <i class="material-icons opacity-10">local_offer</i>
                               </div>
@@ -251,7 +281,6 @@
           <!-- Navbar -->
           <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur"
                data-scroll="true">
-               <div class="container-fluid py-1 px-3">
                     <nav aria-label="breadcrumb">
                          <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
                               <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark"
@@ -274,8 +303,8 @@
                               <div class="container-fluid">
                                    <div class="row">
                                         <div class="col-md-8">
-                                             <form action="/admin/addproduct" method="post"
-                                                  enctype="multipart/form-data" onsubmit="return validateForm()">
+                                             <form id="formSubmit"
+                                                  enctype="multipart/form-data">
                                                   <div class="form-group form-field">
                                                        <label for="category">Product Category</label>
                                                        <select name="category" class="form-select">
@@ -316,23 +345,34 @@
                                                             name="stock" placeholder="Enter stock" required>
                                                   </div>
                                                   <div class="form-group form-field">
-                                                       <label for="images">Images</label>
+                                                       <label for="images">Add Image</label>
                                                        <input type="file" class="form-control-file" id="images"
-                                                            accept="image/*" name="images" required multiple>
-                                                  </div>
-                                                  <div class="col-md-4">
-                                                       <div class="card">
-                                                            <div class="card-body">
-                                                                 <h5>Images Preview</h5>
-                                                                 <div class="image-container" style="width: 150px;">
-                                                                      <!-- Image previews will be inserted here -->
-                                                                 </div>
-                                                            </div>
+                                                            accept=".jpg, .jpeg, .png, .webp" name="images">
+                                                       <!-- Cropping Section (hidden initially) -->
+                                                       <div id="cropping-section" class="mt-3" style="display: none;">
+                                                            <h5>Crop Image</h5>
+                                                            <div id="cropper-container"></div>
+                                                            <button id="crop-image-btn" class="btn btn-primary mt-3"
+                                                                 type="button">Crop Image</button>
                                                        </div>
                                                   </div>
+                                                  <!-- A hidden input to store the cropped images array -->
+                                                  <input type="hidden" id="croppedImages" name="croppedImages">
+
                                                   <input type="submit" class="btn btn-primary mt-2" value="Add">
 
                                              </form>
+
+                                             <!-- Image Preview Section -->
+                                             <div class="card mt-4">
+                                                  <div class="card-body">
+                                                       <h5>Images Preview</h5>
+                                                       <div class="image-container">
+                                                            <!-- Image previews will be inserted here -->
+                                                       </div>
+                                                  </div>
+                                             </div>
+
                                         </div>
                                    </div>
                               </div>
@@ -342,102 +382,194 @@
           </div>
 
           <script>
-               // Function to validate form
-               function validateForm() {
-                    const p_name = document.querySelector('[name="p_name"]');
-                    const price = document.querySelector('[name="price"]');
-                    const description = document.querySelector('[name="description"]');
-                    const discount = document.querySelector('[name="discount"]');
-                    const stock = document.querySelector('[name="stock"]');
-                    const listing = document.querySelector('[name="listing"]');
-                    const images = document.querySelector('[name="images"]');
+               document.addEventListener('DOMContentLoaded', () => {
+                    const imageInput = document.getElementById('images');
+                    const croppingSection = document.getElementById('cropping-section');
+                    const cropperContainer = document.getElementById('cropper-container');
+                    const imageContainer = document.querySelector('.image-container');
+                    const form = document.querySelector('form');
 
-                    // Check if any field is empty or contains only whitespace
-                    if (!p_name.value.trim() || !price.value.trim() || !description.value.trim() || !discount.value.trim()
-                         || !stock.value.trim() || !listing.value.trim() || !images.value.trim()) {
-                         Swal.fire({
-                              title: 'Error!',
-                              text: 'Requires all fields',
-                              icon: 'error',
-                              confirmButton: 'Retry'
-                         });
-                         return false; // Prevent form submission
-                    } else if (price.value < 40) {
-                         Swal.fire({
-                              title: 'Error!',
-                              text: 'The product price needs atleast to be $40',
-                              icon: 'error',
-                              confirmButton: 'Retry'
-                         });
-                         return false; // Prevent form submission
-                    } else if (discount.value > 30 || discount.value <= 0) {
-                         Swal.fire({
-                              title: 'Error!',
-                              text: 'Discounts can only of 0-30%!',
-                              icon: 'error',
-                              confirmButton: 'Retry'
-                         });
-                         return false; // Prevent form submission
-                    } else if (stock.value < 1) {
-                         Swal.fire({
-                              title: 'Error!',
-                              text: 'There needs to be atleast 1 stock',
-                              icon: 'error',
-                              confirmButton: 'Retry'
-                         });
-                         return false; // Prevent form submission
-                    }
+                    let cropperInstance = null;
 
-                    return true; // Allow form submission
-               }
-          </script>
-          <script>
-               const imageContainer = document.querySelector('.image-container');
-               const imageInput = document.querySelector('#images');
+                    imageInput.addEventListener('change', (e) => {
+                         const file = e.target.files[0];
+                         if (file) {
+                              const reader = new FileReader();
+                              reader.onload = (e) => {
+                                   if (cropperInstance) {
+                                        cropperInstance.destroy(); // Destroy previous Cropper instance
+                                   }
 
-               imageInput.addEventListener('change', (event) => {
-                    const files = event.target.files;
+                                   const image = new Image();
+                                   image.src = e.target.result;
+                                   image.onload = () => {
+                                        cropperContainer.innerHTML = ''; // Clear previous cropper
+                                        const cropperCanvas = document.createElement('canvas');
+                                        cropperContainer.appendChild(cropperCanvas);
 
-                    for (const file of files) {
-                         if (['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(file.type) || ['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(file.type.split('/')[0] + '/' + file.type.split('/')[1].split('.')[1])) {
-                              const image = new Image();
-                              image.src = URL.createObjectURL(file);
+                                        cropperInstance = new Cropper(cropperCanvas, {
+                                             aspectRatio: 9 / 16, // Set your desired aspect ratio
+                                             viewMode: 1, // Show only the cropped area
+                                        });
 
-                              image.onload = () => {
-                                   const imageElement = document.createElement('div');
-                                   imageElement.classList.add('image-element');
-                                   imageElement.style.height = '150px';
-                                   imageElement.style.width = '150px';
-                                   imageElement.style.position = 'relative';
-
-                                   const imageWrapper = document.createElement('img');
-                                   imageWrapper.classList.add('img-fluid', 'img-thumbnail');
-                                   imageWrapper.style.height = '100%';
-                                   imageWrapper.style.width = '100%';
-                                   imageWrapper.style.objectFit = 'contain';
-                                   imageWrapper.src = image.src;
-
-                                   imageElement.appendChild(imageWrapper);
-
-                                   const deleteButton = document.createElement('button');
-                                   deleteButton.classList.add('btn', 'btn-danger', 'btn-sm', 'delete-button');
-                                   deleteButton.innerHTML = '<i class="fa fa-trash-alt text-lg"></i>';
-                                   deleteButton.style.position = 'absolute';
-                                   deleteButton.style.top = '0';
-                                   deleteButton.style.right = '0';
-
-                                   imageElement.appendChild(deleteButton);
-
-                                   imageContainer.appendChild(imageElement);
-
-                                   deleteButton.addEventListener('click', () => {
-                                        imageElement.remove();
-                                   });
+                                        cropperInstance.replace(image.src); // Display the selected image in Cropper
+                                        croppingSection.style.display = 'block'; // Show cropping section
+                                   };
                               };
+                              reader.readAsDataURL(file);
                          }
+                    });
+
+                    document.getElementById('crop-image-btn').addEventListener('click', () => {
+                         if (cropperInstance) {
+                              const croppedImage = cropperInstance.getCroppedCanvas().toDataURL();
+                              // Add the cropped image to the image preview section
+                              const imageWrapper = document.createElement('div');
+                              imageWrapper.classList.add('image-wrapper');
+
+                              const imageElement = document.createElement('img');
+                              imageElement.src = croppedImage;
+                              imageElement.classList.add('img-fluid', 'img-thumbnail', 'mr-2');
+                              imageWrapper.appendChild(imageElement);
+
+                              // Create delete button
+                              const deleteBtn = document.createElement('button');
+                              deleteBtn.classList.add('btn', 'btn-danger', 'delete-btn');
+                              deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+                              deleteBtn.addEventListener('click', () => {
+                                   imageElement.remove(); // Remove from DOM
+                                   const croppedImagesInput = document.getElementById('croppedImages');
+                                   const croppedImagesArray = JSON.parse(croppedImagesInput.value || '[]');
+                                   const index = croppedImagesArray.indexOf(croppedImage);
+                                   if (index !== -1) {
+                                        croppedImagesArray.splice(index, 1); // Remove from array
+                                        croppedImagesInput.value = JSON.stringify(croppedImagesArray);
+                                   }
+                              });
+                              imageWrapper.appendChild(deleteBtn);
+
+                              imageContainer.appendChild(imageWrapper);
+
+                              // You can also push the cropped image data URL to an array for form submission
+                              const croppedImagesInput = document.getElementById('croppedImages');
+                              const croppedImagesArray = JSON.parse(croppedImagesInput.value || '[]');
+                              croppedImagesArray.push(croppedImage);
+                              croppedImagesInput.value = JSON.stringify(croppedImagesArray);
+
+                              // Reset Cropper instance and input file
+                              cropperInstance.destroy();
+                              imageInput.value = '';
+                              cropperContainer.innerHTML = '';
+                              cropperInstance = null;
+                              croppingSection.style.display = 'none'; // Hide cropping section
+                         }
+                    });
+
+                    form.addEventListener('submit', async (e) => {
+                         e.preventDefault(); // Prevent default form submission
+
+                         const croppedImagesInput = document.getElementById('croppedImages');
+                         const croppedImagesArray = JSON.parse(croppedImagesInput.value || '[]');
+
+                         // Validate form data
+                         const isValid = validateForm(croppedImagesArray);
+                         if (!isValid) {
+                              return; // Stop form submission if validation fails
+                         }
+
+                         try {
+                              // Perform form submission asynchronously
+                              const response = await fetch('/admin/addproduct', {
+                                   method: 'POST',
+                                   headers: {
+                                        'Content-Type': 'application/json'
+                                   },
+                                   body: JSON.stringify({
+                                        category: form.category.value,
+                                        p_name: form.p_name.value,
+                                        price: form.price.value,
+                                        description: form.description.value,
+                                        discount: form.discount.value,
+                                        stock: form.stock.value,
+                                        croppedImages: croppedImagesArray
+                                   })
+                              })
+
+                              if (!response.ok) {
+                                   throw new Error('Failed to submit form');
+                              }
+
+                              const result = await response.json(); // Assuming backend returns JSON response
+                              console.log(result); // Log the response from the backend
+                         } catch (error) {
+                              console.error('Error:', error);
+                         }
+                    });
+
+                    // Function to validate form
+                    function validateForm(croppedImagesArray) {
+                         const p_name = form.p_name.value.trim();
+                         const price = parseFloat(form.price.value.trim());
+                         const description = form.description.value.trim();
+                         const discount = parseFloat(form.discount.value.trim());
+                         const stock = parseInt(form.stock.value.trim());
+
+                         if (!p_name || isNaN(price) || !description || isNaN(discount) || isNaN(stock)) {
+                              Swal.fire({
+                                   title: 'Error!',
+                                   text: 'All fields are required and must be valid',
+                                   icon: 'error',
+                                   confirmButton: 'Retry'
+                              });
+                              return false; // Validation failed
+                         }
+
+                         if (price < 40) {
+                              Swal.fire({
+                                   title: 'Error!',
+                                   text: 'The product price needs to be at least $40',
+                                   icon: 'error',
+                                   confirmButton: 'Retry'
+                              });
+                              return false; // Validation failed
+                         }
+
+                         if (discount > 30 || discount <= 0) {
+                              Swal.fire({
+                                   title: 'Error!',
+                                   text: 'Discount must be between 0 and 30%',
+                                   icon: 'error',
+                                   confirmButton: 'Retry'
+                              });
+                              return false; // Validation failed
+                         }
+
+                         if (stock < 1) {
+                              Swal.fire({
+                                   title: 'Error!',
+                                   text: 'Stock must be at least 1',
+                                   icon: 'error',
+                                   confirmButton: 'Retry'
+                              });
+                              return false; // Validation failed
+                         }
+
+                         if (croppedImagesArray.length < 3 || croppedImagesArray.length > 4) {
+                              Swal.fire({
+                                   title: 'Error!',
+                                   text: 'You must upload 3 to 4 images',
+                                   icon: 'error',
+                                   confirmButton: 'Ok'
+                              });
+                              return false; // Validation failed
+                         }
+
+                         return true; // All validations passed
                     }
+
                });
           </script>
+
      </main>
      <!--   Core JS Files   -->
      <script src="/js/admin/core/popper.min.js"></script>
@@ -445,6 +577,8 @@
      <script src="/js/admin/plugins/perfect-scrollbar.min.js"></script>
      <script src="/js/admin/plugins/smooth-scrollbar.min.js"></script>
      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.all.min.js"></script>
+     <!-- Include Cropper.js JavaScript -->
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
      <script>
           let win = navigator.platform.indexOf('Win') > -1;
           if (win && document.querySelector('#sidenav-scrollbar')) {

@@ -29,9 +29,9 @@ let schema = new mongoose.Schema({
    },
    images: {
       type: [String],
-      minlength: 4,
+      minlength: 3,
       maxlength: 4,
-      required: [true, "4 images are required"],
+      required: [true, "3-4 images are only required"],
    },
    total_price: {
       type: Number,

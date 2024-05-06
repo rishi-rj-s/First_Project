@@ -213,25 +213,25 @@ exports.addproduct = async (req, res) => {
         .status(400)
         .send({ message: "Data to update cannot be empty" });
     }
-    const imagesArray = req.files.map((file) => file.path); // Assuming you're storing file paths
-
-    if (imagesArray.length !== 4) {
-      return res
-        .status(400)
-        .send({ message: "Exactly four images are required" });
-    }
 
     // Trim and check for empty values
-    const category = req.body.category.trim();
-    const p_name = req.body.p_name.trim();
-    const price = req.body.price.trim();
-    const description = req.body.description.trim();
-    const discount = req.body.discount.trim();
-    const stock = req.body.stock.trim();
+    const category = req.body.category;
+    const p_name = req.body.p_name;
+    const price = req.body.price;
+    const description = req.body.description;
+    const discount = req.body.discount;
+    const stock = req.body.stock;
+    const images = req.body.croppedImages;
+    // console.log(req.body)
+    
 
     // Check if any of the required fields are empty
-    if (!category || !p_name || !price || !description || !discount || !stock) {
+    if (!category || !p_name || !price || !description || !discount || !stock ) {
       return res.status(400).json({ error: "All fields are required" });
+    }
+
+    if(images.length>4 || images.length<3){
+      return res.status(400).json({error: "The image count is wrong"})
     }
 
     // Create a new instance of ProductDb with trimmed values
@@ -242,7 +242,7 @@ exports.addproduct = async (req, res) => {
       description,
       discount,
       stock,
-      images: imagesArray, // Save file paths in MongoDB
+      images,
     });
 
     // Save the data to the collection
@@ -328,19 +328,25 @@ exports.editproductpage = async (req, res) => {
 };
 
 exports.viewSingleProduct = async (req, res) => {
-  const p_id = req.params.pid;
-  const product = await ProductDb.findById(p_id);
+  try {
+    const p_id = req.params.pid;
+    const product = await ProductDb.findById(p_id);
 
-  if (!product) {
-    return res.status(404).send('Product not found');
+    if (!product) {
+      return res.status(404).send('Product not found');
+    }
+
+    if (!product) {
+      res.status(404).send("No such product found!");
+    }
+    res.render("admin/productview", {
+      product: product,
+    });
+  } catch (e) {
+    console.log(e);
+    res.render('pagenotfound');
   }
 
-  if (!product) {
-    res.status(404).send("No such product found!");
-  }
-  res.render("admin/productview", {
-    product: product,
-  });
 }
 
 exports.addcategory = async (req, res) => {
@@ -540,10 +546,10 @@ exports.acceptReturn = async (req, res) => {
     let returnedItemPrice = 0;
     for (const item of returnedProducts) {
       const itemPrice = item.price - item.offerDiscount;
-      returnedItemPrice += itemPrice ;
+      returnedItemPrice += itemPrice;
     }
 
-    console.log(returnedItemPrice); 
+    console.log(returnedItemPrice);
 
     let refund = returnedItemPrice;
     updatedOrder.totalAmount -= returnedItemPrice;
