@@ -61,14 +61,14 @@
           function calculateRemainingTime(timestamp) {
                const currentTime = Date.now();
                const elapsedTime = (currentTime - timestamp) / 1000; // Convert to seconds
-               const remainingTime = Math.max(0, 30 - elapsedTime); // Maximum time is 60 seconds
+               const remainingTime = Math.max(0, 60 - elapsedTime); // Maximum time is 60 seconds
                return formatTime(remainingTime);
           }
 
           // Function to format time
           function formatTime(seconds) {
                const minutes = Math.floor(seconds / 60);
-               const remainingSeconds = Math.floor(seconds % 30);
+               const remainingSeconds = Math.floor(seconds % 60);
                return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
           }
 

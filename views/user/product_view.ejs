@@ -250,7 +250,7 @@
                   <div class="zoom-container">
                     <div id="lens-<%= index %>" class="lens"></div>
                     <img id='featured-<%= index %>' style="max-width: 100%; max-height: 100vh; margin: auto;"
-                      class="rounded-4 fit" src="/<%= image %>" />
+                      class="rounded-4 fit" src="<%= image %>" />
                   </div>
                 </div>
                 <% }); %>
@@ -266,8 +266,8 @@
           </div>
 
           <div class="d-flex justify-content-center mb-3">
-            <% for (let i=0; i < 4; i++) { %>
-              <img width="60" height="60" class="rounded-2 border mx-1 rounded-2" src="/<%= product.images[i] %>"
+            <% for (let i=0; i < product.images.length; i++) { %>
+              <img width="60" height="60" class="rounded-2 border mx-1 rounded-2" src="<%= product.images[i] %>"
                 onclick="updateMainImage(this.src)" /> <!-- Add onclick event here -->
               <% } %>
           </div>
@@ -358,7 +358,7 @@
                       <%if(similar[i]._id.toString()===product._id.toString()) {continue;}%>
                         <div class="product">
                           <a href="/user/productview/<%= similar[i]._id %>" class="me-3">
-                            <img src="/<%=similar[i].images[0]%>" style="min-width: 96px; height: 96px;"
+                            <img src="<%=similar[i].images[0]%>" style="min-width: 96px; height: 96px;"
                               class="img-md img-thumbnail" />
                           </a>
                           <div class="info">

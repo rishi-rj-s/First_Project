@@ -4,12 +4,12 @@ const OfferDb = require('../model/offermodel');
 
 exports.renderOffers = async (req, res) => {
   try {
-    const offers = await OfferDb.find().populate('catId pdtId').limit(3).sort({_id:-1});
+    const offers = await OfferDb.find().populate('catId pdtId').limit(3).sort({ _id: -1 });
     if (!offers) {
       res.status(404).send("No offers");
     }
     let pages = await OfferDb.countDocuments();
-    pages = Math.ceil(pages/3)
+    pages = Math.ceil(pages / 3)
     res.render('admin/offers', { offers, pages });
   } catch (e) {
     console.log(e);
@@ -17,19 +17,19 @@ exports.renderOffers = async (req, res) => {
   }
 }
 
-exports.renderMoreOffers = async (req,res) => {
-  try{
+exports.renderMoreOffers = async (req, res) => {
+  try {
     const page = req.query.page
-    let jump = (page-1) * 3;
+    let jump = (page - 1) * 3;
     console.log(page, jump, "Triggered!")
 
     // Fetch coupons details from the database
-    const offers = await OfferDb.find().populate('catId pdtId').limit(3).skip(jump).sort({_id:-1});
+    const offers = await OfferDb.find().populate('catId pdtId').limit(3).skip(jump).sort({ _id: -1 });
     // console.log(offers)
 
     // return the order list page and pass the orders, categories, user, and cancelledProducts data to the view
     return res.status(200).json({ offers }); // Send JSON response with orders data
-  }catch(e){
+  } catch (e) {
     console.log(e);
     res.status(500).send("Internal Server Error!");
   }
@@ -130,17 +130,17 @@ exports.addCOffer = async (req, res) => {
       if (product.offerActive) {
         let offerId = product.offerId;
         let offDisc = Math.round((discount / 100) * product.total_price);
-        if(product.offerDiscount > offDisc){
+        if (product.offerDiscount > offDisc) {
           continue;
-        }else{
+        } else {
           await OfferDb.findByIdAndDelete(offerId);
         }
-      }else{
+      } else {
         product.offerActive = true;
         product.offerDiscount = Math.round((discount / 100) * product.total_price);
         product.offerId = offer._id;
-  
-        await product.save();  
+
+        await product.save();
       }
     }
 
@@ -169,7 +169,7 @@ exports.editOffer = async (req, res) => {
   try {
     const offerId = req.body.offId;
     const discount = req.body.discount
-    if(discount >30 || discount < 10){
+    if (discount > 30 || discount < 10) {
       res.status(404).send("Discount either exceeds or is below the limit!")
     }
     await OfferDb.findByIdAndUpdate(offerId, {
@@ -180,10 +180,10 @@ exports.editOffer = async (req, res) => {
 
     if (offer.type === "Category") {
       await CatDb.findByIdAndUpdate(offer.catId, {
-        offerDiscount : discount,
+        offerDiscount: discount,
       });
-      const products = await ProductDb.find({category: offer.catId});
-      for (const product of products) {  
+      const products = await ProductDb.find({ category: offer.catId });
+      for (const product of products) {
         product.offerActive = true;
         product.offerDiscount = Math.round((discount / 100) * product.total_price);
         product.offerId = offer._id;
@@ -224,16 +224,24 @@ exports.deleteOffer = async (req, res) => {
         }
       });
 
-      // Update all products in the category
-      await ProductDb.updateMany({ category: offer.catId }, {
-        $set: {
-          offerActive: false,
-          offerDiscount: 0
-        },
-        $unset: {
-          offerId: '' // Set offerId to undefined
-        }
+      // Get all products with the category offer applied
+      const productsToUpdate = await ProductDb.find({
+        category: offer.catId,
+        offerId: offerId
       });
+
+      // Update offers only for products with the category offer applied
+      for (const product of productsToUpdate) {
+        await ProductDb.findByIdAndUpdate(product._id, {
+          $set: {
+            offerActive: false,
+            offerDiscount: 0,
+          },
+          $unset: {
+            offerId: ''
+          }
+        });
+      }
     } else {
       // Update product
       await ProductDb.findByIdAndUpdate(offer.pdtId, {
@@ -245,6 +253,23 @@ exports.deleteOffer = async (req, res) => {
           offerId: ''
         }
       });
+
+      // Check if there's a category offer that can be applied
+      const categoryOffer = await OfferDb.findOne({
+        type: "Category",
+        catId: product.category
+      });
+
+      if (categoryOffer) {
+        // Apply category offer to product
+        await ProductDb.findByIdAndUpdate(product._id, {
+          $set: {
+            offerActive: true,
+            offerDiscount: categoryOffer.discount,
+            offerId: categoryOffer._id
+          }
+        });
+      }
     }
 
     res.redirect("/admin/offers?msg=delsu")

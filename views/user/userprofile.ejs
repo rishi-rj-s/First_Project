@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.all.min.js"></script>
-   <style>
+    <style>
         body {
             font-family: 'Times New Roman', Times, serif sans-serif;
             background-color: #f8f9fa;
@@ -135,6 +135,49 @@
         .social-icons i {
             padding-right: 10px;
         }
+
+        .ref-code-container {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            display: flex;
+            /* Use flexbox for layout */
+            align-items: center;
+            /* Center items vertically */
+        }
+
+        .ref-code-container p {
+            margin: 0;
+            font-weight: bold;
+        }
+
+        .ref-code-container button {
+            padding: 5px 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .ref-code-container button:hover {
+            background-color: #0056b3;
+        }
+
+        #refCode.badge {
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-weight: bold;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .small-sweetalert {
+            font-size: 14px;
+            /* Adjust font size as needed */
+            border-radius: 5px;
+            /* Rounded corners */
+        }
     </style>
 </head>
 
@@ -151,18 +194,64 @@
     <div class="container mt-5">
         <div class="profile-container">
             <div class="profile-card">
-                <a href="/user/changename" style="position: absolute; top: 0; right: 0;"><i class="fas fa-edit fa-lg" style="color: black;"></i></a>
+                <a href="/user/changename" style="position: absolute; top: 0; right: 0;"><i class="fas fa-edit fa-lg"
+                        style="color: black;"></i></a>
                 <img src="/img/landing/User Icon.webp" alt="Profile Picture">
                 <div class="card-body">
-                    <h5>Hey, <%=user.name%></h5>
+                    <h5>Hey, <%=user.name%>
+                    </h5>
                 </div>
+                <div class="ref-code-container">
+                    <p style="display: inline-block; margin-right: 10px;">Your Referral Code: <span id="refCode"
+                            class="badge bg-white">
+                            <%= user.refCode %>
+                        </span></p>
+                    <button onclick="copyRefCode()" class="copy-icon"><i id="copyIcon" class="fas fa-copy"></i></button>
+                </div>
+
             </div>
+
+            <script>
+                function copyRefCode() {
+                    // Get the text content of the refCode span element
+                    const refCode = document.getElementById('refCode').innerText;
+
+                    // Create a temporary input element
+                    const tempInput = document.createElement('input');
+
+                    // Set the value of the input element to the referral code
+                    tempInput.value = refCode;
+
+                    // Append the input element to the body
+                    document.body.appendChild(tempInput);
+
+                    // Select the input element's content
+                    tempInput.select();
+
+                    // Copy the selected content
+                    document.execCommand('copy');
+
+                    // Remove the temporary input element
+                    document.body.removeChild(tempInput);
+
+                    // Change icon to tick temporarily
+                    const copyIcon = document.getElementById('copyIcon');
+                    copyIcon.className = 'fas fa-check';
+
+                    // Revert back to copy icon after 2 seconds
+                    setTimeout(() => {
+                        copyIcon.className = 'fas fa-copy';
+                    }, 2000);
+                }
+            </script>
+
             <div class="profile-card">
                 <div class="card-body">
                     <a href="/user/address" class="card-link"><i class="fas fa-map-marker-alt fa-2x"></i><br>
                         Addresses</a>
                     <a href="/user/wallet" class="card-link"><i class="fas fa-wallet fa-2x"></i><br> Wallet</a>
-                    <a href="/user/vieworders" class="card-link"><i class="fas fa-shopping-bag fa-2x"></i><br> Orders</a>
+                    <a href="/user/vieworders" class="card-link"><i class="fas fa-shopping-bag fa-2x"></i><br>
+                        Orders</a>
                     <a href="/user/changepass" class="card-link"><i class="fas fa-lock fa-2x"></i><br> Change Pass</a>
                     <a href="/user/logout" class="card-link"><i class="fas fa-power-off fa-2x"></i><br> Logout</a>
                 </div>

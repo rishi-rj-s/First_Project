@@ -537,7 +537,7 @@
                   <ul>
                     ${product.stock > 0 ? `<li><a href="/user/addtocart/${product._id}"><i class="fa fa-shopping-cart"></i></a></li>` : ''}
                     <li><a href="/user/addwishlist/${product._id}"><i class="fa fa-heart"></i></a></li>
-                    <li><a href="/user/productview/${product._id}"><i class="fa fa-expand"></i></a></li>
+                    <li><a href="/user/productview?id=${product._id}"><i class="fa fa-expand"></i></a></li>
                   </ul>
                 </div>
                 <div class="part-2">

@@ -174,7 +174,7 @@
                    <div class="zoom-container">
                      <div id="lens-<%= index %>" class="lens"></div>
                      <img id='featured-<%= index %>' style="max-width: 100%; max-height: 100vh; margin: auto;"
-                       class="rounded-4 fit" src="/<%= image %>" />
+                       class="rounded-4 fit" src="<%= image %>" />
                    </div>
                  </div>
                  <% }); %>
@@ -191,7 +191,7 @@
  
            <div class="d-flex justify-content-center mb-3">
              <% for (let i=0; i < 4; i++) { %>
-               <img width="60" height="60" class="rounded-2 border mx-1 rounded-2" src="/<%= product.images[i] %>"
+               <img width="60" height="60" class="rounded-2 border mx-1 rounded-2" src="<%= product.images[i] %>"
                  onclick="updateMainImage(this.src)" /> <!-- Add onclick event here -->
                <% } %>
            </div>

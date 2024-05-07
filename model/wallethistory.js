@@ -22,7 +22,6 @@ const walletHistorySchema = new mongoose.Schema({
     order:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'order',
-        required: true
     }
 });
 

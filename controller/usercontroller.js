@@ -298,7 +298,7 @@ exports.registerfirst = async (req, res) => {
   // Send OTP via email
   try {
     await sendOtpEmail(email, otp);
-    q = { code: otp, expiryTime: Date.now() + 30000 };
+    q = { code: otp, expiryTime: Date.now() + 60000 };
     res.render("user/otpverify", { msg: "send" });
   } catch (error) {
     console.error(error);
@@ -314,6 +314,7 @@ exports.register = async (req, res) => {
   const { name, email, newpassword } = s;
   const otp = req.body.otp;
   const storedOtp = q;
+  let referralBonus = 0;
 
   //Check if expired
   if (!q || otp != q.code || Date.now() > q.expiryTime) {
@@ -325,15 +326,73 @@ exports.register = async (req, res) => {
     return res.redirect("/user/registerfirst?error=otpwrong");
   }
 
+  // Check if there is a referral code in the session
+  if (s.referral) {
+    try {
+      // Check if the referral code exists in the UserDb
+      const referredUser = await Userdb.findOne({ refCode: s.referral });
+      if (referredUser) {
+        // Add 50 to the referral bonus
+        referralBonus = 50;
+
+        // Create a wallet history entry for the referred user
+        const referredUserWalletHistory = new WalletHistory({
+          userId: referredUser._id,
+          transactionType: 'Credit',
+          amount: referralBonus,
+          order: null // Assuming no specific order associated with the referral bonus
+        });
+        await referredUserWalletHistory.save();
+
+        // Update the referred user's wallet
+        referredUser.wallet += referralBonus;
+        await referredUser.save();
+      }
+    } catch (error) {
+      console.error('Error checking referral code:', error);
+    }
+  }
+
+  async function generateRefCode() {
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let code = "";
+    for (let i = 0; i < 6; i++) {
+      code += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+
+    // Check if the generated code already exists in the database
+    const existingUser = await Userdb.findOne({ refCode: code });
+    if (existingUser) {
+      // If the code exists, recursively call the function to generate a new one
+      return generateRefCode();
+    }
+
+    // Return the unique generated code
+    return code.toUpperCase();
+  }
+
+
   try {
     const hashedPassword = await bcrypt.hash(newpassword, 10);
+    const refCode = await generateRefCode(); // Generate the refCode
     const users = new Userdb({
       name: name,
       email: email,
       password: hashedPassword,
+      refCode: refCode,
+      wallet: referralBonus // Add referral bonus to the new user's wallet
     });
 
     await users.save();
+
+    // Create a wallet history entry for the new user
+    const newUserWalletHistory = new WalletHistory({
+      userId: users._id,
+      transactionType: 'Credit',
+      amount: referralBonus, // Add referral bonus to the wallet history
+    });
+    await newUserWalletHistory.save();
+
     // Clear session data after successful registration
     s = {};
     q = {};
@@ -355,7 +414,7 @@ exports.resendOtp = async (req, res) => {
   // Send OTP via email
   try {
     await sendOtpEmail(email, otp);
-    q = { code: otp, expiryTime: Date.now() + 30000 };
+    q = { code: otp, expiryTime: Date.now() + 60000 };
     res.render("user/otpverify");
   } catch (error) {
     console.error(error);
@@ -391,7 +450,7 @@ exports.forgotpass = async (req, res) => {
   // Send OTP via email
   try {
     await sendOtpEmail(email, otp);
-    q = { code: otp, expiryTime: Date.now() + 30000 };
+    q = { code: otp, expiryTime: Date.now() + 60000 };
     res.render("user/forgototpverify");
   } catch (error) {
     console.error(error);

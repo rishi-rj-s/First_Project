@@ -34,11 +34,17 @@ let schema = new mongoose.Schema({
   wallet: {
     type: Number,
     default: 0,
+  },
+  refCode: {
+    type: String,
+    unique: true,
+    required: true,
   }
 },
-{
-     timestamps: true
-});
+  {
+    timestamps: true
+  }
+);
 
 const Userdb = mongoose.model("user", schema);
 

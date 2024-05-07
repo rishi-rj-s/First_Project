@@ -174,19 +174,6 @@ exports.addproductpage = async (req, res) => {
   }
 };
 
-const upload = multer({
-  limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB limit per file
-  },
-  fileFilter: (req, file, cb) => {
-    if (file.mimetype.startsWith("image/")) {
-      cb(null, true);
-    } else {
-      cb(new Error("Only images are allowed"));
-    }
-  },
-});
-
 exports.category = async (req, res) => {
   try {
     const cate = await CatDb.find();
@@ -223,15 +210,15 @@ exports.addproduct = async (req, res) => {
     const stock = req.body.stock;
     const images = req.body.croppedImages;
     // console.log(req.body)
-    
+
 
     // Check if any of the required fields are empty
-    if (!category || !p_name || !price || !description || !discount || !stock ) {
+    if (!category || !p_name || !price || !description || !discount || !stock) {
       return res.status(400).json({ error: "All fields are required" });
     }
 
-    if(images.length>4 || images.length<3){
-      return res.status(400).json({error: "The image count is wrong"})
+    if (images.length > 4 || images.length < 3) {
+      return res.status(400).json({ error: "The image count is wrong" })
     }
 
     // Create a new instance of ProductDb with trimmed values
@@ -299,7 +286,8 @@ exports.editproduct = async (req, res) => {
 
     // Check if new images are provided, then replace the old ones
     if (images.length === 4) {
-      const imagesArray = images.map((file) => file.path);
+      // Assuming 'images' is an array of file paths
+      const imagesArray = images.map((file) => '/' + file.path);
       product.images = imagesArray;
     }
 
