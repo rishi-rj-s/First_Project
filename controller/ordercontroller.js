@@ -136,18 +136,8 @@ exports.placeOrder = async (req, res) => {
       await history.save();
     }
 
-    // Remove ordered products from the cart
-    await Cart.findOneAndUpdate(
-      { user: userId },
-      {
-        $pull: {
-          product: {
-            productId: { $in: usercart.product.map((item) => item.productId) },
-          },
-        },
-      },
-      { new: true }
-    );
+    // Delete the cart
+    await Cart.findOneAndDelete({ user: userId });
 
     // Reduce the stock of ordered products
     usercart.product.forEach(async (product) => {
@@ -230,17 +220,8 @@ exports.razorPayOrder = async (req, res) => {
     await order.save();
 
 
-    await Cart.findOneAndUpdate(
-      { user: userId },
-      {
-        $pull: {
-          product: {
-            productId: { $in: usercart.product.map((item) => item.productId) },
-          },
-        },
-      },
-      { new: true }
-    );
+    // Delete the cart
+    await Cart.findOneAndDelete({ user: userId });
 
     // Reduce the stock of ordered products
     usercart.product.forEach(async (product) => {

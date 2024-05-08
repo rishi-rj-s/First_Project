@@ -281,14 +281,14 @@
           <!-- Navbar -->
           <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur"
                data-scroll="true">
-                    <nav aria-label="breadcrumb">
-                         <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
-                              <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark"
-                                        href="/admin/viewproducts">Products</a></li>
-                              <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Add Products</li>
-                         </ol>
-                         <h6 class="font-weight-bolder mb-0">Products</h6>
-                    </nav>
+               <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
+                         <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark"
+                                   href="/admin/viewproducts">Products</a></li>
+                         <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Add Products</li>
+                    </ol>
+                    <h6 class="font-weight-bolder mb-0">Products</h6>
+               </nav>
           </nav>
           <!-- End Navbar -->
           <div class="container-fluid py-4">
@@ -303,8 +303,7 @@
                               <div class="container-fluid">
                                    <div class="row">
                                         <div class="col-md-8">
-                                             <form id="formSubmit"
-                                                  enctype="multipart/form-data">
+                                             <form id="formSubmit" enctype="multipart/form-data">
                                                   <div class="form-group form-field">
                                                        <label for="category">Product Category</label>
                                                        <select name="category" class="form-select">
@@ -359,7 +358,8 @@
                                                   <!-- A hidden input to store the cropped images array -->
                                                   <input type="hidden" id="croppedImages" name="croppedImages">
 
-                                                  <input type="submit" class="btn btn-primary mt-2" value="Add">
+                                                  <input type="submit" onclick="console.log('submitted')"
+                                                       class="btn btn-primary mt-2" value="Add">
 
                                              </form>
 
@@ -467,6 +467,7 @@
 
                     form.addEventListener('submit', async (e) => {
                          e.preventDefault(); // Prevent default form submission
+                         console.log("1");
 
                          const croppedImagesInput = document.getElementById('croppedImages');
                          const croppedImagesArray = JSON.parse(croppedImagesInput.value || '[]');
@@ -493,14 +494,20 @@
                                         stock: form.stock.value,
                                         croppedImages: croppedImagesArray
                                    })
-                              })
+                              });
 
                               if (!response.ok) {
                                    throw new Error('Failed to submit form');
                               }
 
-                              const result = await response.json(); // Assuming backend returns JSON response
-                              console.log(result); // Log the response from the backend
+                              const result = await response.json();
+                              // Check if the response contains a success message
+                              if (result.message === "Product added successfully") {
+                                   // Redirect to the specified URL
+                                   window.location.href = "/admin/viewproducts?msg=success";
+                              } else {
+                                   console.log(result);
+                              }
                          } catch (error) {
                               console.error('Error:', error);
                          }

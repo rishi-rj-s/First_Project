@@ -3,6 +3,7 @@ const path = require("path");
 const usercontroller = require("../controller/usercontroller");
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
+require('../auth/passport-setup')
 
 const route = express.Router();
 

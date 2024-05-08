@@ -7,7 +7,6 @@ const OrderDb = require("../model/ordermodel");
 const OfferDb = require('../model/offermodel');
 const WalletHistory = require("../model/wallethistory");
 const jwt = require("jsonwebtoken");
-const multer = require("multer");
 const mongoose = require('mongoose')
 
 exports.login = async (req, res) => {
@@ -241,10 +240,12 @@ exports.addproduct = async (req, res) => {
       newPdt.offerDiscount = Math.round((offer.discount / 100) * newPdt.total_price);
       await newPdt.save();
     }
-    res.redirect("/admin/viewproducts?msg=success");
+
+    // Send a JSON response indicating success
+    res.status(200).json({ message: "Product added successfully", productId: newPdt._id });
   } catch (e) {
     console.log(e);
-    res.status(500).send("Error");
+    res.status(500).json({ error: "An error occurred while adding the product" });
   }
 };
 
