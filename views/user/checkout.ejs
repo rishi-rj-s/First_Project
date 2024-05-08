@@ -255,7 +255,7 @@
                   <% }) %>
               </div>
             </div>
-            <a href="/user/addaddress"><button class="btn btn-warning" onclick="goToAddAddress()">Add
+            <a href="/user/addaddress"><button type="button" class="btn btn-warning" onclick="goToAddAddress()">Add
                 Address</button></a>
           </div>
         </div>
@@ -301,11 +301,11 @@
             document.addEventListener('DOMContentLoaded', function () {
               const removeButton = document.getElementById('removeButton');
               const applyButton = document.getElementById('applyButton');
-              const couponApplied = <%= usercart.couponApplied %>; // Assuming usercart.couponApplied is a boolean value
+              const appliedCoupon = <%= usercart.couponApplied %>; // Assuming usercart.couponApplied is a boolean value
               const couponSelect = document.getElementById('couponSelect');
               const cartId = couponSelect.getAttribute('data-cart-id');
 
-              if (!couponApplied) {
+              if (!appliedCoupon) {
                 removeButton.style.display = 'none'; // Hide the removeButton initially if couponApplied is false
               } else {
                 applyButton.style.display = 'none';
@@ -472,7 +472,8 @@
         data-description="Payment for Order <%= usercart._id %>" data-prefill.name="<%= username.name %>"
         data-prefill.email="<%= username.email %>">
         </script>
-      <button id="rzp-button" class="btn btn-block btn-primary font-weight-bold py-3" disabled>Place order</button>
+      <button id="rzp-button" type="submit" class="btn btn-block btn-primary font-weight-bold py-3" disabled>Place
+        order</button>
     </form>
   </div>
 
@@ -525,39 +526,60 @@
         });
       });
 
-      var paymentTimeout; // Variable to store the timeout
-
-      // Event listener for when Razorpay window is closed
-      window.addEventListener('message', function (event) {
-        if (event.data.event === 'payment.success') {
-          clearTimeout(paymentTimeout); // Clear the timeout if payment is successful
-        } else if (event.data.event === 'payment.closed') {
-          handlePaymentTimeout(); // Handle payment timeout if Razorpay window is closed without success
+      // Razorpay handler function
+      function razorpayHandler(response) {
+        if (response.error) {
+          // Handle payment failure
+          paymentStatusInput.value = 'Failed'; // Set payment status to Failed
+          document.getElementById('razorpay-form').submit(); // Submit the form
+        } else {
+          // Handle payment success
+          document.getElementById('razorpay-form').submit(); // Submit the form
         }
-      });
-
-      // Function to handle payment timeout
-      function handlePaymentTimeout() {
-        console.log("Payment should be failed by now!")
-        paymentStatusInput.value = 'Failed';
-        document.getElementById('razorpay-form').submit(); // Submit the form with payment status failed
       }
 
-      // Event listener for when Razorpay window is closed
-      window.addEventListener('message', function (event) {
-        if (event.data.event === 'payment.success') {
-          clearTimeout(paymentTimeout); // Clear the timeout if payment is successful
+
+      // Razorpay handler function
+      function razorpayHandler(response) {
+        if (response.error) {
+          // Handle payment failure
+          paymentStatusInput.value = 'Failed'; // Set payment status to Failed
+          document.getElementById('razorpay-form').submit(); // Submit the form
+        } else {
+          // Handle payment success
+          document.getElementById('razorpay-form').submit(); // Submit the form
         }
+      }
+
+      // Initialize Razorpay object with handler function
+      var rzp1 = new Razorpay({
+        key: 'rzp_test_sat2P9V0ocnwA6', // Replace with your Razorpay API key
+        amount: <%= usercart.subtotal * 100 %>, // Sample amount (in paisa)
+        currency: 'INR',
+        description: "Payment for Order <%= usercart._id %>",
+        handler: razorpayHandler // Assign the handler function
       });
 
       // Event listener for form submission (before payment)
       document.getElementById('razorpay-form').addEventListener('submit', function () {
-        // Set a timeout for payment completion (adjust the time as needed)
-        paymentTimeout = setTimeout(handlePaymentTimeout, 20000); // 1 minute timeout
+        // Set payment status based on Razorpay response
+        paymentStatusInput.value = rzp1.razorpay_payment_id ? 'Success' : 'Failed';
       });
 
+      // Function to handle payment timeout
+      function handlePaymentTimeout() {
+        paymentStatusInput.value = 'Failed'; // Set payment status to Failed
+        document.getElementById('razorpay-form').submit(); // Submit the form with payment status failed
+      }
+
+      // Event listener for form submission (before payment)
+      document.getElementById('razorpay-form').addEventListener('submit', function () {
+        // Set a timeout for payment completion (adjust the time as needed)
+        setTimeout(handlePaymentTimeout, 60000); // 2 minute timeout
+      });
 
     });
+
   </script>
 
   <script>

@@ -335,6 +335,7 @@ form.sign-in-form {
     align-items: center;
     padding: 2.5rem 8%;
     grid-column: 1 / 2;
+    margin-top: -1.5rem;
   }
 
   .right-panel {
@@ -426,7 +427,7 @@ form.sign-in-form {
   }
 
   .container:before {
-    bottom: 72%;
+    bottom: 80%;
     left: 50%;
   }
 
