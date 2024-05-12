@@ -264,8 +264,11 @@
           <div class="total-amount mb-1 col-md-6 col-lg-12">
             <h3>Grand Total</h3>
             <hr />
-            <p><strong>Total Amount: $<%= (usercart.subtotal) %></strong></p>
-            <p><strong>Coupon : <span class="text-success">-$<%= usercart.discount%></span></strong></p>
+            <p><strong>Total Amount: $<%= usercart.subtotal + usercart.discount %></strong></p>
+            <p><strong>Coupon : <span class="text-success">-$<%= usercart.discount %></span></strong></p>
+            <% if(usercart.discount > 0){%>
+              <p><strong>Grand Total : <span class="font-weight-bolder">$<%= usercart.subtotal %></span></strong></p>
+            <%}%>
             <hr>
           </div>
 
@@ -465,10 +468,10 @@
       <input type="hidden" name="cartId" value="<%= usercart._id %>">
 
       <!-- Hidden field for payment status -->
-      <input type="hidden" name="paymentStatus" id="paymentStatus" value="">
+      <input type="hidden" name="paymentStatus" id="paymentStatus" value="Completed">
 
       <script src="https://checkout.razorpay.com/v1/checkout.js" data-key="rzp_test_sat2P9V0ocnwA6"
-        data-amount="<%= usercart.subtotal * 100 %>" data-currency="INR" data-buttontext=""
+        data-amount="<%= usercart.subtotal * 100 %>" data-currency="USD" data-buttontext=""
         data-description="Payment for Order <%= usercart._id %>" data-prefill.name="<%= username.name %>"
         data-prefill.email="<%= username.email %>">
         </script>
@@ -524,46 +527,6 @@
           console.log("CHanged! address")
           razorpayOrder.disabled = !document.querySelector('input[name="addressId"]:checked');
         });
-      });
-
-      // Razorpay handler function
-      function razorpayHandler(response) {
-        if (response.error) {
-          // Handle payment failure
-          paymentStatusInput.value = 'Failed'; // Set payment status to Failed
-          document.getElementById('razorpay-form').submit(); // Submit the form
-        } else {
-          // Handle payment success
-          document.getElementById('razorpay-form').submit(); // Submit the form
-        }
-      }
-
-
-      // Razorpay handler function
-      function razorpayHandler(response) {
-        if (response.error) {
-          // Handle payment failure
-          paymentStatusInput.value = 'Failed'; // Set payment status to Failed
-          document.getElementById('razorpay-form').submit(); // Submit the form
-        } else {
-          // Handle payment success
-          document.getElementById('razorpay-form').submit(); // Submit the form
-        }
-      }
-
-      // Initialize Razorpay object with handler function
-      var rzp1 = new Razorpay({
-        key: 'rzp_test_sat2P9V0ocnwA6', // Replace with your Razorpay API key
-        amount: <%= usercart.subtotal * 100 %>, // Sample amount (in paisa)
-        currency: 'INR',
-        description: "Payment for Order <%= usercart._id %>",
-        handler: razorpayHandler // Assign the handler function
-      });
-
-      // Event listener for form submission (before payment)
-      document.getElementById('razorpay-form').addEventListener('submit', function () {
-        // Set payment status based on Razorpay response
-        paymentStatusInput.value = rzp1.razorpay_payment_id ? 'Success' : 'Failed';
       });
 
       // Function to handle payment timeout

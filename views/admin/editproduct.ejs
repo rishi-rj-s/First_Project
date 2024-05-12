@@ -280,20 +280,20 @@
                                                   <div class="form-group form-field">
                                                        <label for="stock">Category</label>
                                                        <select name="category" class="form-select">
-                                                            <% cate.forEach(category=> { %>
-                                                                 <% if (category._id===product.category) { %>
-                                                                      <option value="<%= category._id %>" selected>
-                                                                           <%= category.category %>
-                                                                      </option>
-                                                                      <% } else { %>
-                                                                           <option value="<%= category._id %>">
-                                                                                <%= category.category %>
-                                                                           </option>
-                                                                           <% } %>
-                                                                                <% }); %>
-                                                       </select>
-                                                  </div>
-
+                                                            <% cate.forEach(category => { %>
+                                                                <% if (String(category._id) === String(product.category)) { %>
+                                                                    <option value="<%= category._id %>" selected>
+                                                                        <%= category.category %>
+                                                                    </option>
+                                                                <% } else { %>
+                                                                    <option value="<%= category._id %>">
+                                                                        <%= category.category %>
+                                                                    </option>
+                                                                <% } %>
+                                                            <% }); %>
+                                                        </select>                                                        
+                                                   </div>
+                                                   
                                                   <div class="form-group form-field">
                                                        <label for="p_name">Product Name</label>
                                                        <input type="text" class="form-control form-field" id="p_name"

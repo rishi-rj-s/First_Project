@@ -181,7 +181,8 @@
                             <h4 class="card-title">
                               <%= cartItem.productId.p_name %>
                             </h4>
-                            <p class="font-weight-bold">PRICE - $<%=((cartItem.productId.total_price - cartItem.productId.offerDiscount)*cartItem.quantity)%>  <strike>$<%= cartItem.productId.price*cartItem.quantity %></strike>
+                            <p class="font-weight-bold">PRICE - $<%=cartItem.productId.total_price -
+                                cartItem.productId.offerDiscount%> <strike>$<%= cartItem.productId.price %></strike> 
                             </p>
                             <% if (cartItem.productId.stock> 0) { %>
                               <div class="input-group me-2 mb-2">
@@ -198,10 +199,16 @@
                                 async function updateQuantity(productId, action) {
                                   try {
                                     const quantityInput = document.querySelector(`input[data-product-id="${productId}"]`);
-                                    const totalAmountValue = document.getElementById('totalAmountValue');
-                                    const newQuantity = action === 'add' ? parseInt(quantityInput.value) + 1 : parseInt(quantityInput.value) - 1;
+                                    let newQuantity = parseInt(quantityInput.value);
+
+                                    if (action === 'add') {
+                                      newQuantity++;
+                                    } else if (action === 'sub') {
+                                      newQuantity--;
+                                    }
+
                                     if (newQuantity < 1 || newQuantity > 5) {
-                                      return; // Prevent decreasing quantity below 1
+                                      return; // Prevent decreasing quantity below 1 or exceeding 5
                                     }
 
                                     const currentStock = <%= cartItem.productId.stock %>; // Get current stock from server-side
@@ -215,6 +222,10 @@
                                       return; // Prevent further execution
                                     }
 
+                                    // Update the quantity input directly
+                                    quantityInput.value = newQuantity;
+
+                                    // Send the update request to the backend
                                     const response = await fetch(`/user/updatequantity/${productId}?quantity=${newQuantity}`, {
                                       method: 'GET',
                                       headers: {
@@ -227,8 +238,8 @@
                                     }
 
                                     const data = await response.json();
-                                    totalAmountValue.value = `Total Amount: ${data.subtotal}`
-                                    window.location.reload()
+                                    // Assuming data.subtotal contains the updated subtotal value from the backend
+                                    document.getElementById('totalAmountValue').textContent = `Total Amount: $${data.subtotal}`;
                                   } catch (error) {
                                     console.error(error); // Log the error for debugging
                                     Swal.fire({
@@ -239,7 +250,6 @@
                                     });
                                   }
                                 }
-
                               </script>
 
                               <% } else { %>
@@ -270,7 +280,7 @@
                                         </p>
                                       </div>
                                       <%}%>
-                                    <% } %>
+                                        <% } %>
                           </div>
                         </div>
                       </div>
@@ -340,29 +350,29 @@
             </div>
 
             <% if(usercart.couponApplied){ %>
-            <!-- Coupon Applied? -->
-            <div class="total-amount">
-              <h3 class="text-success">Coupon Applied</h3>
-              <hr />
-              <p><strong >Coupon : <%= usercart.couponCode %></strong></p>
-              <p><strong >Discount : $<%= usercart.discount %></strong></p>
-            </div>
-            <%}%>
+              <!-- Coupon Applied? -->
+              <div class="total-amount">
+                <h3 class="text-success">Coupon Applied</h3>
+                <hr />
+                <p><strong>Coupon : <%= usercart.couponCode %></strong></p>
+                <p><strong>Discount : $<%= usercart.discount %></strong></p>
+              </div>
+              <%}%>
 
-            <!-- Total Amount -->
-            <div class="total-amount">
-              <h3>Grand Total</h3>
-              <hr />
-              <p><strong id="totalAmountValue">Total Amount: $<%= usercart.subtotal %></strong></p>
-            </div>
-            <div class="d-flex justify-content-center mb-5">
-              <!-- Place Order Button -->
-              <a href="/user/orders"><button style="width: 200px" class="btn btn-primary btn-block btn-place-order"
-                  id="placeOrderBtn">
-                  Checkout
-                </button></a>
-            </div>
-            <%}%>
+                <!-- Total Amount -->
+                <div class="total-amount">
+                  <h3>Grand Total</h3>
+                  <hr />
+                  <p><strong id="totalAmountValue">Total Amount: $<%= usercart.subtotal %></strong></p>
+                </div>
+                <div class="d-flex justify-content-center mb-5">
+                  <!-- Place Order Button -->
+                  <a href="/user/orders"><button style="width: 200px" class="btn btn-primary btn-block btn-place-order"
+                      id="placeOrderBtn">
+                      Checkout
+                    </button></a>
+                </div>
+                <%}%>
       </div>
     </div>
   </div>

@@ -307,8 +307,11 @@ exports.editproduct = async (req, res) => {
 exports.editproductpage = async (req, res) => {
   try {
     let id = req.params.id;
+    
     const product = await ProductDb.findById(id);
-    const cate = await CatDb.find({});
+    const cate = await CatDb.find();    
+    console.log(product._id, cate[0]._id);
+
     res.render("admin/editproduct", { product, cate });
   } catch (e) {
     console.log(e);

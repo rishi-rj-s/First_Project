@@ -160,7 +160,7 @@ exports.razorPayOrder = async (req, res) => {
     const cartId = req.params.cid;
     const addId = req.body.addressId;
     const userId = req.session.user;
-    const paymentStatus = req.body.paymentStatus || "Completed";
+    const paymentStatus = req.body.paymentStatus;
     // console.log(paymentStatus);
     let coupon;
     // console.log(cartId, addId);
