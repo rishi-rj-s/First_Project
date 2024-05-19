@@ -728,7 +728,7 @@ exports.generateInvoice = async (req, res) => {
     const orderId = req.params.oid;
     const order = await OrderDb.findOne({
       '_id': orderId,
-      'orderedItems.status': 'Delivered', // Find orders where at least one ordered item has a status of "Delivered"
+      'orderedItems.status': 'Delivered',
     }).populate('couponApplied shippingAddress');
 
     if (!order) {
@@ -745,27 +745,30 @@ exports.generateInvoice = async (req, res) => {
     doc.pipe(res);
 
     // Header Section
-    doc.image('public/img/landing/dp.png', {
-      width: 50,
-      align: 'right'
-    }).moveDown(0.5);
-
+    doc.image('public/img/landing/dp.png', { width: 50, align: 'right' }).moveDown(0.5);
     doc.fontSize(20).text('RISHI STUDIO', { align: 'center' });
     doc.moveDown(0.5);
     doc.fontSize(16).text('Invoice', { align: 'center' });
     doc.moveDown();
 
+    // Company Information
+    doc.fontSize(12).text('Address: 123 Studio Lane, City, State, ZIP');
+    doc.text('Phone: (123) 456-7890');
+    doc.text('Email: rishistudio@gmail.com');
+    doc.text('Website: www.rishistudio.shop');
+    doc.moveDown();
+
     // Invoice Details
     doc.fontSize(12).text(`Invoice Number: ${generateInvoiceNumber(order)}`);
-    doc.fontSize(12).text(`Invoice Date: ${formatDate(order.orderDate)}`);
+    doc.text(`Invoice Date: ${formatDate(order.orderDate)}`);
     doc.moveDown();
 
     // Customer Information
-    doc.fontSize(14).text(`Customer Information:`, { underline: true });
+    doc.fontSize(14).text('Customer Information:', { underline: true });
     doc.fontSize(12).text(`Name: ${order.name}`);
-    doc.fontSize(12).text(`Shipping Address: ${order.shippingAddress.address},`);
-    doc.fontSize(12).text(` ${order.shippingAddress.city}, ${order.shippingAddress.state}`);
-    doc.fontSize(12).text(` ${order.shippingAddress.pincode}`);
+    doc.text(`Shipping Address: ${order.shippingAddress.address},`);
+    doc.text(` ${order.shippingAddress.city}, ${order.shippingAddress.state}`);
+    doc.text(` ${order.shippingAddress.pincode}`);
     doc.moveDown();
 
     // Ordered Items Table
@@ -774,16 +777,17 @@ exports.generateInvoice = async (req, res) => {
 
     // Payment Information
     doc.fontSize(12).text(`Payment Method: ${order.paymentMethod}`);
-    doc.fontSize(12).text(`Payment Status: ${order.paymentStatus}`);
+    doc.text(`Payment Status: ${order.paymentStatus}`);
     if (order.couponApplied) {
-      doc.fontSize(12).text(`Coupon: (-)$${order.couponApplied.discountAmount}/-`, { align: 'right' });
-      doc.moveDown();
+      doc.text(`Coupon: (-)$${order.couponApplied.discountAmount}/-`, { align: 'right' });
     }
-    doc.fontSize(12).text(`Total Amount: $${order.totalAmount}/-`, { align: 'right' });
+    doc.text(`Total Amount: $${order.totalAmount}/-`, { align: 'right' });
     doc.moveDown();
 
     // Footer Section
     doc.fontSize(10).text('Thank you for your purchase!', { align: 'center' });
+    doc.text('For any inquiries, please contact us at rishistudio@gmail.com or (123) 456-7890.', { align: 'center' });
+    doc.text('Return Policy: Items can be returned within 30 days of receipt. Please visit our website for more details.', { align: 'center' });
 
     doc.end();
 
@@ -794,14 +798,13 @@ exports.generateInvoice = async (req, res) => {
 };
 
 function generateTable(doc, orderedItems) {
-  const tableHeaders = ['Product Name', 'Quantity', 'Price', 'Offer', 'Total'];
-  const filteredItems = orderedItems.filter(item => item.status !== 'Cancelled');
-  const tableData = filteredItems.map(item => [
+  const tableHeaders = ['Product Name', 'Description', 'Quantity', 'Unit Price', 'Total'];
+  const tableData = orderedItems.map(item => [
     item.pname,
+    item.description,
     item.quantity,
     `$${item.price}/-`,
-    `(-)$${item.offerDiscount}/-`,
-    `$${item.price - item.offerDiscount}/-`
+    `$${item.price * item.quantity}/-`
   ]);
 
   doc.table({
@@ -817,5 +820,5 @@ function generateInvoiceNumber(order) {
 
 function formatDate(date) {
   // Format date in a readable format
-  return date.toLocaleDateString();
+  return new Date(date).toLocaleDateString();
 }
